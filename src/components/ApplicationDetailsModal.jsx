@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
   const [newNote, setNewNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useLanguage();
 
   if (!app) return null;
 
@@ -11,12 +13,17 @@ export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
     try {
       return app.notes && app.notes !== "[]" ? JSON.parse(app.notes) : [];
     } catch (e) {
-      return app.notes ? [{ date: 'Eski Not', text: app.notes }] : [];
+      return app.notes ? [{ date: t('oldNote'), text: app.notes }] : [];
     }
   };
 
   const notesList = parseNotes();
   const isPaidCategory = app.applicationType === 'JOB' || app.applicationType === 'INTERNSHIP';
+
+  // Veritabanındaki eski Türkçe kayıtları diller arası otomatik eşleştirme (mapping)
+  const displayPlatform = app.platform === 'Şirket Sitesi' ? t('platCompanySite') : (app.platform === 'Diğer' ? t('platOther') : app.platform);
+  const displaySalary = app.salary === 'Bilinmiyor' ? t('salUnknown') : (app.salary === 'Gönüllü' ? t('salVolunteer') : app.salary);
+  const displayMode = app.workMode === 'ONSITE' ? t('modeOnsite') : (app.workMode === 'HYBRID' ? t('modeHybrid') : (app.workMode === 'REMOTE' ? t('modeRemote') : app.workMode));
 
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
@@ -49,31 +56,31 @@ export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
           
           <div className={`grid ${isPaidCategory ? 'grid-cols-4' : 'grid-cols-3'} gap-3`}>
             <div className="bg-columbia/5 p-4 rounded-3xl border border-columbia/10 text-center">
-              <span className="block text-[9px] font-black text-columbia tracking-[0.2em] uppercase mb-1">Platform</span>
-              <span className="text-gray-700 font-bold text-xs truncate block px-1">{app.platform || 'Belirsiz'}</span>
+              <span className="block text-[9px] font-black text-columbia tracking-[0.2em] uppercase mb-1">{t('detailPlatform')}</span>
+              <span className="text-gray-700 font-bold text-xs truncate block px-1">{displayPlatform || t('detailUnspecified')}</span>
             </div>
             
             {isPaidCategory && (
               <div className="bg-peach/10 p-4 rounded-3xl border border-peach/20 text-center animate-fade-in">
-                <span className="block text-[9px] font-black text-peach tracking-[0.2em] uppercase mb-1">Maaş</span>
-                <span className="text-gray-700 font-bold text-xs block">{app.salary}</span>
+                <span className="block text-[9px] font-black text-peach tracking-[0.2em] uppercase mb-1">{t('detailSalary')}</span>
+                <span className="text-gray-700 font-bold text-xs block">{displaySalary}</span>
               </div>
             )}
 
             <div className="bg-cambridge/10 p-4 rounded-3xl border border-cambridge/20 text-center">
-              <span className="block text-[9px] font-black text-cambridge tracking-[0.2em] uppercase mb-1">Mod</span>
-              <span className="text-gray-700 font-bold text-xs block">{app.workMode}</span>
+              <span className="block text-[9px] font-black text-cambridge tracking-[0.2em] uppercase mb-1">{t('detailMode')}</span>
+              <span className="text-gray-700 font-bold text-xs block">{displayMode}</span>
             </div>
 
             <div className="bg-alabaster/40 p-4 rounded-3xl border border-columbia/10 text-center">
-              <span className="block text-[9px] font-black text-gray-400 tracking-[0.2em] uppercase mb-1">Lokasyon</span>
-              <span className="text-gray-700 font-bold text-xs truncate block px-1">{app.location || 'Belirtilmedi'}</span>
+              <span className="block text-[9px] font-black text-gray-400 tracking-[0.2em] uppercase mb-1">{t('detailLocation')}</span>
+              <span className="text-gray-700 font-bold text-xs truncate block px-1">{app.location || t('detailNotSpecified')}</span>
             </div>
           </div>
 
           {app.applicationQuestions && (
             <div className="animate-fade-in">
-              <h4 className="text-[10px] font-black text-cherry/60 tracking-[0.2em] uppercase mb-3 px-2">Başvuru Formu Bilgilerim</h4>
+              <h4 className="text-[10px] font-black text-cherry/60 tracking-[0.2em] uppercase mb-3 px-2">{t('detailQuestions')}</h4>
               <div className="bg-cherry/5 p-6 rounded-[2rem] text-gray-600 text-sm leading-relaxed border border-cherry/10 italic">
                 {app.applicationQuestions}
               </div>
@@ -82,7 +89,7 @@ export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
 
           {app.description && (
             <div>
-              <h4 className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-3 px-2">İş Tanımı</h4>
+              <h4 className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-3 px-2">{t('detailDescription')}</h4>
               <div className="bg-alabaster/40 p-6 rounded-[2rem] text-gray-500 text-sm leading-relaxed border border-columbia/10 whitespace-pre-wrap">
                 {app.description}
               </div>
@@ -90,11 +97,11 @@ export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
           )}
 
           <div>
-            <h4 className="text-[10px] font-black text-cherry tracking-[0.2em] uppercase mb-4 px-2">Süreç Günlüğü</h4>
+            <h4 className="text-[10px] font-black text-cherry tracking-[0.2em] uppercase mb-4 px-2">{t('detailJournal')}</h4>
             <div className="space-y-4 mb-6 px-1">
               <textarea 
                 value={newNote} onChange={(e) => setNewNote(e.target.value)}
-                placeholder="Bu aşamada neler oldu? Notlarını ekle..."
+                placeholder={t('journalPlaceholder')}
                 className="w-full p-5 bg-white border-2 border-alabaster rounded-[1.5rem] focus:border-cherry/20 outline-none transition-all text-sm text-gray-700 min-h-[120px] shadow-sm"
               />
               <div className="flex justify-end">
@@ -102,14 +109,14 @@ export default function ApplicationDetailsModal({ app, onClose, onUpdate }) {
                   onClick={handleAddNote} disabled={isSubmitting}
                   className="px-8 py-3 bg-cherry text-white font-black rounded-xl text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 shadow-lg shadow-cherry/20 transition-all disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Güncelleniyor...' : 'Günlüğe Ekle'}
+                  {isSubmitting ? t('btnUpdating') : t('btnAddJournal')}
                 </button>
               </div>
             </div>
 
             <div className="space-y-5 px-2">
               {notesList.length === 0 ? (
-                <p className="text-center text-gray-300 py-6 text-sm italic">Henüz bir günlük girişi yapılmamış.</p>
+                <p className="text-center text-gray-300 py-6 text-sm italic">{t('emptyJournal')}</p>
               ) : (
                 notesList.map((note, idx) => (
                   <div key={idx} className="relative pl-8 border-l-2 border-alabaster group pb-2">

@@ -1,18 +1,20 @@
 import { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function StatusUpdateModal({ show, onClose, onConfirm, newStatus }) {
   const [note, setNote] = useState('');
+  const { t } = useLanguage();
 
   if (!show) return null;
 
   const getStatusLabel = (status) => {
     const labels = {
-      'APPLIED': 'Başvuruldu',
-      'ASSESSMENT': 'Teknik Sınav',
-      'VIDEO_INTERVIEW': 'Video Mülakat',
-      'INTERVIEW': 'Görüşme',
-      'OFFER': 'Kabul',
-      'REJECTED': 'Red'
+      'APPLIED': t('statusApplied'),
+      'ASSESSMENT': t('statusAssessment'),
+      'VIDEO_INTERVIEW': t('statusVideo'),
+      'INTERVIEW': t('statusInterview'),
+      'OFFER': t('statusOffer'),
+      'REJECTED': t('statusRejected')
     };
     return labels[status] || status;
   };
@@ -22,18 +24,18 @@ export default function StatusUpdateModal({ show, onClose, onConfirm, newStatus 
       <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-lg border border-white/50">
         <div className="text-center mb-8">
           <span className="inline-block px-4 py-1.5 bg-columbia/10 text-columbia text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-4">
-            Aşama Güncelleniyor
+            {t('statusUpdating')}
           </span>
           <h3 className="text-2xl font-black text-gray-800 tracking-tight">
-            Yeni statü: <span className="text-cherry">{getStatusLabel(newStatus)}</span>
+            {t('newStatusLabel')} <span className="text-cherry">{getStatusLabel(newStatus)}</span>
           </h3>
-          <p className="text-gray-400 font-medium mt-2">Bu değişiklikle ilgili bir not eklemek ister misin?</p>
+          <p className="text-gray-400 font-medium mt-2">{t('statusNotePrompt')}</p>
         </div>
 
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="Örn: Teknik sınav maili geldi, haftaya Salı günü için randevulaştık..."
+          placeholder={t('statusNotePlaceholder')}
           className="w-full p-5 bg-alabaster/50 border-2 border-transparent rounded-[1.5rem] focus:border-cherry/20 focus:bg-white outline-none transition-all text-sm text-gray-700 min-h-[150px] mb-6"
         />
 
@@ -42,13 +44,13 @@ export default function StatusUpdateModal({ show, onClose, onConfirm, newStatus 
             onClick={() => onConfirm(note)}
             className="w-full py-4 bg-cherry text-white font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-cherry/20 uppercase tracking-widest text-xs"
           >
-            Güncelle ve Notu Ekle
+            {t('btnUpdateAndNote')}
           </button>
           <button
             onClick={() => onConfirm(null)}
             className="w-full py-4 bg-gray-50 text-gray-400 font-black rounded-2xl hover:text-gray-600 transition-all uppercase tracking-widest text-[10px]"
           >
-            Notsuz Devam Et
+            {t('btnContinueWithoutNote')}
           </button>
         </div>
       </div>

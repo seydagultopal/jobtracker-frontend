@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 import ApplicationFormModal from '../components/ApplicationFormModal';
-import Logo from '../components/Logo';
 import StatusUpdateModal from '../components/StatusUpdateModal';
+import Topbar from '../components/Topbar';
+import { useLanguage } from '../context/LanguageContext'; // Dil altyapısı eklendi
 import api from '../services/api';
 
 export default function Dashboard() {
@@ -11,14 +12,25 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [pendingUpdate, setPendingUpdate] = useState(null); 
   
-  // Statü güncelleme akışı için yeni state'ler
-  const [pendingUpdate, setPendingUpdate] = useState(null); // { app, newStatus }
+  const [userEmail, setUserEmail] = useState('');
 
+  const { t } = useLanguage(); // Çeviri fonksiyonu çağrıldı
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchApplications();
+    
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUserEmail(payload.sub); 
+      } catch (error) {
+        console.error(t('userInfoError')); // Çevrildi
+      }
+    }
   }, []);
 
   const fetchApplications = async () => {
@@ -27,8 +39,7 @@ export default function Dashboard() {
       setApplications(response.data);
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        localStorage.removeItem('auth_token');
-        navigate('/login');
+        handleLogout();
       }
     } finally {
       setLoading(false);
@@ -41,22 +52,19 @@ export default function Dashboard() {
       setShowAddModal(false);
       fetchApplications(); 
     } catch (error) {
-      console.error("Hata:", error);
+      console.error(t('errorLog') + ":", error); // Çevrildi
     }
   };
 
-  // Dropdown değiştiğinde modalı açar
   const onStatusDropdownChange = (app, newStatus) => {
     if (app.status === newStatus) return;
     setPendingUpdate({ app, newStatus });
   };
 
-  // Modaldan onay geldiğinde (notlu veya notsuz) çalışan fonksiyon
   const handleFinalStatusUpdate = async (noteText) => {
     const { app, newStatus } = pendingUpdate;
     let updatedNotes = app.notes;
 
-    // Eğer not eklendiyse, JSON listesinin en başına ekle
     if (noteText && noteText.trim()) {
       try {
         const currentNotes = app.notes && app.notes !== "[]" ? JSON.parse(app.notes) : [];
@@ -72,19 +80,24 @@ export default function Dashboard() {
       setPendingUpdate(null);
       fetchApplications(); 
     } catch (error) {
-      console.error("Güncelleme hatası:", error);
+      console.error(t('errorLog') + ":", error); // Çevrildi
     }
   };
 
   const handleDelete = async (id) => {
-    if(window.confirm("Bu kaydı silmek istediğine emin misin?")) {
+    if(window.confirm(t('confirmDelete'))) { // Çevrildi
       try {
         await api.delete(`/applications/${id}`);
         fetchApplications(); 
       } catch (error) {
-        console.error("Hata:", error);
+        console.error(t('errorLog') + ":", error); // Çevrildi
       }
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    navigate('/login');
   };
 
   const getStatusBadge = (status) => {
@@ -100,89 +113,92 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-alabaster font-sans selection:bg-cherry/20">
-      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-5 flex justify-between items-center border-b border-columbia/10">
-        <div className="flex items-center gap-4">
-          <Logo className="w-10 h-10 shadow-sm rounded-2xl" />
-          <h1 className="text-2xl font-black text-cherry tracking-tighter">Job Tracker</h1>
-        </div>
-        <button onClick={() => {localStorage.removeItem('auth_token'); navigate('/login');}} className="px-5 py-2 text-xs font-black text-gray-400 uppercase tracking-widest hover:text-cherry transition-all">Çıkış</button>
-      </nav>
+    <div className="min-h-screen bg-alabaster font-sans selection:bg-cherry/20 pb-20">
+      
+      <Topbar userEmail={userEmail} handleLogout={handleLogout} />
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex justify-between items-end mb-10">
-          <div>
-            <h2 className="text-3xl font-black text-gray-800 tracking-tight">Başvurularım</h2>
-            <p className="text-gray-400 font-medium">Kariyer yolculuğundaki tüm adımların burada ✨</p>
-          </div>
-          <button onClick={() => setShowAddModal(true)} className="px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-cherry/20">
-            + Yeni Ekle
-          </button>
-        </div>
-
+      <main className="max-w-[1400px] w-[95%] mx-auto py-10">
+        
         <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden border border-columbia/10">
-          {loading ? (
-            <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">Yükleniyor...</div>
-          ) : applications.length === 0 ? (
-            <div className="p-20 text-center text-gray-300 font-medium italic">Henüz bir kayıt yok. Kariyer serüvenine başla!</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-alabaster/30 border-b border-columbia/5">
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">Kurum</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">Pozisyon</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">Aşama</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em] text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-columbia/5">
-                  {applications.map((app) => (
-                    <tr key={app.id} className="hover:bg-alabaster/20 transition-all group">
-                      <td className="px-8 py-6 font-bold text-gray-700">{app.companyName}</td>
-                      <td className="px-8 py-6 text-gray-500 font-medium">{app.position}</td>
-                      <td className="px-8 py-6">
-                        <select 
-                          value={app.status}
-                          onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                          className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
-                        >
-                          <option value="APPLIED">Başvuruldu</option>
-                          <option value="ASSESSMENT">Teknik Sınav</option>
-                          <option value="VIDEO_INTERVIEW">Video Mülakat</option>
-                          <option value="INTERVIEW">Görüşme</option>
-                          <option value="OFFER">Kabul</option>
-                          <option value="REJECTED">Red</option>
-                        </select>
-                      </td>
-                      <td className="px-8 py-6 flex items-center justify-center gap-4">
-                        <button 
-                          onClick={() => setSelectedApp(app)} 
-                          className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-columbia bg-columbia/5 border border-columbia/20 rounded-xl hover:bg-columbia hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                        >
-                          Görüntüle
-                        </button>
-                        <button onClick={() => handleDelete(app.id)} className="text-gray-300 hover:text-cherry transition-all font-bold text-xl opacity-0 group-hover:opacity-100">×</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          
+          <div className="p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <h2 className="text-3xl font-black text-gray-800 tracking-tight">{t('dashTitle')}</h2>
+              <p className="text-gray-400 font-medium mt-2">{t('dashSubtitle')}</p>
             </div>
-          )}
+            <button onClick={() => setShowAddModal(true)} className="shrink-0 px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-cherry/20 uppercase tracking-widest text-xs">
+              {t('addNew')}
+            </button>
+          </div>
+
+          <div>
+            {loading ? (
+              <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">{t('loading')}</div>
+            ) : applications.length === 0 ? (
+              <div className="p-20 text-center text-gray-300 font-medium italic">{t('emptyList')}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-alabaster/30 border-y border-columbia/5">
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colCompany')}</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colPosition')}</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colLocMode')}</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colSalary')}</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colStage')}</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em] text-center">{t('colAction')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-columbia/5">
+                    {applications.map((app) => (
+                      <tr key={app.id} className="hover:bg-alabaster/20 transition-all group">
+                        <td className="px-8 py-6 font-bold text-gray-700">{app.companyName}</td>
+                        <td className="px-8 py-6 text-gray-500 font-medium">{app.position}</td>
+                        
+                        <td className="px-8 py-6">
+                          <span className="block text-sm font-bold text-gray-600">{app.location || t('unspecified')}</span>
+                          <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{app.workMode || '-'}</span>
+                        </td>
+                        
+                        <td className="px-8 py-6 text-sm font-bold text-gray-600">
+                          {app.salary && app.salary !== 'Bilinmiyor' ? app.salary : <span className="text-gray-300 font-medium">-</span>}
+                        </td>
+
+                        <td className="px-8 py-6">
+                          <select 
+                            value={app.status}
+                            onChange={(e) => onStatusDropdownChange(app, e.target.value)}
+                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
+                          >
+                            <option value="APPLIED">{t('statusApplied')}</option>
+                            <option value="ASSESSMENT">{t('statusAssessment')}</option>
+                            <option value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
+                            <option value="INTERVIEW">{t('statusInterview')}</option>
+                            <option value="OFFER">{t('statusOffer')}</option>
+                            <option value="REJECTED">{t('statusRejected')}</option>
+                          </select>
+                        </td>
+                        <td className="px-8 py-6 flex items-center justify-center gap-4">
+                          <button 
+                            onClick={() => setSelectedApp(app)} 
+                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-columbia bg-columbia/5 border border-columbia/20 rounded-xl hover:bg-columbia hover:text-white transition-all"
+                          >
+                            {t('btnView')}
+                          </button>
+                          <button onClick={() => handleDelete(app.id)} className="text-gray-300 hover:text-cherry transition-all font-bold text-xl">×</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Tüm Modallar */}
         <ApplicationFormModal show={showAddModal} onClose={() => setShowAddModal(false)} onSubmit={handleAddSubmit} />
         <ApplicationDetailsModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdate={fetchApplications} />
-        
-        {/* Statü Güncelleme Modalı */}
-        <StatusUpdateModal 
-          show={!!pendingUpdate} 
-          newStatus={pendingUpdate?.newStatus} 
-          onClose={() => setPendingUpdate(null)} 
-          onConfirm={handleFinalStatusUpdate} 
-        />
+        <StatusUpdateModal show={!!pendingUpdate} newStatus={pendingUpdate?.newStatus} onClose={() => setPendingUpdate(null)} onConfirm={handleFinalStatusUpdate} />
 
       </main>
     </div>
