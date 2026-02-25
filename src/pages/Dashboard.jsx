@@ -4,7 +4,7 @@ import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 import ApplicationFormModal from '../components/ApplicationFormModal';
 import StatusUpdateModal from '../components/StatusUpdateModal';
 import Topbar from '../components/Topbar';
-import { useLanguage } from '../context/LanguageContext'; // Dil altyapısı eklendi
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 export default function Dashboard() {
@@ -16,7 +16,7 @@ export default function Dashboard() {
   
   const [userEmail, setUserEmail] = useState('');
 
-  const { t } = useLanguage(); // Çeviri fonksiyonu çağrıldı
+  const { t } = useLanguage(); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function Dashboard() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         setUserEmail(payload.sub); 
       } catch (error) {
-        console.error(t('userInfoError')); // Çevrildi
+        console.error(t('userInfoError')); 
       }
     }
   }, []);
@@ -52,7 +52,7 @@ export default function Dashboard() {
       setShowAddModal(false);
       fetchApplications(); 
     } catch (error) {
-      console.error(t('errorLog') + ":", error); // Çevrildi
+      console.error(t('errorLog') + ":", error); 
     }
   };
 
@@ -80,17 +80,17 @@ export default function Dashboard() {
       setPendingUpdate(null);
       fetchApplications(); 
     } catch (error) {
-      console.error(t('errorLog') + ":", error); // Çevrildi
+      console.error(t('errorLog') + ":", error); 
     }
   };
 
   const handleDelete = async (id) => {
-    if(window.confirm(t('confirmDelete'))) { // Çevrildi
+    if(window.confirm(t('confirmDelete'))) { 
       try {
         await api.delete(`/applications/${id}`);
         fetchApplications(); 
       } catch (error) {
-        console.error(t('errorLog') + ":", error); // Çevrildi
+        console.error(t('errorLog') + ":", error); 
       }
     }
   };
@@ -102,31 +102,34 @@ export default function Dashboard() {
 
   const getStatusBadge = (status) => {
     const styles = {
-      'APPLIED': 'bg-columbia/40 text-gray-700',
-      'ASSESSMENT': 'bg-peach/60 text-gray-800',
-      'VIDEO_INTERVIEW': 'bg-peach text-gray-800',
-      'INTERVIEW': 'bg-columbia text-gray-800',
-      'OFFER': 'bg-cambridge text-white',
-      'REJECTED': 'bg-cherry text-white'
+      'APPLIED': 'bg-columbia/40 dark:bg-columbia/20 text-gray-700 dark:text-columbia',
+      'ASSESSMENT': 'bg-peach/60 dark:bg-peach/20 text-gray-800 dark:text-peach',
+      'VIDEO_INTERVIEW': 'bg-peach dark:bg-peach/30 text-gray-800 dark:text-peach',
+      'INTERVIEW': 'bg-columbia dark:bg-columbia/30 text-gray-800 dark:text-columbia',
+      'OFFER': 'bg-cambridge dark:bg-cambridge/40 text-white',
+      'REJECTED': 'bg-cherry dark:bg-cherry/40 text-white'
     };
-    return styles[status] || 'bg-gray-100 text-gray-500';
+    return styles[status] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
   };
 
   return (
-    <div className="min-h-screen bg-alabaster font-sans selection:bg-cherry/20 pb-20">
+    // DEĞİŞİKLİK 1: Arka plan grileşen yeşil yerine ferahlatıcı mavi (columbia/20) yapıldı
+    <div className="min-h-screen bg-columbia/20 dark:bg-night font-sans selection:bg-cherry/20 pb-20 transition-colors duration-500">
       
       <Topbar userEmail={userEmail} handleLogout={handleLogout} />
 
       <main className="max-w-[1400px] w-[95%] mx-auto py-10">
         
-        <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden border border-columbia/10">
+        {/* Kutunun kenarlığı da maviye uyumlu hale getirildi */}
+        <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none overflow-hidden border border-columbia/20 dark:border-starlight/30 transition-colors duration-500">
           
           <div className="p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <h2 className="text-3xl font-black text-gray-800 tracking-tight">{t('dashTitle')}</h2>
-              <p className="text-gray-400 font-medium mt-2">{t('dashSubtitle')}</p>
+              <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">{t('dashTitle')}</h2>
+              <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">{t('dashSubtitle')}</p>
             </div>
-            <button onClick={() => setShowAddModal(true)} className="shrink-0 px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-cherry/20 uppercase tracking-widest text-xs">
+            {/* DEĞİŞİKLİK 2: Ana buton tekrar PEMBE (cherry) yapıldı */}
+            <button onClick={() => setShowAddModal(true)} className="shrink-0 px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-cherry/20 dark:shadow-none uppercase tracking-widest text-xs">
               {t('addNew')}
             </button>
           </div>
@@ -135,12 +138,13 @@ export default function Dashboard() {
             {loading ? (
               <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">{t('loading')}</div>
             ) : applications.length === 0 ? (
-              <div className="p-20 text-center text-gray-300 font-medium italic">{t('emptyList')}</div>
+              <div className="p-20 text-center text-gray-300 dark:text-gray-500 font-medium italic">{t('emptyList')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-alabaster/30 border-y border-columbia/5">
+                    {/* Tablo başlığı arka planı maviye uyumlu yapıldı */}
+                    <tr className="bg-columbia/5 dark:bg-night/50 border-y border-columbia/10 dark:border-starlight/30">
                       <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colCompany')}</th>
                       <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colPosition')}</th>
                       <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colLocMode')}</th>
@@ -149,43 +153,45 @@ export default function Dashboard() {
                       <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em] text-center">{t('colAction')}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-columbia/5">
+                  {/* Satır arası çizgiler ve hover efekti maviye uyumlu yapıldı */}
+                  <tbody className="divide-y divide-columbia/10 dark:divide-starlight/30">
                     {applications.map((app) => (
-                      <tr key={app.id} className="hover:bg-alabaster/20 transition-all group">
-                        <td className="px-8 py-6 font-bold text-gray-700">{app.companyName}</td>
-                        <td className="px-8 py-6 text-gray-500 font-medium">{app.position}</td>
+                      <tr key={app.id} className="hover:bg-columbia/5 dark:hover:bg-night/40 transition-all group">
+                        <td className="px-8 py-6 font-bold text-gray-700 dark:text-gray-200">{app.companyName}</td>
+                        <td className="px-8 py-6 text-gray-500 dark:text-gray-400 font-medium">{app.position}</td>
                         
                         <td className="px-8 py-6">
-                          <span className="block text-sm font-bold text-gray-600">{app.location || t('unspecified')}</span>
-                          <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{app.workMode || '-'}</span>
+                          <span className="block text-sm font-bold text-gray-600 dark:text-gray-300">{app.location || t('unspecified')}</span>
+                          <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{app.workMode || '-'}</span>
                         </td>
                         
-                        <td className="px-8 py-6 text-sm font-bold text-gray-600">
-                          {app.salary && app.salary !== 'Bilinmiyor' ? app.salary : <span className="text-gray-300 font-medium">-</span>}
+                        <td className="px-8 py-6 text-sm font-bold text-gray-600 dark:text-gray-300">
+                          {app.salary && app.salary !== 'Bilinmiyor' ? app.salary : <span className="text-gray-300 dark:text-gray-600 font-medium">-</span>}
                         </td>
 
                         <td className="px-8 py-6">
                           <select 
                             value={app.status}
                             onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
+                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
                           >
-                            <option value="APPLIED">{t('statusApplied')}</option>
-                            <option value="ASSESSMENT">{t('statusAssessment')}</option>
-                            <option value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
-                            <option value="INTERVIEW">{t('statusInterview')}</option>
-                            <option value="OFFER">{t('statusOffer')}</option>
-                            <option value="REJECTED">{t('statusRejected')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="APPLIED">{t('statusApplied')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="ASSESSMENT">{t('statusAssessment')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="INTERVIEW">{t('statusInterview')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="OFFER">{t('statusOffer')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="REJECTED">{t('statusRejected')}</option>
                           </select>
                         </td>
                         <td className="px-8 py-6 flex items-center justify-center gap-4">
+                          {/* DEĞİŞİKLİK 3: "Görüntüle" butonu YEŞİL (cambridge) olarak bırakıldı, çeşitlilik için */}
                           <button 
                             onClick={() => setSelectedApp(app)} 
-                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-columbia bg-columbia/5 border border-columbia/20 rounded-xl hover:bg-columbia hover:text-white transition-all"
+                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-cambridge bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-xl hover:bg-cambridge hover:text-white transition-all"
                           >
                             {t('btnView')}
                           </button>
-                          <button onClick={() => handleDelete(app.id)} className="text-gray-300 hover:text-cherry transition-all font-bold text-xl">×</button>
+                          <button onClick={() => handleDelete(app.id)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl">×</button>
                         </td>
                       </tr>
                     ))}

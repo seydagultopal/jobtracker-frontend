@@ -27,14 +27,13 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-alabaster">
-      <div className="w-full max-w-md p-10 space-y-6 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-columbia/30">
+    <div className="flex items-center justify-center min-h-screen bg-alabaster dark:bg-night transition-colors duration-500">
+      <div className="w-full max-w-md p-10 space-y-6 bg-white dark:bg-twilight rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-columbia/30 dark:border-starlight/50 transition-colors duration-500">
         
-        {/* Logo ve Başlık Alanı */}
         <div className="text-center flex flex-col items-center">
           <Logo className="w-20 h-20 mb-5 shadow-sm rounded-3xl" />
           <h2 className="text-4xl font-extrabold text-cherry mb-2 tracking-tight">Job Tracker</h2>
-          <p className="text-gray-400 font-medium">Hayalindeki işi bulma serüveni</p>
+          <p className="text-gray-400 dark:text-gray-400 font-medium">Hayalindeki işi bulma serüveni</p>
         </div>
         
         {error && (
@@ -45,10 +44,10 @@ export default function Login() {
 
         <form className="space-y-5" onSubmit={handleLogin}>
           <div>
-            <label className="block mb-2 text-sm font-semibold text-gray-500 pl-1">E-Posta</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-500 dark:text-gray-400 pl-1">E-Posta</label>
             <input
               type="email"
-              className="w-full px-5 py-3 bg-alabaster/50 border border-columbia/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-columbia/30 transition-all duration-500 ease-out text-gray-700"
+              className="w-full px-5 py-3 bg-alabaster/50 dark:bg-night border border-columbia/50 dark:border-starlight/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-columbia/30 dark:focus:ring-starlight transition-all duration-500 ease-out text-gray-700 dark:text-gray-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -56,10 +55,10 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="block mb-2 text-sm font-semibold text-gray-500 pl-1">Şifre</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-500 dark:text-gray-400 pl-1">Şifre</label>
             <input
               type="password"
-              className="w-full px-5 py-3 bg-alabaster/50 border border-columbia/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-columbia/30 transition-all duration-500 ease-out text-gray-700"
+              className="w-full px-5 py-3 bg-alabaster/50 dark:bg-night border border-columbia/50 dark:border-starlight/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-columbia/30 dark:focus:ring-starlight transition-all duration-500 ease-out text-gray-700 dark:text-gray-200"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -68,7 +67,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full py-3.5 mt-2 text-white font-bold bg-cherry rounded-2xl hover:bg-opacity-90 hover:scale-[1.02] transition-all duration-500 ease-out shadow-md focus:outline-none focus:ring-4 focus:ring-cherry/30"
+            className="w-full py-3.5 mt-2 text-white font-bold bg-cherry rounded-2xl hover:bg-opacity-90 hover:scale-[1.02] transition-all duration-500 ease-out shadow-md dark:shadow-none focus:outline-none focus:ring-4 focus:ring-cherry/30"
           >
             Giriş Yap
           </button>

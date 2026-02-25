@@ -5,7 +5,8 @@ import Login from './pages/Login';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+      {/* dark:bg-night ve dark:text-gray-100 ile genel tema güncellendi */}
+      <div className="min-h-screen bg-gray-50 dark:bg-night text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500">
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
