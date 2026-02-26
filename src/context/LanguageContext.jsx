@@ -4,6 +4,23 @@ const LanguageContext = createContext();
 
 const translations = {
   tr: {
+    // Menü
+    menuDashboard: 'Dashboard',
+    menuTracker: 'Tracker',
+    menuAgenda: 'Ajanda',
+    menuCalendar: 'Takvim',
+    menuDev: 'Gelişim',
+    menuResume: 'Resume',
+    
+    // Dashboard (İstatistikler)
+    statTotal: 'Başvurulan',
+    statInterview: 'Mülakat',
+    statAssessment: 'Teknik Sınav',
+    statVideo: 'Video Mülakat',
+    statOffer: 'Kabul',
+    calendarTitle: 'Takvim',
+    reminderTitle: 'Hatırlatıcı',
+
     // Topbar
     myAccount: 'HESABIM',
     loggedInAs: 'GİRİŞ YAPILAN HESAP',
@@ -11,9 +28,9 @@ const translations = {
     settings: 'Ayarlar',
     logout: 'Çıkış Yap',
     comingSoon: 'Bu özellik yakında eklenecek!',
-    defaultUser: 'Kullanıcı', // YENİ EKLENDİ
+    defaultUser: 'Kullanıcı',
     
-    // Dashboard & Tablo
+    // Tracker Tablo
     dashTitle: 'Başvurularım',
     dashSubtitle: 'Kariyer yolculuğundaki tüm adımların burada ✨',
     addNew: '+ Yeni Ekle',
@@ -28,12 +45,10 @@ const translations = {
     btnView: 'Görüntüle',
     unspecified: 'Belirtilmedi',
     
-    // Uyarılar ve Hatalar
+    // Uyarılar ve Başvuru Durumları
     confirmDelete: 'Bu kaydı silmek istediğine emin misin?',
     errorLog: 'Hata',
     userInfoError: 'Kullanıcı bilgisi alınamadı',
-    
-    // Başvuru Durumları
     statusApplied: 'Başvuruldu',
     statusAssessment: 'Teknik Sınav',
     statusVideo: 'Video Mülakat',
@@ -46,7 +61,7 @@ const translations = {
     btnSave: 'Kaydet',
     btnUpdating: 'Güncelleniyor...',
 
-    // Yeni Ekle Modalı
+    // Form Modalı
     newAppTitle: 'Yeni Başvuru Kaydı',
     formCompany: 'Kurum / Şirket Adı',
     formPosition: 'Pozisyon / Program Adı',
@@ -93,7 +108,7 @@ const translations = {
     btnAddJournal: 'Günlüğe Ekle',
     emptyJournal: 'Henüz bir günlük girişi yapılmamış.',
 
-    // Statü Güncelleme Modalı
+    // Statü Modalı
     statusUpdating: 'Aşama Güncelleniyor',
     newStatusLabel: 'Yeni statü:',
     statusNotePrompt: 'Bu değişiklikle ilgili bir not eklemek ister misin?',
@@ -102,16 +117,29 @@ const translations = {
     btnContinueWithoutNote: 'Notsuz Devam Et',
   },
   en: {
-    // Topbar
+    menuDashboard: 'Dashboard',
+    menuTracker: 'Tracker',
+    menuAgenda: 'Agenda',
+    menuCalendar: 'Calendar',
+    menuDev: 'Development',
+    menuResume: 'Resume',
+    
+    statTotal: 'Applied',
+    statInterview: 'Interview',
+    statAssessment: 'Assessment',
+    statVideo: 'Video Interview',
+    statOffer: 'Offer',
+    calendarTitle: 'Calendar',
+    reminderTitle: 'Reminder',
+
     myAccount: 'MY ACCOUNT',
     loggedInAs: 'LOGGED IN AS',
     profile: 'My Profile',
     settings: 'Settings',
     logout: 'Logout',
     comingSoon: 'This feature is coming soon!',
-    defaultUser: 'User', // YENİ EKLENDİ
+    defaultUser: 'User',
     
-    // Dashboard & Tablo
     dashTitle: 'My Applications',
     dashSubtitle: 'All steps of your career journey are here ✨',
     addNew: '+ Add New',
@@ -126,12 +154,9 @@ const translations = {
     btnView: 'View',
     unspecified: 'Unspecified',
     
-    // Uyarılar ve Hatalar
     confirmDelete: 'Are you sure you want to delete this record?',
     errorLog: 'Error',
     userInfoError: 'Could not fetch user info',
-    
-    // Başvuru Durumları
     statusApplied: 'Applied',
     statusAssessment: 'Assessment',
     statusVideo: 'Video Interview',
@@ -139,12 +164,10 @@ const translations = {
     statusOffer: 'Offer',
     statusRejected: 'Rejected',
 
-    // Modals Common
     btnCancel: 'Cancel',
     btnSave: 'Save',
     btnUpdating: 'Updating...',
 
-    // Form Modal
     newAppTitle: 'New Application Record',
     formCompany: 'Company / Org Name',
     formPosition: 'Position / Program Name',
@@ -176,7 +199,6 @@ const translations = {
     formDescription: 'Job Description',
     descPlaceholder: 'You can paste the job description here...',
 
-    // Details Modal
     oldNote: 'Old Note',
     detailPlatform: 'Platform',
     detailUnspecified: 'Unspecified',
@@ -191,7 +213,6 @@ const translations = {
     btnAddJournal: 'Add to Journal',
     emptyJournal: 'No journal entry has been made yet.',
 
-    // Status Modal
     statusUpdating: 'Updating Stage',
     newStatusLabel: 'New status:',
     statusNotePrompt: 'Would you like to add a note regarding this change?',

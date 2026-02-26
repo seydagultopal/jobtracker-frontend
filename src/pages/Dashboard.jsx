@@ -1,212 +1,153 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
-import ApplicationFormModal from '../components/ApplicationFormModal';
-import StatusUpdateModal from '../components/StatusUpdateModal';
-import Topbar from '../components/Topbar';
+import { useEvents } from '../context/EventContext';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 export default function Dashboard() {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [pendingUpdate, setPendingUpdate] = useState(null); 
-  
-  const [userEmail, setUserEmail] = useState('');
-
-  const { t } = useLanguage(); 
+  const { t } = useLanguage();
+  const { events } = useEvents(); 
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ total: 0, interview: 0, assessment: 0, video: 0, offer: 0 });
 
   useEffect(() => {
-    fetchApplications();
-    
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUserEmail(payload.sub); 
-      } catch (error) {
-        console.error(t('userInfoError')); 
-      }
-    }
+    api.get('/applications').then(res => {
+      const apps = res.data;
+      setStats({
+        total: apps.length,
+        interview: apps.filter(a => a.status === 'INTERVIEW').length,
+        assessment: apps.filter(a => a.status === 'ASSESSMENT').length,
+        video: apps.filter(a => a.status === 'VIDEO_INTERVIEW').length,
+        offer: apps.filter(a => a.status === 'OFFER').length,
+      });
+    }).catch(err => console.error(err));
   }, []);
 
-  const fetchApplications = async () => {
-    try {
-      const response = await api.get('/applications');
-      setApplications(response.data);
-    } catch (error) {
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        handleLogout();
-      }
-    } finally {
-      setLoading(false);
-    }
+  // BUGÜNÜN ETKİNLİKLERİNİ BUL
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todaysEvents = events
+    .filter(e => e.date === todayStr)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  // MİNİ TAKVİM İÇİN GEREKLİ HESAPLAMALAR
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+  const startDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Pazartesiyi başa alıyoruz
+  const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+  const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+
+  const hasEvent = (day) => {
+    const monthStr = String(currentMonth + 1).padStart(2, '0');
+    const dayStr = String(day).padStart(2, '0');
+    const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
+    return events.some(e => e.date === dateStr);
   };
 
-  const handleAddSubmit = async (formData) => {
-    try {
-      await api.post('/applications', formData);
-      setShowAddModal(false);
-      fetchApplications(); 
-    } catch (error) {
-      console.error(t('errorLog') + ":", error); 
-    }
-  };
-
-  const onStatusDropdownChange = (app, newStatus) => {
-    if (app.status === newStatus) return;
-    setPendingUpdate({ app, newStatus });
-  };
-
-  const handleFinalStatusUpdate = async (noteText) => {
-    const { app, newStatus } = pendingUpdate;
-    let updatedNotes = app.notes;
-
-    if (noteText && noteText.trim()) {
-      try {
-        const currentNotes = app.notes && app.notes !== "[]" ? JSON.parse(app.notes) : [];
-        const newNoteEntry = { date: new Date().toLocaleString('tr-TR'), text: noteText.trim() };
-        updatedNotes = JSON.stringify([newNoteEntry, ...currentNotes]);
-      } catch (e) {
-        updatedNotes = JSON.stringify([{ date: new Date().toLocaleString('tr-TR'), text: noteText.trim() }]);
-      }
-    }
-
-    try {
-      await api.put(`/applications/${app.id}`, { ...app, status: newStatus, notes: updatedNotes });
-      setPendingUpdate(null);
-      fetchApplications(); 
-    } catch (error) {
-      console.error(t('errorLog') + ":", error); 
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if(window.confirm(t('confirmDelete'))) { 
-      try {
-        await api.delete(`/applications/${id}`);
-        fetchApplications(); 
-      } catch (error) {
-        console.error(t('errorLog') + ":", error); 
-      }
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    navigate('/login');
-  };
-
-  const getStatusBadge = (status) => {
-    const styles = {
-      'APPLIED': 'bg-columbia/40 dark:bg-columbia/20 text-gray-700 dark:text-columbia',
-      'ASSESSMENT': 'bg-peach/60 dark:bg-peach/20 text-gray-800 dark:text-peach',
-      'VIDEO_INTERVIEW': 'bg-peach dark:bg-peach/30 text-gray-800 dark:text-peach',
-      'INTERVIEW': 'bg-columbia dark:bg-columbia/30 text-gray-800 dark:text-columbia',
-      'OFFER': 'bg-cambridge dark:bg-cambridge/40 text-white',
-      'REJECTED': 'bg-cherry dark:bg-cherry/40 text-white'
-    };
-    return styles[status] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
-  };
+  const StatBox = ({ label, value }) => (
+    <div className="bg-white/80 dark:bg-twilight p-5 rounded-3xl flex justify-between items-center shadow-sm border border-white dark:border-starlight/30 transition-all hover:scale-[1.02]">
+      <span className="font-bold text-gray-600 dark:text-gray-300">{label}</span>
+      <span className="text-xl font-black text-gray-800 dark:text-white">{value}</span>
+    </div>
+  );
 
   return (
-    // DEĞİŞİKLİK 1: Arka plan grileşen yeşil yerine ferahlatıcı mavi (columbia/20) yapıldı
-    <div className="min-h-screen bg-columbia/20 dark:bg-night font-sans selection:bg-cherry/20 pb-20 transition-colors duration-500">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full min-h-[500px] animate-fade-in">
       
-      <Topbar userEmail={userEmail} handleLogout={handleLogout} />
-
-      <main className="max-w-[1400px] w-[95%] mx-auto py-10">
+      {/* Sol Kolon (İstatistikler) */}
+      <div className="lg:col-span-5 flex flex-col gap-4">
+        <StatBox label={t('statTotal')} value={stats.total} />
+        <StatBox label={t('statInterview')} value={stats.interview} />
+        <StatBox label={t('statAssessment')} value={stats.assessment} />
+        <StatBox label={t('statVideo')} value={stats.video} />
+        <StatBox label={t('statOffer')} value={stats.offer} />
         
-        {/* Kutunun kenarlığı da maviye uyumlu hale getirildi */}
-        <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none overflow-hidden border border-columbia/20 dark:border-starlight/30 transition-colors duration-500">
-          
-          <div className="p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
-              <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">{t('dashTitle')}</h2>
-              <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">{t('dashSubtitle')}</p>
-            </div>
-            {/* DEĞİŞİKLİK 2: Ana buton tekrar PEMBE (cherry) yapıldı */}
-            <button onClick={() => setShowAddModal(true)} className="shrink-0 px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-cherry/20 dark:shadow-none uppercase tracking-widest text-xs">
-              {t('addNew')}
-            </button>
+        <div className="mt-auto bg-cherry p-8 rounded-[2.5rem] flex items-center justify-center text-6xl font-black text-white shadow-xl shadow-cherry/20">
+          5 <span className="ml-3 drop-shadow-md">🔥</span>
+        </div>
+      </div>
+
+      {/* Sağ Kolon (Mini Takvim & Hatırlatıcı) */}
+      <div className="lg:col-span-7 flex flex-col gap-6">
+        
+        {/* MİNİ TAKVİM (Tıklanabilir) */}
+        <div 
+          onClick={() => navigate('/takvim')}
+          className="bg-columbia/20 dark:bg-columbia/5 border-2 border-white/50 dark:border-starlight/30 p-8 rounded-[3rem] flex-1 flex flex-col shadow-inner cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300 group relative"
+        >
+          {/* Takvime Git İpucu */}
+          <div className="absolute top-6 right-8 text-[10px] font-black text-columbia dark:text-columbia/70 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+            Takvime Git <span>➔</span>
           </div>
 
-          <div>
-            {loading ? (
-              <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">{t('loading')}</div>
-            ) : applications.length === 0 ? (
-              <div className="p-20 text-center text-gray-300 dark:text-gray-500 font-medium italic">{t('emptyList')}</div>
+          <span className="text-2xl font-black tracking-widest uppercase text-columbia dark:text-columbia/80 mb-6">
+            {monthNames[currentMonth]} {currentYear}
+          </span>
+          
+          <div className="grid grid-cols-7 gap-2 flex-1">
+            {/* Gün İsimleri */}
+            {dayNames.map(d => (
+              <div key={d} className="text-center text-[10px] font-black text-columbia/50 dark:text-columbia/40 uppercase tracking-widest mb-2">{d}</div>
+            ))}
+            
+            {/* Boş Günler */}
+            {Array.from({ length: startDayIndex }).map((_, i) => (
+              <div key={`empty-${i}`} />
+            ))}
+            
+            {/* Ayın Günleri */}
+            {Array.from({ length: daysInMonth }).map((_, i) => {
+              const day = i + 1;
+              const isToday = day === today.getDate();
+              const evt = hasEvent(day);
+              
+              return (
+                <div 
+                  key={day} 
+                  className={`relative flex flex-col items-center justify-center p-2 rounded-xl text-sm font-bold transition-all ${
+                    isToday 
+                      ? 'bg-white dark:bg-twilight text-columbia shadow-sm border border-columbia/20 dark:border-columbia/10' 
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {day}
+                  {evt && <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-cherry"></span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* HATIRLATICI KUTUSU (Dinamik) */}
+        <div className="bg-[#D4B996]/80 dark:bg-[#8A6F4E] border-2 border-white/30 dark:border-starlight/20 p-8 rounded-[2.5rem] flex flex-col justify-center min-h-[160px] shadow-lg relative overflow-hidden">
+          {/* Arka plan deseni */}
+          <div className="absolute right-[-20px] bottom-[-40px] text-9xl opacity-10">🔔</div>
+          
+          <h3 className="text-lg font-black text-white/90 uppercase tracking-[0.2em] mb-4 relative z-10">
+            {t('reminderTitle')} (Bugün)
+          </h3>
+          
+          <div className="space-y-3 relative z-10">
+            {todaysEvents.length > 0 ? (
+              todaysEvents.map(evt => (
+                <div key={evt.id} className="flex items-center gap-3 bg-white/20 dark:bg-black/20 p-3 rounded-xl backdrop-blur-sm">
+                  <span className="bg-white dark:bg-twilight text-[#D4B996] dark:text-[#8A6F4E] px-2 py-1 rounded-lg text-xs font-black shrink-0">
+                    {evt.time}
+                  </span>
+                  <span className="text-white font-bold truncate">{evt.title}</span>
+                </div>
+              ))
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    {/* Tablo başlığı arka planı maviye uyumlu yapıldı */}
-                    <tr className="bg-columbia/5 dark:bg-night/50 border-y border-columbia/10 dark:border-starlight/30">
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colCompany')}</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colPosition')}</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colLocMode')}</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colSalary')}</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colStage')}</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em] text-center">{t('colAction')}</th>
-                    </tr>
-                  </thead>
-                  {/* Satır arası çizgiler ve hover efekti maviye uyumlu yapıldı */}
-                  <tbody className="divide-y divide-columbia/10 dark:divide-starlight/30">
-                    {applications.map((app) => (
-                      <tr key={app.id} className="hover:bg-columbia/5 dark:hover:bg-night/40 transition-all group">
-                        <td className="px-8 py-6 font-bold text-gray-700 dark:text-gray-200">{app.companyName}</td>
-                        <td className="px-8 py-6 text-gray-500 dark:text-gray-400 font-medium">{app.position}</td>
-                        
-                        <td className="px-8 py-6">
-                          <span className="block text-sm font-bold text-gray-600 dark:text-gray-300">{app.location || t('unspecified')}</span>
-                          <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{app.workMode || '-'}</span>
-                        </td>
-                        
-                        <td className="px-8 py-6 text-sm font-bold text-gray-600 dark:text-gray-300">
-                          {app.salary && app.salary !== 'Bilinmiyor' ? app.salary : <span className="text-gray-300 dark:text-gray-600 font-medium">-</span>}
-                        </td>
-
-                        <td className="px-8 py-6">
-                          <select 
-                            value={app.status}
-                            onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
-                          >
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="APPLIED">{t('statusApplied')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="ASSESSMENT">{t('statusAssessment')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="INTERVIEW">{t('statusInterview')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="OFFER">{t('statusOffer')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="REJECTED">{t('statusRejected')}</option>
-                          </select>
-                        </td>
-                        <td className="px-8 py-6 flex items-center justify-center gap-4">
-                          {/* DEĞİŞİKLİK 3: "Görüntüle" butonu YEŞİL (cambridge) olarak bırakıldı, çeşitlilik için */}
-                          <button 
-                            onClick={() => setSelectedApp(app)} 
-                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-cambridge bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-xl hover:bg-cambridge hover:text-white transition-all"
-                          >
-                            {t('btnView')}
-                          </button>
-                          <button onClick={() => handleDelete(app.id)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl">×</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <p className="text-white/80 font-bold italic">
+                Bugün planlanan bir etkinlik yok. Sakin bir gün! ☕
+              </p>
             )}
           </div>
         </div>
+      </div>
 
-        <ApplicationFormModal show={showAddModal} onClose={() => setShowAddModal(false)} onSubmit={handleAddSubmit} />
-        <ApplicationDetailsModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdate={fetchApplications} />
-        <StatusUpdateModal show={!!pendingUpdate} newStatus={pendingUpdate?.newStatus} onClose={() => setPendingUpdate(null)} onConfirm={handleFinalStatusUpdate} />
-
-      </main>
     </div>
   );
 }
