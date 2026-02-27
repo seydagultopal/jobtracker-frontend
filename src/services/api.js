@@ -6,11 +6,12 @@ const api = axios.create({
 
 // Her istekten önce çalışacak aracı (Interceptor)
 api.interceptors.request.use((config) => {
-  // LocalStorage'dan Basic Auth için kaydettiğimiz şifrelenmiş metni alıyoruz
+  // LocalStorage'dan JWT token'ı alıyoruz
   const token = localStorage.getItem('auth_token'); 
   
   if (token) {
-    config.headers.Authorization = `Basic ${token}`;
+    // Basic değil Bearer olmalı!
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });

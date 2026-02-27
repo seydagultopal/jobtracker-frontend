@@ -67,6 +67,24 @@ const translations = {
     passRule2: 'En az bir büyük harf ve bir rakam içermeli.',
     passRule3: 'En az bir özel karakter (!@#$ vb.) içermeli.',
 
+    // Giriş (Login) Sayfası
+    loginTitle: 'Hoş Geldin ✨',
+    loginBtn: 'Giriş Yap',
+    forgotPass: 'Şifremi Unuttum',
+    loginOr: 'VEYA',
+    loginGoogle: 'Google ile Giriş Yap',
+    loginNoAccount: 'Hesabın yok mu? Kayıt Ol',
+    msgLoginFailed: 'Giriş Başarısız! Bilgilerini kontrol et.',
+    msgLoginSuccess: 'Giriş Başarılı! Yönlendiriliyorsun...',
+    
+    // Şifremi Unuttum Modalı (YENİ EKLENDİ)
+    forgotPassTitle: 'Şifreni mi Unuttun? 🥺',
+    forgotPassDesc: 'Merak etme, yeni şifreni belirleyip eski verilerine kavuşabilirsin.',
+    forgotNewPass: 'Yeni Şifre',
+    forgotConfirmPass: 'Yeni Şifre (Tekrar)',
+    btnResetPass: 'Şifremi Güncelle',
+    msgPassResetSuccess: 'Şifren başarıyla güncellendi! 🎉',
+
     // Tracker Tablo
     dashTitle: 'Başvurularım',
     dashSubtitle: 'Kariyer yolculuğundaki tüm adımların burada ✨',
@@ -214,6 +232,24 @@ const translations = {
     passRule2: 'Must contain at least one uppercase letter and one number.',
     passRule3: 'Must contain at least one special character (!@#$ etc.).',
     
+    // Giriş (Login) Sayfası
+    loginTitle: 'Welcome Back ✨',
+    loginBtn: 'Sign In',
+    forgotPass: 'Forgot Password?',
+    loginOr: 'OR',
+    loginGoogle: 'Sign in with Google',
+    loginNoAccount: "Don't have an account? Sign Up",
+    msgLoginFailed: 'Login Failed! Please check your credentials.',
+    msgLoginSuccess: 'Login Successful! Redirecting...',
+    
+    // Şifremi Unuttum Modalı (YENİ EKLENDİ)
+    forgotPassTitle: 'Forgot Password? 🥺',
+    forgotPassDesc: 'Do not worry, you can set a new password and get your data back.',
+    forgotNewPass: 'New Password',
+    forgotConfirmPass: 'Confirm New Password',
+    btnResetPass: 'Update Password',
+    msgPassResetSuccess: 'Password updated successfully! 🎉',
+
     dashTitle: 'My Applications',
     dashSubtitle: 'All steps of your career journey are here ✨',
     addNew: '+ Add New',

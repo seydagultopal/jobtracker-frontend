@@ -11,7 +11,7 @@ export default function Calendar() {
   const [formData, setFormData] = useState({
     title: '',
     time: '10:00',
-    type: 'BOOTCAMP', // BOOTCAMP, INTERVIEW, MEETING, DEADLINE
+    type: 'BOOTCAMP', 
     isRecurring: false,
     recurringWeeks: 4
   });
@@ -19,7 +19,7 @@ export default function Calendar() {
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year, month) => {
     let day = new Date(year, month, 1).getDay();
-    return day === 0 ? 6 : day - 1; // Pazartesiyi 0 yapmak için
+    return day === 0 ? 6 : day - 1; 
   };
 
   const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
@@ -46,7 +46,7 @@ export default function Calendar() {
 
     for (let i = 0; i < weeksToAdd; i++) {
       const eventDate = new Date(baseDate);
-      eventDate.setDate(baseDate.getDate() + (i * 7)); // Her döngüde 7 gün (1 hafta) ekle
+      eventDate.setDate(baseDate.getDate() + (i * 7)); 
       
       const monthStr = String(eventDate.getMonth() + 1).padStart(2, '0');
       const dayStr = String(eventDate.getDate()).padStart(2, '0');
@@ -77,11 +77,10 @@ export default function Calendar() {
   };
 
   return (
-    <div className="h-full flex flex-col gap-6 animate-fade-in">
+    <div className="h-full flex flex-col gap-3 animate-fade-in pb-2">
       
-      {/* Takvim Üst Barı */}
-      <div className="bg-white dark:bg-twilight rounded-[2rem] p-6 flex justify-between items-center shadow-sm border border-columbia/20 dark:border-starlight/30 transition-colors duration-500">
-        <h2 className="text-3xl font-black text-cherry tracking-tight">
+      <div className="bg-white dark:bg-twilight rounded-[2rem] px-6 py-4 flex justify-between items-center shadow-sm border border-columbia/20 dark:border-starlight/30 transition-colors duration-500 shrink-0">
+        <h2 className="text-2xl md:text-3xl font-black text-cherry tracking-tight">
           {monthNames[currentDate.getMonth()]} <span className="text-columbia">{currentDate.getFullYear()}</span>
         </h2>
         <div className="flex gap-2">
@@ -90,20 +89,17 @@ export default function Calendar() {
         </div>
       </div>
 
-      {/* Takvim Izgarası */}
-      <div className="bg-white dark:bg-twilight rounded-[2rem] p-6 shadow-sm border border-columbia/20 dark:border-starlight/30 flex-1 flex flex-col transition-colors duration-500 min-h-[600px]">
+      <div className="bg-white dark:bg-twilight rounded-[2rem] p-4 shadow-sm border border-columbia/20 dark:border-starlight/30 flex-1 flex flex-col transition-colors duration-500 min-h-0">
         
-        {/* Gün İsimleri */}
-        <div className="grid grid-cols-7 gap-4 mb-4">
+        <div className="grid grid-cols-7 gap-2 md:gap-4 mb-2 shrink-0">
           {dayNames.map(day => (
             <div key={day} className="text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{day}</div>
           ))}
         </div>
 
-        {/* Gün Kutucukları */}
-        <div className="grid grid-cols-7 gap-3 flex-1 auto-rows-fr">
+        <div className="grid grid-cols-7 gap-2 flex-1 auto-rows-fr min-h-0">
           {Array.from({ length: firstDay }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-alabaster/30 dark:bg-night/30 rounded-2xl border border-transparent"></div>
+            <div key={`empty-${i}`} className="bg-alabaster/30 dark:bg-night/30 rounded-xl md:rounded-2xl border border-transparent"></div>
           ))}
           
           {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -119,19 +115,19 @@ export default function Calendar() {
               <div 
                 key={day} 
                 onClick={() => openModalForDate(day)}
-                className={`relative p-3 rounded-2xl border border-columbia/10 dark:border-starlight/20 flex flex-col gap-1 cursor-pointer transition-all hover:border-columbia hover:shadow-md ${isToday ? 'bg-peach/10 border-peach/30' : 'bg-white dark:bg-night'}`}
+                className={`relative p-2 rounded-xl md:rounded-2xl border border-columbia/10 dark:border-starlight/20 flex flex-col gap-1 cursor-pointer transition-all hover:border-columbia hover:shadow-md overflow-hidden ${isToday ? 'bg-peach/10 border-peach/30' : 'bg-white dark:bg-night'}`}
               >
-                <span className={`text-sm font-black ${isToday ? 'text-peach' : 'text-gray-400 dark:text-gray-500'}`}>{day}</span>
+                <span className={`text-xs md:text-sm font-black ${isToday ? 'text-peach' : 'text-gray-400 dark:text-gray-500'}`}>{day}</span>
                 
-                <div className="flex flex-col gap-1 overflow-y-auto custom-scrollbar">
+                <div className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1">
                   {dayEvents.map(evt => (
-                    <div key={evt.id} className={`group relative text-[9px] font-bold px-2 py-1 rounded-lg truncate border ${getEventColor(evt.type)}`} title={evt.title}>
-                      {evt.time} - {evt.title}
+                    <div key={evt.id} className={`group relative text-[10px] leading-tight font-bold px-2 py-1.5 rounded-lg border flex items-center shrink-0 min-h-[26px] ${getEventColor(evt.type)}`} title={evt.title}>
+                      <span className="truncate w-full pr-4">{evt.time} - {evt.title}</span>
                       <button 
                         onClick={(e) => { e.stopPropagation(); deleteEvent(evt.id); }}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-cherry hover:scale-110 transition-all bg-white/80 dark:bg-night/80 rounded"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-cherry hover:scale-110 transition-all bg-white/90 dark:bg-night/90 rounded p-0.5"
                       >
-                        <Trash2 size={10} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   ))}
@@ -142,7 +138,6 @@ export default function Calendar() {
         </div>
       </div>
 
-      {/* Etkinlik Ekleme Modalı */}
       {showModal && (
         <div className="fixed inset-0 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-twilight p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white/50 dark:border-starlight/50">
@@ -178,7 +173,6 @@ export default function Calendar() {
                 </select>
               </div>
 
-              {/* TEKRARLAMA (RECURRING) BÖLÜMÜ */}
               <div className="bg-columbia/10 dark:bg-starlight/20 p-4 rounded-2xl border border-columbia/20 dark:border-starlight/30 mt-4">
                 <label className="flex items-center gap-2 cursor-pointer mb-3">
                   <input type="checkbox" checked={formData.isRecurring} onChange={e => setFormData({...formData, isRecurring: e.target.checked})} className="w-4 h-4 text-cherry rounded border-gray-300" />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 import ApplicationFormModal from '../components/ApplicationFormModal';
 import StatusUpdateModal from '../components/StatusUpdateModal';
@@ -8,11 +9,13 @@ import api from '../services/api';
 export default function Tracker() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null); 
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [pendingUpdate, setPendingUpdate] = useState(null); 
 
   const { t } = useLanguage(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchApplications();
@@ -20,10 +23,34 @@ export default function Tracker() {
 
   const fetchApplications = async () => {
     try {
-      const response = await api.get('/applications');
-      setApplications(response.data);
+      setLoading(true);
+      setErrorMsg(null);
+      const response = await api.get(`/applications`); 
+      
+      console.log("🔥 BACKEND'DEN GELEN HAM VERİ:", response.data); 
+
+      let fetchedData = [];
+      
+      if (Array.isArray(response.data)) {
+        fetchedData = response.data;
+      } else if (response.data && Array.isArray(response.data.content)) {
+        fetchedData = response.data.content; 
+      } else if (response.data && Array.isArray(response.data.data)) {
+        fetchedData = response.data.data;
+      } else if (response.data && response.data._embedded) {
+        const keys = Object.keys(response.data._embedded);
+        if (keys.length > 0) fetchedData = response.data._embedded[keys[0]];
+      }
+      
+      setApplications(fetchedData);
+      
     } catch (error) {
-      console.error(error);
+      console.error("API Veri Çekme Hatası:", error);
+      if (error.response) {
+        setErrorMsg(`Sunucu Hatası: ${error.response.status} - ${error.response.statusText}`);
+      } else {
+        setErrorMsg(`Bağlantı Hatası: ${error.message}. Backend ayakta mı veya CORS engeli mi var?`);
+      }
     } finally {
       setLoading(false);
     }
@@ -35,7 +62,8 @@ export default function Tracker() {
       setShowAddModal(false);
       fetchApplications(); 
     } catch (error) {
-      console.error(error); 
+      console.error("Kayıt Ekleme Hatası:", error); 
+      alert("Kayıt eklenirken bir hata oluştu!");
     }
   };
 
@@ -59,11 +87,12 @@ export default function Tracker() {
     }
 
     try {
-      await api.put(`/applications/${app.id}`, { ...app, status: newStatus, notes: updatedNotes });
+      const appId = app.id || app.job_application_id;
+      await api.put(`/applications/${appId}`, { ...app, status: newStatus, notes: updatedNotes });
       setPendingUpdate(null);
       fetchApplications(); 
     } catch (error) {
-      console.error(error); 
+      console.error("Güncelleme Hatası:", error); 
     }
   };
 
@@ -73,12 +102,13 @@ export default function Tracker() {
         await api.delete(`/applications/${id}`);
         fetchApplications(); 
       } catch (error) {
-        console.error(error); 
+        console.error("Silme Hatası:", error); 
       }
     }
   };
 
   const getStatusBadge = (status) => {
+    const safeStatus = status ? status.toUpperCase() : 'APPLIED';
     const styles = {
       'APPLIED': 'bg-columbia/40 dark:bg-columbia/20 text-gray-700 dark:text-columbia',
       'ASSESSMENT': 'bg-peach/60 dark:bg-peach/20 text-gray-800 dark:text-peach',
@@ -87,7 +117,7 @@ export default function Tracker() {
       'OFFER': 'bg-cambridge dark:bg-cambridge/40 text-white',
       'REJECTED': 'bg-cherry dark:bg-cherry/40 text-white'
     };
-    return styles[status] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
+    return styles[safeStatus] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
   };
 
   return (
@@ -107,6 +137,10 @@ export default function Tracker() {
         <div>
           {loading ? (
             <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">{t('loading')}</div>
+          ) : errorMsg ? (
+            <div className="p-20 text-center text-cherry font-bold italic border-t border-cherry/10 bg-cherry/5">
+              ⚠️ {errorMsg}
+            </div>
           ) : applications.length === 0 ? (
             <div className="p-20 text-center text-gray-300 dark:text-gray-500 font-medium italic">{t('emptyList')}</div>
           ) : (
@@ -123,42 +157,52 @@ export default function Tracker() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-columbia/10 dark:divide-starlight/30">
-                  {applications.map((app) => (
-                    <tr key={app.id} className="hover:bg-columbia/5 dark:hover:bg-night/40 transition-all group">
-                      <td className="px-8 py-6 font-bold text-gray-700 dark:text-gray-200">{app.companyName}</td>
-                      <td className="px-8 py-6 text-gray-500 dark:text-gray-400 font-medium">{app.position}</td>
-                      <td className="px-8 py-6">
-                        <span className="block text-sm font-bold text-gray-600 dark:text-gray-300">{app.location || t('unspecified')}</span>
-                        <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{app.workMode || '-'}</span>
-                      </td>
-                      <td className="px-8 py-6 text-sm font-bold text-gray-600 dark:text-gray-300">
-                        {app.salary && app.salary !== 'Bilinmiyor' ? app.salary : <span className="text-gray-300 dark:text-gray-600 font-medium">-</span>}
-                      </td>
-                      <td className="px-8 py-6">
-                        <select 
-                          value={app.status}
-                          onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                          className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(app.status)}`}
-                        >
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="APPLIED">{t('statusApplied')}</option>
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="ASSESSMENT">{t('statusAssessment')}</option>
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="INTERVIEW">{t('statusInterview')}</option>
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="OFFER">{t('statusOffer')}</option>
-                          <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="REJECTED">{t('statusRejected')}</option>
-                        </select>
-                      </td>
-                      <td className="px-8 py-6 flex items-center justify-center gap-4">
-                        <button 
-                          onClick={() => setSelectedApp(app)} 
-                          className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-cambridge bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-xl hover:bg-cambridge hover:text-white transition-all"
-                        >
-                          {t('btnView')}
-                        </button>
-                        <button onClick={() => handleDelete(app.id)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl">×</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {applications.map((app) => {
+                    const appId = app.id || app.job_application_id;
+                    const compName = app.companyName || app.company_name || 'Bilinmeyen Kurum';
+                    const pos = app.position || 'Bilinmeyen Pozisyon';
+                    const loc = app.location || t('unspecified');
+                    const mode = app.workMode || app.work_mode || '-';
+                    const sal = app.salary && app.salary !== 'Bilinmiyor' ? app.salary : null;
+                    const stat = app.status || 'APPLIED';
+
+                    return (
+                      <tr key={appId} className="hover:bg-columbia/5 dark:hover:bg-night/40 transition-all group">
+                        <td className="px-8 py-6 font-bold text-gray-700 dark:text-gray-200">{compName}</td>
+                        <td className="px-8 py-6 text-gray-500 dark:text-gray-400 font-medium">{pos}</td>
+                        <td className="px-8 py-6">
+                          <span className="block text-sm font-bold text-gray-600 dark:text-gray-300">{loc}</span>
+                          <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{mode}</span>
+                        </td>
+                        <td className="px-8 py-6 text-sm font-bold text-gray-600 dark:text-gray-300">
+                          {sal ? sal : <span className="text-gray-300 dark:text-gray-600 font-medium">-</span>}
+                        </td>
+                        <td className="px-8 py-6">
+                          <select 
+                            value={stat}
+                            onChange={(e) => onStatusDropdownChange(app, e.target.value)}
+                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(stat)}`}
+                          >
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="APPLIED">{t('statusApplied')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="ASSESSMENT">{t('statusAssessment')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="INTERVIEW">{t('statusInterview')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="OFFER">{t('statusOffer')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="REJECTED">{t('statusRejected')}</option>
+                          </select>
+                        </td>
+                        <td className="px-8 py-6 flex items-center justify-center gap-4">
+                          <button 
+                            onClick={() => setSelectedApp(app)} 
+                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-cambridge bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-xl hover:bg-cambridge hover:text-white transition-all"
+                          >
+                            {t('btnView')}
+                          </button>
+                          <button onClick={() => handleDelete(appId)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl">×</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
