@@ -17,7 +17,6 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // Şifremi Unuttum Modalı State'leri
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotData, setForgotData] = useState({ email: '', newPassword: '', confirmNewPassword: '' });
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -55,7 +54,11 @@ export default function Login() {
       }, 1500);
       
     } catch (error) {
-      showToastMessage('errorGeneral', t('msgLoginFailed'));
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        showToastMessage('errorGeneral', 'Hatalı e-posta veya şifre!');
+      } else {
+        showToastMessage('errorGeneral', t('msgLoginFailed'));
+      }
       console.error("Login Error:", error);
     } finally {
       setLoading(false);
@@ -79,7 +82,6 @@ export default function Login() {
 
     setForgotLoading(true);
     try {
-      // API İsteği
       await api.post('/auth/reset-password', {
         email: forgotData.email,
         newPassword: forgotData.newPassword
@@ -91,13 +93,12 @@ export default function Login() {
       
     } catch (error) {
       console.error("Reset Error:", error);
-      // KAFA KARIŞTIRICI MESAJ DÜZELTİLDİ:
-      if (error.response && error.response.status === 500) {
+      if (error.response && error.response.status === 400) {
+        showToastMessage('errorGeneral', error.response.data.error || 'Şifre güncellenemedi.');
+      } else if (error.response && error.response.status === 500) {
         showToastMessage('errorGeneral', 'Sistemde böyle bir mail bulunamadı!');
-      } else if (error.response && error.response.status === 404) {
-        showToastMessage('errorGeneral', 'Sunucuya ulaşılamıyor. Backend açık mı?');
       } else {
-        showToastMessage('errorGeneral', 'Şifre güncellenemedi bir hata oluştu.');
+        showToastMessage('errorGeneral', 'Sunucuya ulaşılamıyor. Backend açık mı?');
       }
     } finally {
       setForgotLoading(false);
@@ -138,7 +139,7 @@ export default function Login() {
       </div>
 
       {toast.show && (
-        <div className={`fixed top-10 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 font-black tracking-wide animate-fade-in transition-all ${getToastStyle(toast.type)}`}>
+        <div className={`fixed top-10 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 font-black tracking-wide animate-fade-in transition-all ${getToastStyle(toast.type)}`}>
           {getToastIcon(toast.type)}
           {toast.msg}
         </div>
@@ -215,7 +216,6 @@ export default function Login() {
 
       </div>
 
-      {/* ŞİFREMİ UNUTTUM MODALI */}
       {showForgotModal && (
         <div className="fixed inset-0 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-twilight p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white/50 dark:border-starlight/50 animate-fade-in relative overflow-hidden">
