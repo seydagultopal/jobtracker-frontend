@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function ApplicationFormModal({ show, onClose, onSubmit }) {
@@ -18,6 +18,27 @@ export default function ApplicationFormModal({ show, onClose, onSubmit }) {
     applicationQuestions: '',
     notes: '[]'
   });
+
+  // YENİ: Modal her açıldığında (show true olduğunda) formu sıfırlar
+  useEffect(() => {
+    if (show) {
+      setFormData({
+        companyName: '',
+        position: '',
+        applicationType: 'JOB',
+        workMode: 'REMOTE',
+        location: '',
+        platform: 'LinkedIn',
+        otherPlatformUrl: '',
+        applicationDate: new Date().toISOString().split('T')[0],
+        status: 'APPLIED',
+        salary: 'Bilinmiyor',
+        description: '',
+        applicationQuestions: '',
+        notes: '[]'
+      });
+    }
+  }, [show]);
 
   if (!show) return null;
 

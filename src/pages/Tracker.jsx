@@ -42,6 +42,13 @@ export default function Tracker() {
         if (keys.length > 0) fetchedData = response.data._embedded[keys[0]];
       }
       
+      // YENİ: Verileri en yeni eklenen (ID'si büyük olan) en üste gelecek şekilde sıralıyoruz
+      fetchedData.sort((a, b) => {
+        const idA = a.id || a.job_application_id || 0;
+        const idB = b.id || b.job_application_id || 0;
+        return idB - idA;
+      });
+      
       setApplications(fetchedData);
       
     } catch (error) {

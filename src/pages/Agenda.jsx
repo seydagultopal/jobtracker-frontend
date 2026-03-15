@@ -1,6 +1,7 @@
 import { Bell, Calendar as CalendarIcon, CheckCircle2, Circle, Frown, Meh, Plus, Save, Smile, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useEvents } from '../context/EventContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../services/api';
 
@@ -11,16 +12,39 @@ export default function Agenda() {
   const [notes, setNotes] = useState('');
   const [mood, setMood] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false); // Verinin tam yüklenip yüklenmediğini takip etmek için
 
   const { isDarkMode } = useTheme();
   const { events } = useEvents(); // Takvim etkinliklerini çekiyoruz
+  const { t } = useLanguage();
 
-  // Tarih değiştiğinde o güne ait verileri Backend'den yükle
+  // Tarih değiştiğinde o güne ait verileri geçici hafızadan veya Backend'den yükle
   useEffect(() => {
     fetchAgendaData(currentDate);
   }, [currentDate]);
 
   const fetchAgendaData = async (dateStr) => {
+    setIsLoaded(false);
+    
+    // 1. Önce geçici hafızada (sessionStorage) kaydedilmemiş veri var mı kontrol et
+    const tempKey = `agenda_temp_${dateStr}`;
+    const tempData = sessionStorage.getItem(tempKey);
+
+    if (tempData) {
+      try {
+        const parsed = JSON.parse(tempData);
+        setTodos(parsed.todos || []);
+        setNotes(parsed.notes || '');
+        setMood(parsed.mood || null);
+        setIsSaved(false);
+        setIsLoaded(true);
+        return; // Geçici hafızada veri varsa backend'e istek atma
+      } catch (e) {
+        console.error("Geçici veri okunamadı", e);
+      }
+    }
+
+    // 2. Geçici veri yoksa backend'den çek
     try {
       const response = await api.get(`/agenda/${dateStr}`);
       const data = response.data;
@@ -29,9 +53,19 @@ export default function Agenda() {
       setMood(data.mood || null);
       setIsSaved(false);
     } catch (error) {
-      console.error("Ajanda verisi çekilirken hata oluştu:", error);
+      console.error(t('agendaFetchError'), error);
+    } finally {
+      setIsLoaded(true);
     }
   };
+
+  // Verilerde herhangi bir değişiklik olduğunda geçici hafızaya kaydet
+  useEffect(() => {
+    if (isLoaded) {
+      const tempKey = `agenda_temp_${currentDate}`;
+      sessionStorage.setItem(tempKey, JSON.stringify({ todos, notes, mood }));
+    }
+  }, [todos, notes, mood, isLoaded, currentDate]);
 
   // Verileri Backend'e kaydetme fonksiyonu
   const handleSave = async () => {
@@ -40,10 +74,11 @@ export default function Agenda() {
       await api.post(`/agenda/${currentDate}`, dataToSave);
       
       setIsSaved(true);
+      sessionStorage.removeItem(`agenda_temp_${currentDate}`); // Başarıyla kaydedilince geçici veriyi temizle
       setTimeout(() => setIsSaved(false), 2000); 
     } catch (error) {
-      console.error("Ajanda kaydedilirken hata:", error);
-      alert("Kaydedilirken bir hata oluştu!");
+      console.error(t('agendaSaveLog'), error);
+      alert(t('msgAgendaSaveError'));
     }
   };
 
@@ -86,7 +121,7 @@ export default function Agenda() {
 
   // 2. Takvimdeki etkinlik zaten To-Do listesinde var mı diye kontrol ediyoruz
   const suggestedEvents = todaysEvents.filter(e => {
-    const title = e.title || e.text || 'Takvim Etkinliği';
+    const title = e.title || e.text || t('agendaDefaultEvent');
     return !todos.some(t => t.text === title);
   });
 
@@ -101,8 +136,8 @@ export default function Agenda() {
       {/* Üst Kısım: Başlık ve Tarih Seçici */}
       <div className="p-8 md:p-10 border-b border-columbia/10 dark:border-starlight/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shrink-0">
         <div>
-          <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">Günlük Planlayıcı</h2>
-          <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">Bugün neler yapıyoruz?</p>
+          <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">{t('agendaTitle')}</h2>
+          <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">{t('agendaSubtitle')}</p>
         </div>
         
         <div className="flex items-center gap-4 bg-columbia/5 dark:bg-night/50 p-2 rounded-2xl border border-columbia/10 dark:border-starlight/30">
@@ -129,7 +164,7 @@ export default function Agenda() {
           {/* To-Do Section */}
           <div className="flex-1 flex flex-col">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Yapılacaklar</h3>
+              <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('agendaTodoTitle')}</h3>
               <span className="text-xs font-bold text-columbia bg-columbia/10 px-3 py-1 rounded-full">
                 {todos.filter(t => t.completed).length} / {todos.length}
               </span>
@@ -139,13 +174,13 @@ export default function Agenda() {
             {suggestedEvents.length > 0 && (
               <div className="mb-4 space-y-2 animate-fade-in">
                 {suggestedEvents.map((evt, idx) => {
-                  const title = evt.title || evt.text || 'Takvim Etkinliği';
+                  const title = evt.title || evt.text || t('agendaDefaultEvent');
                   return (
                     <div key={idx} className="flex items-center justify-between p-3.5 bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-2xl transition-all">
                       <div className="flex items-center gap-3">
                         <Bell size={16} className="text-cambridge dark:text-cambridge animate-pulse" />
                         <div>
-                          <p className="text-[10px] font-black text-cambridge/70 uppercase tracking-widest">Takviminde Var</p>
+                          <p className="text-[10px] font-black text-cambridge/70 uppercase tracking-widest">{t('agendaInCalendar')}</p>
                           <p className="text-xs font-bold text-cambridge dark:text-white mt-0.5">{title}</p>
                         </div>
                       </div>
@@ -153,7 +188,7 @@ export default function Agenda() {
                         onClick={() => addSuggestedToTodo(title)} 
                         className="px-4 py-2 bg-cambridge text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-cambridge/90 active:scale-95 transition-all shadow-sm shadow-cambridge/30"
                       >
-                        Listeye Ekle
+                        {t('agendaAddToList')}
                       </button>
                     </div>
                   );
@@ -164,7 +199,7 @@ export default function Agenda() {
             <form onSubmit={handleAddTodo} className="relative mb-6">
               <input 
                 type="text" 
-                placeholder="Yeni bir görev ekle..." 
+                placeholder={t('agendaNewTodoPlaceholder')}
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
                 className="w-full pl-5 pr-14 py-4 bg-white dark:bg-night/50 border border-columbia/20 dark:border-starlight/30 rounded-2xl text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-columbia dark:focus:border-columbia transition-all shadow-sm dark:shadow-none placeholder:text-gray-400"
@@ -177,7 +212,7 @@ export default function Agenda() {
             <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar max-h-[400px]">
               {todos.length === 0 ? (
                 <div className="text-center py-10 text-gray-400 dark:text-gray-600 font-medium italic text-sm">
-                  Henüz bir görev eklenmedi.
+                  {t('agendaNoTodo')}
                 </div>
               ) : (
                 todos.map(todo => (
@@ -202,7 +237,7 @@ export default function Agenda() {
 
           {/* Mod Section */}
           <div className="mt-auto pt-6 border-t border-columbia/10 dark:border-starlight/30">
-            <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4 text-center">Günün Modu</h3>
+            <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4 text-center">{t('agendaDailyMood')}</h3>
             <div className="flex justify-center gap-4">
               <button onClick={() => setMood('good')} className={`p-4 rounded-2xl transition-all ${mood === 'good' ? 'bg-cambridge/20 text-cambridge border-cambridge/30' : 'bg-white dark:bg-night/40 text-gray-400 border-transparent hover:bg-gray-50 dark:hover:bg-starlight/20'} border`}>
                 <Smile size={28} strokeWidth={2.5} />
@@ -220,21 +255,21 @@ export default function Agenda() {
         {/* SAĞ SÜTUN: Günlük / Notlar */}
         <div className="lg:col-span-7 p-8 flex flex-col h-full relative">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Çalışma Notları & Günlük</h3>
+            <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('agendaNotesTitle')}</h3>
             
             <button 
               onClick={handleSave}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[11px] tracking-widest uppercase transition-all shadow-md active:scale-95 ${isSaved ? 'bg-cambridge text-white shadow-cambridge/20' : 'bg-columbia text-white shadow-columbia/20 hover:bg-columbia/90'}`}
             >
               <Save size={16} strokeWidth={2.5} />
-              {isSaved ? 'Kaydedildi!' : 'Kaydet'}
+              {isSaved ? t('agendaSaved') : t('btnSave')}
             </button>
           </div>
 
           <textarea 
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Bugün neler öğrendin? Neler yaptın? Buraya yazabilirsin..."
+            placeholder={t('agendaNotesPlaceholder')}
             className="flex-1 w-full bg-columbia/5 dark:bg-night/40 border border-columbia/10 dark:border-starlight/30 rounded-[2rem] p-8 text-sm font-medium text-gray-700 dark:text-gray-200 resize-none outline-none focus:border-columbia/30 dark:focus:border-starlight/50 transition-all leading-relaxed placeholder:text-gray-400"
           />
         </div>

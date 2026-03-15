@@ -5,12 +5,12 @@ const LanguageContext = createContext();
 const translations = {
   tr: {
     // Menü
-    menuDashboard: 'Dashboard',
-    menuTracker: 'Tracker',
+    menuDashboard: 'Panel',
+    menuTracker: 'Başvurularım',
     menuAgenda: 'Ajanda',
     menuCalendar: 'Takvim',
     menuDev: 'Gelişim',
-    menuResume: 'Resume',
+    menuResume: 'Özgeçmiş',
     
     // Dashboard (İstatistikler)
     statTotal: 'Başvurulan',
@@ -77,7 +77,7 @@ const translations = {
     msgLoginFailed: 'Giriş Başarısız! Bilgilerini kontrol et.',
     msgLoginSuccess: 'Giriş Başarılı! Yönlendiriliyorsun...',
     
-    // Şifremi Unuttum Modalı (YENİ EKLENDİ)
+    // Şifremi Unuttum Modalı
     forgotPassTitle: 'Şifreni mi Unuttun? 🥺',
     forgotPassDesc: 'Merak etme, yeni şifreni belirleyip eski verilerine kavuşabilirsin.',
     forgotNewPass: 'Yeni Şifre',
@@ -170,6 +170,35 @@ const translations = {
     statusNotePlaceholder: 'Örn: Teknik sınav maili geldi, haftaya Salı günü için randevulaştık...',
     btnUpdateAndNote: 'Güncelle ve Notu Ekle',
     btnContinueWithoutNote: 'Notsuz Devam Et',
+
+    // Ajanda Sayfası
+    agendaTitle: 'Günlük Planlayıcı',
+    agendaSubtitle: 'Bugün neler yapıyoruz?',
+    agendaTodoTitle: 'Yapılacaklar',
+    agendaInCalendar: 'Takviminde Var',
+    agendaDefaultEvent: 'Takvim Etkinliği',
+    agendaAddToList: 'Listeye Ekle',
+    agendaNewTodoPlaceholder: 'Yeni bir görev ekle...',
+    agendaNoTodo: 'Henüz bir görev eklenmedi.',
+    agendaDailyMood: 'Günün Modu',
+    agendaNotesTitle: 'Çalışma Notları & Günlük',
+    agendaSaved: 'Kaydedildi!',
+    agendaNotesPlaceholder: 'Bugün neler öğrendin? Neler yaptın? Buraya yazabilirsin...',
+    agendaFetchError: 'Ajanda verisi çekilirken hata oluştu:',
+    agendaSaveLog: 'Ajanda kaydedilirken hata:',
+    msgAgendaSaveError: 'Kaydedilirken bir hata oluştu!',
+
+    // Gelişim Sayfası
+    devTitle: 'Gelişim Alanı',
+    devSubtitle: 'Öğrenme yolculuğun ve becerilerin 🚀',
+    devAddCourse: '+ Eğitim',
+    devAddProject: '+ Proje',
+    devAddSkill: '+ Yetenek',
+    devInProgress: 'Eğitimler',
+    devProjects: 'Projeler',
+    devTargetSkills: 'Yetenekler',
+    devChartTitle: 'Gelişim Çizelgesi',
+    devChartSubtitle: 'Aylık öğrenme ve gelişim istatistikleri'
   },
   en: {
     menuDashboard: 'Dashboard',
@@ -242,7 +271,7 @@ const translations = {
     msgLoginFailed: 'Login Failed! Please check your credentials.',
     msgLoginSuccess: 'Login Successful! Redirecting...',
     
-    // Şifremi Unuttum Modalı (YENİ EKLENDİ)
+    // Şifremi Unuttum Modalı
     forgotPassTitle: 'Forgot Password? 🥺',
     forgotPassDesc: 'Do not worry, you can set a new password and get your data back.',
     forgotNewPass: 'New Password',
@@ -329,6 +358,35 @@ const translations = {
     statusNotePlaceholder: 'e.g. Received technical test email, scheduled for next Tuesday...',
     btnUpdateAndNote: 'Update and Add Note',
     btnContinueWithoutNote: 'Continue Without Note',
+
+    // Agenda Page
+    agendaTitle: 'Daily Planner',
+    agendaSubtitle: 'What are we doing today?',
+    agendaTodoTitle: 'To-Do List',
+    agendaInCalendar: 'In Your Calendar',
+    agendaDefaultEvent: 'Calendar Event',
+    agendaAddToList: 'Add to List',
+    agendaNewTodoPlaceholder: 'Add a new task...',
+    agendaNoTodo: 'No tasks added yet.',
+    agendaDailyMood: 'Mood of the Day',
+    agendaNotesTitle: 'Study Notes & Journal',
+    agendaSaved: 'Saved!',
+    agendaNotesPlaceholder: 'What did you learn today? What did you do? You can write it here...',
+    agendaFetchError: 'Error fetching agenda data:',
+    agendaSaveLog: 'Error saving agenda:',
+    msgAgendaSaveError: 'An error occurred while saving!',
+
+    // Gelişim Sayfası
+    devTitle: 'Development Area',
+    devSubtitle: 'Your learning journey and skills 🚀',
+    devAddCourse: '+ Course',
+    devAddProject: '+ Project',
+    devAddSkill: '+ Skill',
+    devInProgress: 'Courses',
+    devProjects: 'Projects',
+    devTargetSkills: 'Skills',
+    devChartTitle: 'Development Chart',
+    devChartSubtitle: 'Monthly learning and development statistics'
   }
 };
 
