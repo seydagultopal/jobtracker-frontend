@@ -1,279 +1,255 @@
-import { Bell, Calendar as CalendarIcon, CheckCircle2, Circle, Frown, Meh, Plus, Save, Smile, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, ChevronLeft, ChevronRight, Circle, Frown, Meh, Plus, Save, Smile, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useEvents } from '../context/EventContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useTheme } from '../context/ThemeContext';
 import api from '../services/api';
 
 export default function Agenda() {
-  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
+  const { t, language } = useLanguage();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  const [agendaId, setAgendaId] = useState(null);
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
+  const [mood, setMood] = useState('NEUTRAL'); 
   const [notes, setNotes] = useState('');
-  const [mood, setMood] = useState(null);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false); // Verinin tam yüklenip yüklenmediğini takip etmek için
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const { isDarkMode } = useTheme();
-  const { events } = useEvents(); // Takvim etkinliklerini çekiyoruz
-  const { t } = useLanguage();
-
-  // Tarih değiştiğinde o güne ait verileri geçici hafızadan veya Backend'den yükle
   useEffect(() => {
     fetchAgendaData(currentDate);
   }, [currentDate]);
 
-  const fetchAgendaData = async (dateStr) => {
-    setIsLoaded(false);
-    
-    // 1. Önce geçici hafızada (sessionStorage) kaydedilmemiş veri var mı kontrol et
-    const tempKey = `agenda_temp_${dateStr}`;
-    const tempData = sessionStorage.getItem(tempKey);
+  const formatDateForApi = (date) => {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split('T')[0];
+  };
 
-    if (tempData) {
-      try {
-        const parsed = JSON.parse(tempData);
-        setTodos(parsed.todos || []);
-        setNotes(parsed.notes || '');
-        setMood(parsed.mood || null);
-        setIsSaved(false);
-        setIsLoaded(true);
-        return; // Geçici hafızada veri varsa backend'e istek atma
-      } catch (e) {
-        console.error("Geçici veri okunamadı", e);
-      }
-    }
-
-    // 2. Geçici veri yoksa backend'den çek
+  const fetchAgendaData = async (date) => {
     try {
+      setLoading(true);
+      const dateStr = formatDateForApi(date);
       const response = await api.get(`/agenda/${dateStr}`);
-      const data = response.data;
-      setTodos(data.todos || []);
-      setNotes(data.notes || '');
-      setMood(data.mood || null);
-      setIsSaved(false);
+      
+      if (response.data) {
+        setAgendaId(response.data.id);
+        setTodos(response.data.todos || []);
+        setMood(response.data.mood || 'NEUTRAL');
+        setNotes(response.data.notes || '');
+      } else {
+        resetForm();
+      }
     } catch (error) {
-      console.error(t('agendaFetchError'), error);
+      if (error.response?.status === 404) {
+        resetForm();
+      } else {
+        console.error("Ajanda verisi çekilirken hata:", error);
+      }
     } finally {
-      setIsLoaded(true);
+      setLoading(false);
     }
   };
 
-  // Verilerde herhangi bir değişiklik olduğunda geçici hafızaya kaydet
-  useEffect(() => {
-    if (isLoaded) {
-      const tempKey = `agenda_temp_${currentDate}`;
-      sessionStorage.setItem(tempKey, JSON.stringify({ todos, notes, mood }));
-    }
-  }, [todos, notes, mood, isLoaded, currentDate]);
+  const resetForm = () => {
+    setAgendaId(null);
+    setTodos([]);
+    setMood('NEUTRAL');
+    setNotes('');
+  };
 
-  // Verileri Backend'e kaydetme fonksiyonu
   const handleSave = async () => {
     try {
-      const dataToSave = { date: currentDate, todos, notes, mood };
-      await api.post(`/agenda/${currentDate}`, dataToSave);
+      setSaving(true);
+      const dateStr = formatDateForApi(currentDate);
+      const payload = {
+        date: dateStr,
+        mood: mood,
+        notes: notes,
+        todos: todos
+      };
+
+      const response = await api.post(`/agenda/${dateStr}`, payload);
+      setAgendaId(response.data.id);
       
-      setIsSaved(true);
-      sessionStorage.removeItem(`agenda_temp_${currentDate}`); // Başarıyla kaydedilince geçici veriyi temizle
-      setTimeout(() => setIsSaved(false), 2000); 
+      setTimeout(() => setSaving(false), 500);
     } catch (error) {
-      console.error(t('agendaSaveLog'), error);
-      alert(t('msgAgendaSaveError'));
+      console.error("Ajanda kaydedilirken hata:", error);
+      setSaving(false);
     }
   };
 
-  // To-Do İşlemleri
   const handleAddTodo = (e) => {
-    e.preventDefault();
-    if (!newTodo.trim()) return;
-    setTodos([{ id: Date.now(), text: newTodo, completed: false }, ...todos]);
-    setNewTodo('');
+    if (e.key === 'Enter' || e.type === 'click') {
+      e.preventDefault();
+      if (!newTodo.trim()) return;
+      setTodos([...todos, { text: newTodo, completed: false }]);
+      setNewTodo('');
+    }
   };
 
-  const toggleTodo = (id) => {
-    setTodos(todos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+  const toggleTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos[index].completed = !newTodos[index].completed;
+    setTodos(newTodos);
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+  const deleteTodo = (index) => {
+    const newTodos = todos.filter((_, i) => i !== index);
+    setTodos(newTodos);
   };
 
-  const handlePrevDay = () => {
-    const date = new Date(currentDate);
-    date.setDate(date.getDate() - 1);
-    setCurrentDate(date.toISOString().split('T')[0]);
+  const changeDate = (days) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + days);
+    setCurrentDate(newDate);
   };
 
-  const handleNextDay = () => {
-    const date = new Date(currentDate);
-    date.setDate(date.getDate() + 1);
-    setCurrentDate(date.toISOString().split('T')[0]);
-  };
-
-  // --- YENİ ÖZELLİK: Takvim Önerileri ---
-  
-  // 1. O güne ait takvim etkinliklerini buluyoruz
-  const todaysEvents = events.filter(e => {
-    // Takvim verisi yapısına göre 'date' veya 'start' alanı üzerinden tarihi yakalıyoruz
-    const eventDate = e.date || (e.start ? new Date(e.start).toISOString().split('T')[0] : null);
-    return eventDate === currentDate;
+  const displayDate = currentDate.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-
-  // 2. Takvimdeki etkinlik zaten To-Do listesinde var mı diye kontrol ediyoruz
-  const suggestedEvents = todaysEvents.filter(e => {
-    const title = e.title || e.text || t('agendaDefaultEvent');
-    return !todos.some(t => t.text === title);
-  });
-
-  // 3. Önerilen etkinliği tek tıkla To-Do listesine ekleme fonksiyonu
-  const addSuggestedToTodo = (title) => {
-    setTodos([{ id: Date.now(), text: title, completed: false }, ...todos]);
-  };
 
   return (
-    <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none overflow-hidden border border-cambridge/20 dark:border-starlight/30 transition-colors duration-500 flex flex-col min-h-[calc(100vh-8rem)]">
+    // DÜZELTME: h-full yerine min-h-full kullanıldı. Böylece içerik arttıkça container da aşağıya doğru genişler.
+    <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none p-6 md:p-8 lg:p-10 border border-gray-100 dark:border-starlight/20 transition-colors duration-500 min-h-full flex flex-col space-y-6 animate-fade-in">
       
-      {/* Üst Kısım: Başlık ve Tarih Seçici */}
-      <div className="p-8 md:p-10 border-b border-columbia/10 dark:border-starlight/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shrink-0">
-        <div>
-          <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">{t('agendaTitle')}</h2>
-          <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">{t('agendaSubtitle')}</p>
-        </div>
+      {/* HEADER */}
+      <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-4 md:p-6 border border-gray-100 dark:border-starlight/20 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 transition-colors">
         
-        <div className="flex items-center gap-4 bg-columbia/5 dark:bg-night/50 p-2 rounded-2xl border border-columbia/10 dark:border-starlight/30">
-          <button onClick={handlePrevDay} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-columbia/10 dark:hover:bg-starlight/30 text-gray-500 dark:text-gray-400 transition-all font-bold">&lt;</button>
-          <div className="flex items-center gap-3 px-4">
-            <CalendarIcon size={18} className="text-cambridge dark:text-columbia" />
-            <input 
-              type="date" 
-              value={currentDate}
-              onChange={(e) => setCurrentDate(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm font-black text-gray-700 dark:text-gray-200 cursor-pointer uppercase tracking-widest"
-            />
+        <div className="flex items-center gap-4 bg-white dark:bg-night/50 p-2 rounded-2xl border border-gray-100 dark:border-starlight/20 shadow-sm">
+          <button onClick={() => changeDate(-1)} className="p-2 text-gray-400 hover:text-columbia hover:bg-gray-50 dark:hover:bg-twilight rounded-xl transition-all">
+            <ChevronLeft size={20} strokeWidth={3} />
+          </button>
+          <div className="flex items-center gap-2 px-2">
+            <CalendarIcon size={18} className="text-columbia" />
+            <span className="font-black text-gray-700 dark:text-gray-200 text-sm tracking-wide w-48 text-center">{displayDate}</span>
           </div>
-          <button onClick={handleNextDay} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-columbia/10 dark:hover:bg-starlight/30 text-gray-500 dark:text-gray-400 transition-all font-bold">&gt;</button>
+          <button onClick={() => changeDate(1)} className="p-2 text-gray-400 hover:text-columbia hover:bg-gray-50 dark:hover:bg-twilight rounded-xl transition-all">
+            <ChevronRight size={20} strokeWidth={3} />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <button 
+            onClick={() => setCurrentDate(new Date())}
+            className="flex-1 md:flex-none px-6 py-3.5 bg-columbia/10 dark:bg-columbia/20 text-columbia font-black rounded-xl hover:bg-columbia hover:text-white transition-all text-xs uppercase tracking-widest text-center"
+          >
+            {language === 'tr' ? 'Bugün' : 'Today'}
+          </button>
+          <button 
+            onClick={handleSave}
+            disabled={saving || loading}
+            className="flex-1 md:flex-none px-8 py-3.5 bg-cambridge text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cambridge/20 text-xs uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-70 disabled:scale-100"
+          >
+            <Save size={16} strokeWidth={2.5} />
+            {saving ? (language === 'tr' ? 'Kaydediliyor...' : 'Saving...') : t('btnSave')}
+          </button>
         </div>
       </div>
 
-      {/* Ana İçerik Grid Alanı */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0">
+      {/* İÇERİK: Yapılacaklar, Ruh Hali ve Notlar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
         
-        {/* SOL SÜTUN: To-Do Listesi ve Mod */}
-        <div className="lg:col-span-5 border-r border-columbia/10 dark:border-starlight/30 p-8 flex flex-col gap-8 bg-columbia/5 dark:bg-transparent">
+        {/* SOL KOLON */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
           
-          {/* To-Do Section */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('agendaTodoTitle')}</h3>
-              <span className="text-xs font-bold text-columbia bg-columbia/10 px-3 py-1 rounded-full">
-                {todos.filter(t => t.completed).length} / {todos.length}
-              </span>
+          <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 border border-gray-100 dark:border-starlight/20 shrink-0">
+            <h3 className="text-sm font-black text-gray-800 dark:text-white tracking-widest uppercase mb-4 text-center">{t('agendaDailyMood')}</h3>
+            <div className="flex justify-center gap-4 md:gap-6">
+              {[
+                { val: 'BAD', icon: Frown, color: 'text-cherry hover:bg-cherry/10', active: 'bg-cherry/20 text-cherry border-cherry/30' },
+                { val: 'NEUTRAL', icon: Meh, color: 'text-peach hover:bg-peach/10', active: 'bg-peach/20 text-peach border-peach/30' },
+                { val: 'GOOD', icon: Smile, color: 'text-cambridge hover:bg-cambridge/10', active: 'bg-cambridge/20 text-cambridge border-cambridge/30' }
+              ].map((m) => (
+                <button
+                  key={m.val}
+                  onClick={() => setMood(m.val)}
+                  className={`p-4 rounded-2xl border-2 transition-all duration-300 shadow-sm ${
+                    mood === m.val 
+                      ? m.active 
+                      : `border-transparent bg-white dark:bg-night/50 ${m.color} opacity-60 hover:opacity-100`
+                  }`}
+                >
+                  <m.icon size={32} strokeWidth={2.5} />
+                </button>
+              ))}
             </div>
+          </div>
 
-            {/* TAKVİM ÖNERİ KARTI */}
-            {suggestedEvents.length > 0 && (
-              <div className="mb-4 space-y-2 animate-fade-in">
-                {suggestedEvents.map((evt, idx) => {
-                  const title = evt.title || evt.text || t('agendaDefaultEvent');
-                  return (
-                    <div key={idx} className="flex items-center justify-between p-3.5 bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-2xl transition-all">
-                      <div className="flex items-center gap-3">
-                        <Bell size={16} className="text-cambridge dark:text-cambridge animate-pulse" />
-                        <div>
-                          <p className="text-[10px] font-black text-cambridge/70 uppercase tracking-widest">{t('agendaInCalendar')}</p>
-                          <p className="text-xs font-bold text-cambridge dark:text-white mt-0.5">{title}</p>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => addSuggestedToTodo(title)} 
-                        className="px-4 py-2 bg-cambridge text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-cambridge/90 active:scale-95 transition-all shadow-sm shadow-cambridge/30"
-                      >
-                        {t('agendaAddToList')}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            <form onSubmit={handleAddTodo} className="relative mb-6">
+          <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 border border-gray-100 dark:border-starlight/20 flex-1 flex flex-col min-h-[300px]">
+            <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight mb-6">{t('agendaTodoTitle')}</h3>
+            
+            <div className="flex items-center gap-3 mb-6 relative">
               <input 
                 type="text" 
                 placeholder={t('agendaNewTodoPlaceholder')}
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
-                className="w-full pl-5 pr-14 py-4 bg-white dark:bg-night/50 border border-columbia/20 dark:border-starlight/30 rounded-2xl text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-columbia dark:focus:border-columbia transition-all shadow-sm dark:shadow-none placeholder:text-gray-400"
+                onKeyDown={handleAddTodo}
+                className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-4 pr-12 py-3.5 outline-none focus:border-columbia focus:ring-2 focus:ring-columbia/20 transition-all font-medium text-sm shadow-sm"
               />
-              <button type="submit" className="absolute right-2 top-2 bottom-2 w-10 bg-columbia hover:bg-columbia/80 text-white rounded-xl flex items-center justify-center transition-all shadow-md shadow-columbia/20">
-                <Plus size={18} strokeWidth={3} />
+              <button 
+                onClick={handleAddTodo}
+                className="absolute right-2 p-2 bg-columbia text-white rounded-xl hover:bg-columbia/80 transition-all shadow-sm"
+              >
+                <Plus size={16} strokeWidth={3} />
               </button>
-            </form>
+            </div>
 
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar max-h-[400px]">
-              {todos.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 dark:text-gray-600 font-medium italic text-sm">
-                  {t('agendaNoTodo')}
-                </div>
-              ) : (
-                todos.map(todo => (
-                  <div key={todo.id} className={`group flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${todo.completed ? 'bg-columbia/5 border-columbia/10 dark:bg-columbia/5 dark:border-columbia/10 opacity-70' : 'bg-white dark:bg-night/40 border-columbia/20 dark:border-starlight/30 shadow-sm dark:shadow-none hover:border-columbia/40'}`} onClick={() => toggleTodo(todo.id)}>
-                    <button className={`shrink-0 transition-colors ${todo.completed ? 'text-columbia' : 'text-gray-300 dark:text-gray-600 group-hover:text-columbia'}`}>
-                      {todo.completed ? <CheckCircle2 size={22} /> : <Circle size={22} />}
-                    </button>
-                    <span className={`flex-1 text-sm font-bold transition-all ${todo.completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200'}`}>
-                      {todo.text}
-                    </span>
+            {/* DÜZELTME: Sabit bir yüksekliğe sıkışıp kaydırma çubuğu çıkarmasın diye esnek bir liste yapısına geçildi */}
+            {loading ? (
+              <div className="flex-1 flex justify-center items-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">
+                {t('loading')}
+              </div>
+            ) : todos.length === 0 ? (
+              <div className="flex-1 flex justify-center items-center text-gray-400 dark:text-gray-500 italic text-sm text-center px-4">
+                {t('agendaNoTodo')}
+              </div>
+            ) : (
+              <div className="flex-1 space-y-3 pb-4">
+                {todos.map((todo, index) => (
+                  <div key={index} className="flex items-center justify-between group bg-white dark:bg-night/40 p-3.5 rounded-2xl border border-gray-100 dark:border-starlight/20 hover:border-columbia/30 transition-all shadow-sm">
+                    <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleTodo(index)}>
+                      {todo.completed ? (
+                        <CheckCircle2 size={20} className="text-cambridge shrink-0" strokeWidth={2.5} />
+                      ) : (
+                        <Circle size={20} className="text-gray-300 dark:text-gray-600 shrink-0" strokeWidth={2.5} />
+                      )}
+                      <span className={`text-sm font-bold transition-all ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}>
+                        {todo.text}
+                      </span>
+                    </div>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}
-                      className="text-gray-300 dark:text-gray-600 hover:text-cherry dark:hover:text-cherry transition-colors opacity-0 group-hover:opacity-100"
+                      onClick={() => deleteTodo(index)}
+                      className="p-2 text-gray-300 dark:text-gray-600 hover:text-cherry bg-gray-50 dark:bg-twilight hover:bg-cherry/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Mod Section */}
-          <div className="mt-auto pt-6 border-t border-columbia/10 dark:border-starlight/30">
-            <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4 text-center">{t('agendaDailyMood')}</h3>
-            <div className="flex justify-center gap-4">
-              <button onClick={() => setMood('good')} className={`p-4 rounded-2xl transition-all ${mood === 'good' ? 'bg-cambridge/20 text-cambridge border-cambridge/30' : 'bg-white dark:bg-night/40 text-gray-400 border-transparent hover:bg-gray-50 dark:hover:bg-starlight/20'} border`}>
-                <Smile size={28} strokeWidth={2.5} />
-              </button>
-              <button onClick={() => setMood('neutral')} className={`p-4 rounded-2xl transition-all ${mood === 'neutral' ? 'bg-peach/20 text-peach border-peach/30' : 'bg-white dark:bg-night/40 text-gray-400 border-transparent hover:bg-gray-50 dark:hover:bg-starlight/20'} border`}>
-                <Meh size={28} strokeWidth={2.5} />
-              </button>
-              <button onClick={() => setMood('bad')} className={`p-4 rounded-2xl transition-all ${mood === 'bad' ? 'bg-cherry/20 text-cherry border-cherry/30' : 'bg-white dark:bg-night/40 text-gray-400 border-transparent hover:bg-gray-50 dark:hover:bg-starlight/20'} border`}>
-                <Frown size={28} strokeWidth={2.5} />
-              </button>
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* SAĞ SÜTUN: Günlük / Notlar */}
-        <div className="lg:col-span-7 p-8 flex flex-col h-full relative">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('agendaNotesTitle')}</h3>
-            
-            <button 
-              onClick={handleSave}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[11px] tracking-widest uppercase transition-all shadow-md active:scale-95 ${isSaved ? 'bg-cambridge text-white shadow-cambridge/20' : 'bg-columbia text-white shadow-columbia/20 hover:bg-columbia/90'}`}
-            >
-              <Save size={16} strokeWidth={2.5} />
-              {isSaved ? t('agendaSaved') : t('btnSave')}
-            </button>
-          </div>
-
-          <textarea 
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder={t('agendaNotesPlaceholder')}
-            className="flex-1 w-full bg-columbia/5 dark:bg-night/40 border border-columbia/10 dark:border-starlight/30 rounded-[2rem] p-8 text-sm font-medium text-gray-700 dark:text-gray-200 resize-none outline-none focus:border-columbia/30 dark:focus:border-starlight/50 transition-all leading-relaxed placeholder:text-gray-400"
-          />
+        {/* SAĞ KOLON: Çalışma Notları & Günlük */}
+        {/* DÜZELTME: h-[500px] kaldırıldı, minimum 400px ama içerik arttıkça sonsuza kadar esneyebilen hale getirildi */}
+        <div className="lg:col-span-7 bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 md:p-8 border border-gray-100 dark:border-starlight/20 flex flex-col min-h-[400px]">
+          <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight mb-6">{t('agendaNotesTitle')}</h3>
+          
+          {loading ? (
+             <div className="flex-1 flex justify-center items-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">
+               {t('loading')}
+             </div>
+          ) : (
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t('agendaNotesPlaceholder')}
+              className="w-full flex-1 min-h-[300px] bg-white dark:bg-night/30 border border-gray-200 dark:border-starlight/20 text-gray-800 dark:text-gray-200 rounded-[2rem] p-6 outline-none focus:border-peach focus:ring-4 focus:ring-peach/10 transition-all font-medium text-sm resize-y custom-scrollbar leading-relaxed shadow-sm"
+            />
+          )}
         </div>
-        
+
       </div>
     </div>
   );

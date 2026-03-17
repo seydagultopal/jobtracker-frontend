@@ -27,8 +27,6 @@ export default function Tracker() {
       setErrorMsg(null);
       const response = await api.get(`/applications`); 
       
-      console.log("🔥 BACKEND'DEN GELEN HAM VERİ:", response.data); 
-
       let fetchedData = [];
       
       if (Array.isArray(response.data)) {
@@ -42,7 +40,6 @@ export default function Tracker() {
         if (keys.length > 0) fetchedData = response.data._embedded[keys[0]];
       }
       
-      // YENİ: Verileri en yeni eklenen (ID'si büyük olan) en üste gelecek şekilde sıralıyoruz
       fetchedData.sort((a, b) => {
         const idA = a.id || a.job_application_id || 0;
         const idB = b.id || b.job_application_id || 0;
@@ -114,15 +111,16 @@ export default function Tracker() {
     }
   };
 
+  // YENİ: Dashboard ile uyumlu, Dengeli Kontrast Rozet Renkleri
   const getStatusBadge = (status) => {
     const safeStatus = status ? status.toUpperCase() : 'APPLIED';
     const styles = {
-      'APPLIED': 'bg-columbia/40 dark:bg-columbia/20 text-gray-700 dark:text-columbia',
-      'ASSESSMENT': 'bg-peach/60 dark:bg-peach/20 text-gray-800 dark:text-peach',
-      'VIDEO_INTERVIEW': 'bg-peach dark:bg-peach/30 text-gray-800 dark:text-peach',
-      'INTERVIEW': 'bg-columbia dark:bg-columbia/30 text-gray-800 dark:text-columbia',
-      'OFFER': 'bg-cambridge dark:bg-cambridge/40 text-white',
-      'REJECTED': 'bg-cherry dark:bg-cherry/40 text-white'
+      'APPLIED': 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50',
+      'INTERVIEW': 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/50',
+      'ASSESSMENT': 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50',
+      'VIDEO_INTERVIEW': 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50',
+      'OFFER': 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50',
+      'REJECTED': 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50'
     };
     return styles[safeStatus] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
   };
@@ -188,14 +186,14 @@ export default function Tracker() {
                           <select 
                             value={stat}
                             onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                            className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(stat)}`}
+                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(stat)}`}
                           >
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="APPLIED">{t('statusApplied')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="ASSESSMENT">{t('statusAssessment')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="INTERVIEW">{t('statusInterview')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="OFFER">{t('statusOffer')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200" value="REJECTED">{t('statusRejected')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="APPLIED">{t('statusApplied')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="ASSESSMENT">{t('statusAssessment')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="INTERVIEW">{t('statusInterview')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="OFFER">{t('statusOffer')}</option>
+                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="REJECTED">{t('statusRejected')}</option>
                           </select>
                         </td>
                         <td className="px-8 py-6 flex items-center justify-center gap-4">
@@ -205,7 +203,7 @@ export default function Tracker() {
                           >
                             {t('btnView')}
                           </button>
-                          <button onClick={() => handleDelete(appId)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl">×</button>
+                          <button onClick={() => handleDelete(appId)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl hover:scale-110 active:scale-95">×</button>
                         </td>
                       </tr>
                     );

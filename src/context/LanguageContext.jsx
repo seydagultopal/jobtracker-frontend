@@ -188,17 +188,35 @@ const translations = {
     agendaSaveLog: 'Ajanda kaydedilirken hata:',
     msgAgendaSaveError: 'Kaydedilirken bir hata oluştu!',
 
-    // Gelişim Sayfası
+    // Gelişim Sayfası & Modallar
     devTitle: 'Gelişim Alanı',
     devSubtitle: 'Öğrenme yolculuğun ve becerilerin 🚀',
-    devAddCourse: '+ Eğitim',
-    devAddProject: '+ Proje',
-    devAddSkill: '+ Yetenek',
-    devInProgress: 'Eğitimler',
+    devAddCourse: 'Eğitim Ekle',
+    devAddProject: 'Proje Ekle',
+    devAddSkill: 'Yetenek Ekle',
+    devInProgress: 'Devam Eden Eğitimler',
     devProjects: 'Projeler',
-    devTargetSkills: 'Yetenekler',
+    devTargetSkills: 'Hedeflenen Yetenekler',
     devChartTitle: 'Gelişim Çizelgesi',
-    devChartSubtitle: 'Aylık öğrenme ve gelişim istatistikleri'
+    devChartSubtitle: 'Aylık öğrenme ve gelişim istatistikleri',
+    
+    modalAddCourse: 'Yeni Eğitim Ekle',
+    modalAddProject: 'Yeni Proje Ekle',
+    modalAddSkill: 'Yeni Yetenek Ekle',
+    
+    formCourseName: 'Eğitim / Kurs Adı',
+    formCoursePlatform: 'Platform (Udemy, YouTube vb.)',
+    formCourseProgress: 'İlerleme Yüzdesi (%)',
+    formCourseStatus: 'Durum',
+    statusInProgress: 'Devam Ediyor',
+    statusCompleted: 'Tamamlandı',
+    
+    formProjectName: 'Proje Adı',
+    formProjectTech: 'Kullanılan Teknolojiler (React, Java vb.)',
+    formProjectStatus: 'Durum',
+    
+    formSkillName: 'Yetenek / Teknoloji Adı',
+    formSkillLevel: 'Seviye (%)'
   },
   en: {
     menuDashboard: 'Dashboard',
@@ -376,17 +394,35 @@ const translations = {
     agendaSaveLog: 'Error saving agenda:',
     msgAgendaSaveError: 'An error occurred while saving!',
 
-    // Gelişim Sayfası
+    // Gelişim Sayfası & Modallar
     devTitle: 'Development Area',
     devSubtitle: 'Your learning journey and skills 🚀',
-    devAddCourse: '+ Course',
-    devAddProject: '+ Project',
-    devAddSkill: '+ Skill',
-    devInProgress: 'Courses',
+    devAddCourse: 'Add Course',
+    devAddProject: 'Add Project',
+    devAddSkill: 'Add Skill',
+    devInProgress: 'In Progress Courses',
     devProjects: 'Projects',
-    devTargetSkills: 'Skills',
+    devTargetSkills: 'Target Skills',
     devChartTitle: 'Development Chart',
-    devChartSubtitle: 'Monthly learning and development statistics'
+    devChartSubtitle: 'Monthly learning and development statistics',
+
+    modalAddCourse: 'Add New Course',
+    modalAddProject: 'Add New Project',
+    modalAddSkill: 'Add New Skill',
+    
+    formCourseName: 'Course Name',
+    formCoursePlatform: 'Platform (Udemy, YouTube etc.)',
+    formCourseProgress: 'Progress (%)',
+    formCourseStatus: 'Status',
+    statusInProgress: 'In Progress',
+    statusCompleted: 'Completed',
+    
+    formProjectName: 'Project Name',
+    formProjectTech: 'Technologies Used (React, Java etc.)',
+    formProjectStatus: 'Status',
+    
+    formSkillName: 'Skill / Tech Name',
+    formSkillLevel: 'Level (%)'
   }
 };
 

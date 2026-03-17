@@ -16,9 +16,11 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white dark:bg-twilight border-r border-columbia/10 dark:border-starlight/50 flex flex-col transition-colors duration-500 z-50">
-      <div className="h-20 flex items-center px-8 border-b border-columbia/5 dark:border-starlight/30 shrink-0">
-        <Logo className="w-auto h-10" />
+    <aside className="w-64 flex-shrink-0 bg-white dark:bg-twilight border-r border-gray-100 dark:border-starlight/20 flex flex-col transition-colors duration-500 z-50">
+      {/* LOGO VE YAZI KISMI BURADA GÜNCELLENDİ (gap-3 eklendi, Pebble yazısı eklendi) */}
+      <div className="h-20 flex items-center gap-3 px-8 border-b border-gray-100 dark:border-starlight/20 shrink-0">
+        <Logo className="w-auto h-8" />
+        <span className="text-2xl font-black tracking-tight text-gray-800 dark:text-white">Pebble</span>
       </div>
       
       <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-2 custom-scrollbar">
@@ -29,13 +31,17 @@ export default function Sidebar() {
             className={({ isActive }) => 
               `flex items-center gap-3.5 px-5 py-3.5 rounded-[1.25rem] font-bold transition-all duration-300 ${
                 isActive 
-                  ? 'bg-peach/30 text-orange-600 dark:bg-peach/10 dark:text-peach' 
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-alabaster dark:hover:bg-night hover:text-gray-700 dark:hover:text-gray-200 hover:scale-[1.02]'
+                  ? 'bg-gradient-to-r from-columbia to-blue-500 text-white shadow-lg shadow-columbia/40 scale-[1.02]' 
+                  : 'text-gray-500 dark:text-gray-400 border border-transparent hover:bg-columbia/10 hover:text-columbia dark:hover:bg-columbia/20 dark:hover:text-white hover:scale-[1.02]'
               }`
             }
           >
-            <item.icon size={20} strokeWidth={2.5} />
-            <span className="text-[13px] tracking-wide">{item.name}</span>
+            {({ isActive }) => (
+              <>
+                <item.icon size={20} strokeWidth={isActive ? 3 : 2.5} />
+                <span className="text-[13px] tracking-wide">{item.name}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
