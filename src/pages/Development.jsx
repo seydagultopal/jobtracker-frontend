@@ -1,4 +1,4 @@
-import { BookOpen, Code2, Cpu, Database, FolderGit2, LayoutTemplate, Plus, Server, Target, TrendingUp } from 'lucide-react';
+import { BookOpen, Code2, Cpu, Database, Edit2, FolderGit2, LayoutTemplate, Plus, Server, Target, Trash2, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CourseFormModal from '../components/CourseFormModal';
 import ProjectFormModal from '../components/ProjectFormModal';
@@ -23,10 +23,18 @@ export default function Development() {
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showSkillModal, setShowSkillModal] = useState(false);
 
+  // Düzenleme state'leri (Düzenlenecek veriyi tutar)
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [editingProject, setEditingProject] = useState(null);
+  const [editingSkill, setEditingSkill] = useState(null);
+
+  // Silme İşlemi Onay State'i
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null, type: null });
+
   useEffect(() => {
     fetchDevelopmentData();
     fetchChartData();
-  }, [language]); // Dil değiştiğinde grafik gün isimleri de güncellenmeli
+  }, [language]);
 
   const fetchDevelopmentData = async () => {
     try {
@@ -58,13 +66,11 @@ export default function Development() {
     const dates = [];
     const today = new Date();
     
-    // Son 7 günü oluştur (bugün dahil, geriye doğru)
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       dates.push(formatDateForApi(d));
       
-      // Etiket için kısa gün adını al (Pzt, Sal, Wed vb.)
       const dayName = d.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', { weekday: 'short' });
       labels.push(dayName);
     }
@@ -72,32 +78,28 @@ export default function Development() {
     setChartLabels(labels);
 
     try {
-      // Backend'den son 7 günün ajanda verilerini eşzamanlı çekiyoruz
       const requests = dates.map(date => api.get(`/api/agenda/${date}`).catch(() => null));
       const responses = await Promise.all(requests);
       
       const scores = responses.map(res => {
-        if (!res || !res.data) return 0; // O güne ait kayıt yoksa 0 puan
+        if (!res || !res.data) return 0;
         
         const data = res.data;
         let score = 0;
         
-        // 1. To-do Puanı (Her tamamlanan görev +10 puan)
         if (data.todos && Array.isArray(data.todos)) {
           const completedTodos = data.todos.filter(t => t.completed).length;
           score += completedTodos * 10;
         }
         
-        // 2. Not Puanı (20 karakterden uzunsa +20 puan)
         if (data.notes && data.notes.trim().length > 20) {
           score += 20;
         }
         
-        // 3. Ruh Hali Puanı
         if (data.mood === 'GOOD') score += 20;
         else if (data.mood === 'NEUTRAL') score += 10;
         
-        return Math.min(score, 100); // Maksimum 100 puanda sabitliyoruz
+        return Math.min(score, 100);
       });
       
       setChartData(scores);
@@ -111,49 +113,82 @@ export default function Development() {
     const completedProjects = projects.length;
     const completedSkills = skills.length;
 
-    // Örnek: Her tamamlanan görev 10 puan ekler
     const totalScore = (completedCourses + completedProjects + completedSkills) * 10;
 
-    // Çizelge verisini güncelle
     setChartData((prevData) => {
       const newData = [...prevData];
-      newData[newData.length - 1] = Math.min(totalScore, 100); // Maksimum 100 puan
+      newData[newData.length - 1] = Math.min(totalScore, 100); 
       return newData;
     });
   };
 
-  // POST İşlemleri
+  // --- EKLEME VE DÜZENLEME (POST/PUT) İŞLEMLERİ ---
   const handleAddCourse = async (data) => {
     try {
-      await api.post('/api/development/courses', data);
+      if (editingCourse) {
+        await api.put(`/api/development/courses/${editingCourse.id}`, data);
+      } else {
+        await api.post('/api/development/courses', data);
+      }
       setShowCourseModal(false);
+      setEditingCourse(null);
       fetchDevelopmentData();
-      updateChartData(); // Çizelgeyi güncelle
+      updateChartData(); 
     } catch (error) {
-      console.error("Eğitim eklenirken hata:", error);
+      console.error("Eğitim eklenirken/güncellenirken hata:", error);
     }
   };
 
   const handleAddProject = async (data) => {
     try {
-      await api.post('/api/development/projects', data);
+      if (editingProject) {
+        await api.put(`/api/development/projects/${editingProject.id}`, data);
+      } else {
+        await api.post('/api/development/projects', data);
+      }
       setShowProjectModal(false);
+      setEditingProject(null);
       fetchDevelopmentData();
-      updateChartData(); // Çizelgeyi güncelle
+      updateChartData(); 
     } catch (error) {
-      console.error("Proje eklenirken hata:", error);
+      console.error("Proje eklenirken/güncellenirken hata:", error);
     }
   };
 
   const handleAddSkill = async (data) => {
     try {
-      await api.post('/api/development/skills', data);
+      if (editingSkill) {
+        await api.put(`/api/development/skills/${editingSkill.id}`, data);
+      } else {
+        await api.post('/api/development/skills', data);
+      }
       setShowSkillModal(false);
+      setEditingSkill(null);
       fetchDevelopmentData();
-      updateChartData(); // Çizelgeyi güncelle
+      updateChartData(); 
     } catch (error) {
-      console.error("Yetenek eklenirken hata:", error);
+      console.error("Yetenek eklenirken/güncellenirken hata:", error);
     }
+  };
+
+  // --- SİLME (DELETE) İŞLEMLERİ VE ÖZEL MODAL ---
+  const handleDeleteCourse = (id) => setDeleteConfirm({ show: true, id, type: 'course' });
+  const handleDeleteProject = (id) => setDeleteConfirm({ show: true, id, type: 'project' });
+  const handleDeleteSkill = (id) => setDeleteConfirm({ show: true, id, type: 'skill' });
+
+  const executeDelete = async () => {
+    const { id, type } = deleteConfirm;
+    try {
+      if (type === 'course') await api.delete(`/api/development/courses/${id}`);
+      if (type === 'project') await api.delete(`/api/development/projects/${id}`);
+      if (type === 'skill') await api.delete(`/api/development/skills/${id}`);
+      
+      fetchDevelopmentData();
+      updateChartData();
+    } catch (error) {
+      console.error("Silinirken hata:", error);
+    }
+    setDeleteConfirm({ show: false, id: null, type: null });
   };
 
   const getSkillIcon = (name) => {
@@ -179,7 +214,7 @@ export default function Development() {
           
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
             
-            {/* TABLO 1: Eğitimler (Elektrik Mavisi Konsepti) */}
+            {/* TABLO 1: Eğitimler */}
             <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
               <div className="p-6 flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -217,16 +252,26 @@ export default function Development() {
                             <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{course.platform}</span>
                           </td>
                           <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[60px]">
-                                <div 
-                                  className={`h-full rounded-full transition-all duration-1000 ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
-                                  style={{ width: `${course.progress || 0}%` }}
-                                />
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3 flex-1">
+                                <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[60px]">
+                                  <div 
+                                    className={`h-full rounded-full transition-all duration-1000 ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
+                                    style={{ width: `${course.progress || 0}%` }}
+                                  />
+                                </div>
+                                <span className={`text-xs font-black ${course.progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                                  %{course.progress || 0}
+                                </span>
                               </div>
-                              <span className={`text-xs font-black ${course.progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
-                                %{course.progress || 0}
-                              </span>
+                              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
+                                <button onClick={() => { setEditingCourse(course); setShowCourseModal(true); }} className="p-1.5 text-gray-400 hover:text-columbia transition-colors rounded-lg hover:bg-columbia/10">
+                                  <Edit2 size={14} strokeWidth={2.5} />
+                                </button>
+                                <button onClick={() => handleDeleteCourse(course.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
+                                  <Trash2 size={14} strokeWidth={2.5} />
+                                </button>
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -237,7 +282,7 @@ export default function Development() {
               </div>
             </div>
 
-            {/* TABLO 2: Projeler (Derin Mor Konsepti) */}
+            {/* TABLO 2: Projeler */}
             <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
               <div className="p-6 flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -275,13 +320,23 @@ export default function Development() {
                             <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{project.tech}</span>
                           </td>
                           <td className="px-6 py-5">
-                            <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider inline-flex items-center ${
-                              project.status === 'Tamamlandı' || project.status === 'COMPLETED'
-                                ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50' 
-                                : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50'
-                            }`}>
-                              {project.status || 'Devam Ediyor'}
-                            </span>
+                            <div className="flex items-center justify-between gap-4">
+                              <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider inline-flex items-center ${
+                                project.status === 'Tamamlandı' || project.status === 'COMPLETED'
+                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50' 
+                                  : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50'
+                              }`}>
+                                {project.status || 'Devam Ediyor'}
+                              </span>
+                              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
+                                <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="p-1.5 text-gray-400 hover:text-columbia transition-colors rounded-lg hover:bg-columbia/10">
+                                  <Edit2 size={14} strokeWidth={2.5} />
+                                </button>
+                                <button onClick={() => handleDeleteProject(project.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
+                                  <Trash2 size={14} strokeWidth={2.5} />
+                                </button>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -291,7 +346,7 @@ export default function Development() {
               </div>
             </div>
 
-            {/* TABLO 3: Yetenekler (Canlı Turuncu Konsepti) */}
+            {/* TABLO 3: Yetenekler */}
             <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
               <div className="p-6 flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -335,18 +390,29 @@ export default function Development() {
                                 <span className="font-bold text-sm text-gray-700 dark:text-gray-300">{skill.name}</span>
                               </div>
                             </td>
+                            {/* DÜZELTİLEN ALAN: Taşan ve hizası bozulan Yetenekler buton kısmı flex yapısıyla sabitlendi */}
                             <td className="px-6 py-5">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[60px]">
-                                  <div 
-                                    className="h-full rounded-full transition-all duration-1000"
-                                    style={{ 
-                                      width: `${skill.level || 0}%`, 
-                                      backgroundColor: skill.level > 75 ? '#10b981' : skill.level > 40 ? '#3b82f6' : '#f97316'
-                                    }}
-                                  />
+                              <div className="flex items-center justify-between gap-4 w-full">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[40px]">
+                                    <div 
+                                      className="h-full rounded-full transition-all duration-1000"
+                                      style={{ 
+                                        width: `${skill.level || 0}%`, 
+                                        backgroundColor: skill.level > 75 ? '#10b981' : skill.level > 40 ? '#3b82f6' : '#f97316'
+                                      }}
+                                    />
+                                  </div>
+                                  <span className="text-xs font-black text-gray-500 dark:text-gray-400 shrink-0">%{skill.level || 0}</span>
                                 </div>
-                                <span className="text-xs font-black text-gray-500 dark:text-gray-400">%{skill.level || 0}</span>
+                                <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
+                                  <button onClick={() => { setEditingSkill(skill); setShowSkillModal(true); }} className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors rounded-lg hover:bg-orange-500/10">
+                                    <Edit2 size={14} strokeWidth={2.5} />
+                                  </button>
+                                  <button onClick={() => handleDeleteSkill(skill.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
+                                    <Trash2 size={14} strokeWidth={2.5} />
+                                  </button>
+                                </div>
                               </div>
                             </td>
                           </tr>
@@ -360,7 +426,7 @@ export default function Development() {
 
           </div>
 
-          {/* GELİŞİM ÇİZELGESİ (Zümrüt Yeşili Konsepti) */}
+          {/* GELİŞİM ÇİZELGESİ */}
           <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 md:p-8 border border-gray-100 dark:border-starlight/20">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
@@ -403,21 +469,46 @@ export default function Development() {
       {/* Modallar */}
       <CourseFormModal 
         show={showCourseModal} 
-        onClose={() => setShowCourseModal(false)} 
-        onSubmit={handleAddCourse} 
+        onClose={() => { setShowCourseModal(false); setEditingCourse(null); }} 
+        onSubmit={handleAddCourse}
+        initialData={editingCourse}
       />
       
       <ProjectFormModal 
         show={showProjectModal} 
-        onClose={() => setShowProjectModal(false)} 
-        onSubmit={handleAddProject} 
+        onClose={() => { setShowProjectModal(false); setEditingProject(null); }} 
+        onSubmit={handleAddProject}
+        initialData={editingProject}
       />
       
       <SkillFormModal 
         show={showSkillModal} 
-        onClose={() => setShowSkillModal(false)} 
-        onSubmit={handleAddSkill} 
+        onClose={() => { setShowSkillModal(false); setEditingSkill(null); }} 
+        onSubmit={handleAddSkill}
+        initialData={editingSkill}
       />
+
+      {/* SİLME MODALI */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm transition-all duration-500">
+          <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm text-center border border-white/50 dark:border-starlight/50 animate-fade-in">
+            <div className="w-16 h-16 bg-cherry/10 text-cherry rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <Trash2 size={32} strokeWidth={2.5} />
+            </div>
+            <h3 className="text-xl font-black text-gray-800 dark:text-white tracking-tight mb-2">Emin misin?</h3>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">{t('confirmDelete')}</p>
+            
+            <div className="flex gap-4">
+              <button onClick={() => setDeleteConfirm({ show: false, id: null, type: null })} className="flex-1 py-3.5 px-4 bg-gray-100 dark:bg-night text-gray-600 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-night/80 transition-all text-sm uppercase tracking-wider">
+                {t('btnCancel')}
+              </button>
+              <button onClick={executeDelete} className="flex-1 py-3.5 px-4 bg-cherry text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cherry/20 text-sm uppercase tracking-wider">
+                Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

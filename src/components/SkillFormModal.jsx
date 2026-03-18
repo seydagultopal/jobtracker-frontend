@@ -1,27 +1,36 @@
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function SkillFormModal({ show, onClose, onSubmit }) {
+export default function SkillFormModal({ show, onClose, onSubmit, initialData }) {
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     level: 50
   });
 
+  useEffect(() => {
+    if (show) {
+      if (initialData) {
+        setFormData(initialData);
+      } else {
+        setFormData({ name: '', level: 50 });
+      }
+    }
+  }, [show, initialData]);
+
   if (!show) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ name: '', level: 50 });
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm transition-all duration-500 overflow-y-auto">
       <div className="bg-white dark:bg-twilight rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-starlight/20 my-auto">
         <div className="px-8 py-6 border-b border-gray-100 dark:border-starlight/20 flex justify-between items-center bg-gray-50/50 dark:bg-night/30">
-          <h3 className="text-xl font-black text-gray-800 dark:text-white tracking-tight">{t('modalAddSkill')}</h3>
+          <h3 className="text-xl font-black text-gray-800 dark:text-white tracking-tight">{initialData ? 'Yeteneği Düzenle' : t('modalAddSkill')}</h3>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-cherry bg-white dark:bg-twilight hover:bg-cherry/10 rounded-xl transition-all shadow-sm">
             <X size={20} strokeWidth={3} />
           </button>
