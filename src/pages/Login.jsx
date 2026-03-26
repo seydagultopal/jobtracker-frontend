@@ -18,7 +18,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotData, setForgotData] = useState({ email: '', newPassword: '', confirmNewPassword: '' });
+  // Sadece emaili tutuyoruz
+  const [forgotData, setForgotData] = useState({ email: '' });
   const [forgotLoading, setForgotLoading] = useState(false);
 
   const [toast, setToast] = useState({ show: false, type: '', msg: '' });
@@ -44,7 +45,7 @@ export default function Login() {
         password: formData.password
       };
 
-      const response = await api.post('/auth/login', payload);
+      const response = await api.post('/api/auth/login', payload);
       localStorage.setItem('auth_token', response.data.token);
       
       showToastMessage('success', t('msgLoginSuccess'));
@@ -67,34 +68,25 @@ export default function Login() {
 
   const handleForgotSubmit = async (e) => {
     e.preventDefault();
-    
-    const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-    if (!passRegex.test(forgotData.newPassword)) {
-      showToastMessage('warning', t('msgPassRules'));
-      return;
-    }
-
-    if (forgotData.newPassword !== forgotData.confirmNewPassword) {
-      showToastMessage('warning', t('msgPassMismatch'));
-      setForgotData(prev => ({ ...prev, confirmNewPassword: '' }));
-      return;
-    }
-
     setForgotLoading(true);
+    
     try {
-      await api.post('/auth/reset-password', {
-        email: forgotData.email,
-        newPassword: forgotData.newPassword
+      // Sadece mail gönderiyoruz
+      await api.post('/api/auth/forgot-password', {
+        email: forgotData.email
       });
       
-      showToastMessage('success', t('msgPassResetSuccess'));
-      setShowForgotModal(false);
-      setForgotData({ email: '', newPassword: '', confirmNewPassword: '' });
+      showToastMessage('success', 'Şifre sıfırlama linki mailine gönderildi! 💌');
+      
+      setTimeout(() => {
+        setShowForgotModal(false);
+        setForgotData({ email: '' });
+      }, 2500);
       
     } catch (error) {
       console.error("Reset Error:", error);
       if (error.response && error.response.status === 400) {
-        showToastMessage('errorGeneral', error.response.data.error || 'Şifre güncellenemedi.');
+        showToastMessage('errorGeneral', error.response.data.error || 'Şifre sıfırlama maili gönderilemedi.');
       } else if (error.response && error.response.status === 500) {
         showToastMessage('errorGeneral', 'Sistemde böyle bir mail bulunamadı!');
       } else {
@@ -158,16 +150,19 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input required type={showPass ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} placeholder={t('regPassword')} className="w-full pl-11 pr-12 py-4 bg-white dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry dark:focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 transition-all placeholder:text-gray-400 placeholder:font-medium text-sm shadow-sm" />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cherry transition-colors">
-                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{t('regPassword')}</label>
+                <button type="button" onClick={() => setShowForgotModal(true)} className="text-xs font-bold text-columbia hover:text-columbia/80 transition-colors">
+                  {t('forgotPass')}
                 </button>
               </div>
-              <div className="flex justify-end">
-                <button type="button" onClick={() => setShowForgotModal(true)} className="text-xs font-black text-gray-400 hover:text-cherry transition-colors">
-                  {t('forgotPass')}
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                </div>
+                <input required type={showPass ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} placeholder={t('regPassword')} className="w-full pl-11 pr-12 py-4 bg-white dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry dark:focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 transition-all placeholder:text-gray-400 placeholder:font-medium text-sm shadow-sm" />
+                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -235,30 +230,11 @@ export default function Login() {
               <form onSubmit={handleForgotSubmit} className="space-y-4">
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input required type="email" value={forgotData.email} onChange={e => setForgotData({...forgotData, email: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-alabaster/50 dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 text-sm" placeholder={t('regEmail')} />
+                  <input required type="email" value={forgotData.email} onChange={e => setForgotData({email: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-alabaster/50 dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 text-sm" placeholder={t('regEmail')} />
                 </div>
                 
-                <div className="group">
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                    <input required type="password" value={forgotData.newPassword} onChange={e => setForgotData({...forgotData, newPassword: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-alabaster/50 dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 text-sm" placeholder={t('forgotNewPass')} />
-                  </div>
-                  <div className="max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out group-focus-within:max-h-40 group-focus-within:opacity-100 group-focus-within:mt-2 px-2">
-                    <ul className="text-[10px] font-bold text-gray-500 space-y-1 list-disc pl-4 marker:text-peach">
-                      <li>{t('passRule1')}</li>
-                      <li>{t('passRule2')}</li>
-                      <li>{t('passRule3')}</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input required type="password" value={forgotData.confirmNewPassword} onChange={e => setForgotData({...forgotData, confirmNewPassword: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-alabaster/50 dark:bg-night/50 rounded-2xl border border-columbia/10 dark:border-starlight/30 focus:border-cherry outline-none font-bold text-gray-700 dark:text-gray-200 text-sm" placeholder={t('forgotConfirmPass')} />
-                </div>
-
                 <button type="submit" disabled={forgotLoading} className="w-full py-4 bg-columbia text-white font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-columbia/20 uppercase tracking-widest text-xs mt-2">
-                  {forgotLoading ? '...' : t('btnResetPass')}
+                  {forgotLoading ? 'Gönderiliyor...' : 'Sıfırlama Linki Gönder'}
                 </button>
               </form>
             </div>

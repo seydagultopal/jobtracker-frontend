@@ -1,9 +1,11 @@
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useEvents } from '../context/EventContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Calendar() {
   const { events, addEvent, deleteEvent } = useEvents();
+  const { t, language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -24,8 +26,15 @@ export default function Calendar() {
 
   const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
   const firstDay = getFirstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
-  const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-  const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+  
+  // DİLE GÖRE AYLAR VE GÜNLER
+  const monthNames = language === 'tr' 
+    ? ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+  const dayNames = language === 'tr'
+    ? ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
+    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const handlePrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
@@ -142,46 +151,46 @@ export default function Calendar() {
         <div className="fixed inset-0 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-twilight p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white/50 dark:border-starlight/50">
             <h3 className="text-2xl font-black text-cherry tracking-tight mb-6 flex justify-between">
-              Etkinlik Ekle
+              {t('calAddEvent')}
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-cherry">×</button>
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Başlık</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calTitle')}</label>
                 <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200" placeholder="Örn: Java Bootcamp" />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tarih</label>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calDate')}</label>
                   <input type="text" disabled value={selectedDate} className="w-full p-3 bg-gray-100 dark:bg-starlight/20 rounded-xl outline-none font-bold text-gray-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Saat</label>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calTime')}</label>
                   <input required type="time" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200 [color-scheme:light] dark:[color-scheme:dark]" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tür</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calType')}</label>
                 <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200">
-                  <option value="BOOTCAMP">Bootcamp / Eğitim</option>
-                  <option value="INTERVIEW">Mülakat / Sınav</option>
-                  <option value="MEETING">Toplantı</option>
-                  <option value="DEADLINE">Teslim Tarihi (Deadline)</option>
+                  <option value="BOOTCAMP">{t('calTypeBootcamp')}</option>
+                  <option value="INTERVIEW">{t('calTypeInterview')}</option>
+                  <option value="MEETING">{t('calTypeMeeting')}</option>
+                  <option value="DEADLINE">{t('calTypeDeadline')}</option>
                 </select>
               </div>
 
               <div className="bg-columbia/10 dark:bg-starlight/20 p-4 rounded-2xl border border-columbia/20 dark:border-starlight/30 mt-4">
                 <label className="flex items-center gap-2 cursor-pointer mb-3">
                   <input type="checkbox" checked={formData.isRecurring} onChange={e => setFormData({...formData, isRecurring: e.target.checked})} className="w-4 h-4 text-cherry rounded border-gray-300" />
-                  <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Haftalık Tekrarla 🔁</span>
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('calRecurring')}</span>
                 </label>
                 
                 {formData.isRecurring && (
                   <div className="animate-fade-in flex items-center gap-3">
-                    <span className="text-xs font-bold text-gray-500">Kaç hafta sürecek?</span>
+                    <span className="text-xs font-bold text-gray-500">{t('calWeeks')}</span>
                     <select value={formData.recurringWeeks} onChange={e => setFormData({...formData, recurringWeeks: e.target.value})} className="p-2 bg-white dark:bg-night rounded-xl outline-none font-bold text-sm text-columbia">
                       <option value="2">2 Hafta</option>
                       <option value="4">4 Hafta (1 Ay)</option>
@@ -193,7 +202,7 @@ export default function Calendar() {
               </div>
 
               <button type="submit" className="w-full mt-4 py-4 bg-cherry text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cherry/20 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                <Plus size={16} /> Etkinliği Kaydet
+                <Plus size={16} /> {t('calSaveEvent')}
               </button>
             </form>
           </div>

@@ -6,8 +6,10 @@ import Dashboard from './pages/Dashboard';
 import Development from './pages/Development';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import Profile from './pages/Profile'; // <-- YENİ EKLENDİ
 import Register from './pages/Register';
-import Resume from './pages/Resume'; // <-- YENİ EKLENDİ
+import ResetPassword from './pages/ResetPassword';
+import Resume from './pages/Resume';
 import Tracker from './pages/Tracker';
 
 function App() {
@@ -24,8 +26,10 @@ function App() {
             <Route path="/tracker" element={<Tracker />} />
             <Route path="/ajanda" element={<Agenda />} /> 
             <Route path="/takvim" element={<Calendar />} /> 
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/gelisim" element={<Development />} /> 
-            <Route path="/resume" element={<Resume />} /> {/* <-- BURASI GÜNCELLENDİ (Placeholder yerine Resume geldi) */}
+            <Route path="/resume" element={<Resume />} /> 
+            <Route path="/profile" element={<Profile />} /> 
           </Route>
         </Routes>
       </div>

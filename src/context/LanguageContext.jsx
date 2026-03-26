@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const LanguageContext = createContext();
 
@@ -20,6 +20,9 @@ const translations = {
     statOffer: 'Kabul',
     calendarTitle: 'Takvim',
     reminderTitle: 'Hatırlatıcı',
+    dashStreak: 'Günlük Seri',
+    dashStreakMsg: 'Seriyi bozmamak için yarın da gel!',
+    dashNoEvent: 'Bugün planlanan bir etkinlik yok. Sakin bir gün! ☕',
 
     // Topbar
     myAccount: 'HESABIM',
@@ -101,7 +104,7 @@ const translations = {
     unspecified: 'Belirtilmedi',
     
     // Uyarılar ve Başvuru Durumları
-    confirmDelete: 'Bu kaydı silmek istediğine emin misin?',
+    confirmDelete: 'Bu işlemi gerçekleştirmek istediğine emin misin?',
     errorLog: 'Hata',
     userInfoError: 'Kullanıcı bilgisi alınamadı',
     statusApplied: 'Başvuruldu',
@@ -171,6 +174,20 @@ const translations = {
     btnUpdateAndNote: 'Güncelle ve Notu Ekle',
     btnContinueWithoutNote: 'Notsuz Devam Et',
 
+    // Takvim
+    calAddEvent: 'Etkinlik Ekle',
+    calTitle: 'Başlık',
+    calDate: 'Tarih',
+    calTime: 'Saat',
+    calType: 'Tür',
+    calTypeBootcamp: 'Bootcamp / Eğitim',
+    calTypeInterview: 'Mülakat / Sınav',
+    calTypeMeeting: 'Toplantı',
+    calTypeDeadline: 'Teslim Tarihi (Deadline)',
+    calRecurring: 'Haftalık Tekrarla 🔁',
+    calWeeks: 'Kaç hafta sürecek?',
+    calSaveEvent: 'Etkinliği Kaydet',
+
     // Ajanda Sayfası
     agendaTitle: 'Günlük Planlayıcı',
     agendaSubtitle: 'Bugün neler yapıyoruz?',
@@ -216,7 +233,62 @@ const translations = {
     formProjectStatus: 'Durum',
     
     formSkillName: 'Yetenek / Teknoloji Adı',
-    formSkillLevel: 'Seviye (%)'
+    formSkillLevel: 'Seviye (%)',
+
+    // Profil Sayfası
+    profileTabPersonal: 'Kişisel Bilgiler',
+    profileTabResume: 'Eğitim & Deneyim',
+    profileTabSecurity: 'Güvenlik & Şifre',
+    profileDetails: 'Profil Detayları',
+    profileFirstName: 'Ad',
+    profileLastName: 'Soyad',
+    profileEmailReadOnly: 'E-Posta (Salt Okunur)',
+    profilePhone: 'Telefon',
+    profileLocation: 'Konum',
+    profileTitle: 'Ünvan',
+    profileBio: 'Hakkımda',
+    profileSaveSuccess: 'Profil başarıyla güncellendi!',
+    profileSaveError: 'Profil kaydedilemedi:',
+    resumeDataTitle: 'CV Bilgileri',
+    resumeDataDesc: 'Buraya eklediğiniz eğitim ve deneyim bilgileri, CV oluşturucuda otomatik olarak yer alacaktır.',
+    emailChangeTitle: 'E-Posta Değiştir',
+    emailChangeDesc: 'E-postanızı değiştirmek için güvenlik amacıyla mevcut şifrenizi girmelisiniz.',
+    emailNew: 'Yeni E-Posta',
+    emailCurrentPass: 'Mevcut Şifre (Onay İçin)',
+    btnUpdateEmail: 'E-Postayı Güncelle',
+    emailChangeConfirm: 'E-posta adresinizi değiştirmek istediğinize emin misiniz?',
+    emailChangeSuccess: 'E-posta değişti! Lütfen yeniden giriş yapın...',
+    passChangeTitle: 'Şifre Değiştir',
+    passChangeDesc: 'Hesap güvenliğiniz için güçlü bir şifre seçin.',
+    passCurrent: 'Mevcut Şifre',
+    passNew: 'Yeni Şifre',
+    passNewConfirm: 'Yeni Şifre (Tekrar)',
+    btnUpdatePass: 'Şifreyi Güncelle',
+    passChangeSuccess: 'Şifre başarıyla değiştirildi!',
+    passMismatch: 'Yeni şifreler eşleşmiyor!',
+    profileCompany: 'Şirket',
+    profilePosition: 'Pozisyon',
+    profileStartDate: 'Başlangıç (Örn: Oca 2024)',
+    profileEndDate: 'Bitiş (Örn: Devam Ediyor)',
+    profileDesc: 'Açıklama (Ne yaptınız?)',
+    profileSchool: 'Okul / Üniversite',
+    profileDegree: 'Bölüm / Derece',
+    profileGpa: 'GPA (Ops)',
+    profileStartYear: 'Başlangıç (Yıl)',
+    profileEndYear: 'Bitiş (Yıl)',
+    noExperience: 'Henüz deneyim eklenmedi.',
+    noEducation: 'Henüz eğitim eklenmedi.',
+
+    // Resume (Özgeçmiş) Sayfası
+    resumeControlTitle: 'CV Kontrolü',
+    resumeLanguage: 'Dil',
+    btnDownloadPDF: 'PDF İndir',
+    resumeInfoWarning: 'Kişisel bilgileriniz, eğitim ve deneyiminiz otomatik olarak Profil ayarlarınızdan çekilmektedir. Değiştirmek isterseniz Profil sayfasına gidiniz.',
+    resumeAddToCv: "Pebble'dan CV'ye Ekle",
+    resumeShowProjects: 'Projelerimi Göster',
+    resumeShowCerts: 'Sertifikalarımı Göster',
+    resumeShowSkills: 'Yeteneklerimi Göster',
+    resumeDefaultTitle: 'Meslek Ünvanı'
   },
   en: {
     menuDashboard: 'Dashboard',
@@ -233,6 +305,9 @@ const translations = {
     statOffer: 'Offer',
     calendarTitle: 'Calendar',
     reminderTitle: 'Reminder',
+    dashStreak: 'Daily Streak',
+    dashStreakMsg: 'Come back tomorrow to keep it going!',
+    dashNoEvent: 'No events planned for today. A quiet day! ☕',
 
     myAccount: 'MY ACCOUNT',
     loggedInAs: 'LOGGED IN AS',
@@ -242,7 +317,6 @@ const translations = {
     comingSoon: 'This feature is coming soon!',
     defaultUser: 'User',
 
-    // Landing Page
     navHome: 'Home',
     navAbout: 'About',
     navBlog: 'Blog',
@@ -260,7 +334,6 @@ const translations = {
     contactTitle: 'Contact Us',
     contactText: 'Have a problem? Or just want to say hi? We at the Pebble team are looking forward to your messages.',
 
-    // Kayıt (Register) Sayfası
     regTitle: 'Join Us ✨',
     regFirstName: 'First Name',
     regLastName: 'Last Name',
@@ -279,7 +352,6 @@ const translations = {
     passRule2: 'Must contain at least one uppercase letter and one number.',
     passRule3: 'Must contain at least one special character (!@#$ etc.).',
     
-    // Giriş (Login) Sayfası
     loginTitle: 'Welcome Back ✨',
     loginBtn: 'Sign In',
     forgotPass: 'Forgot Password?',
@@ -289,7 +361,6 @@ const translations = {
     msgLoginFailed: 'Login Failed! Please check your credentials.',
     msgLoginSuccess: 'Login Successful! Redirecting...',
     
-    // Şifremi Unuttum Modalı
     forgotPassTitle: 'Forgot Password? 🥺',
     forgotPassDesc: 'Do not worry, you can set a new password and get your data back.',
     forgotNewPass: 'New Password',
@@ -377,7 +448,19 @@ const translations = {
     btnUpdateAndNote: 'Update and Add Note',
     btnContinueWithoutNote: 'Continue Without Note',
 
-    // Agenda Page
+    calAddEvent: 'Add Event',
+    calTitle: 'Title',
+    calDate: 'Date',
+    calTime: 'Time',
+    calType: 'Type',
+    calTypeBootcamp: 'Bootcamp / Training',
+    calTypeInterview: 'Interview / Exam',
+    calTypeMeeting: 'Meeting',
+    calTypeDeadline: 'Deadline',
+    calRecurring: 'Repeat Weekly 🔁',
+    calWeeks: 'How many weeks?',
+    calSaveEvent: 'Save Event',
+
     agendaTitle: 'Daily Planner',
     agendaSubtitle: 'What are we doing today?',
     agendaTodoTitle: 'To-Do List',
@@ -394,7 +477,6 @@ const translations = {
     agendaSaveLog: 'Error saving agenda:',
     msgAgendaSaveError: 'An error occurred while saving!',
 
-    // Gelişim Sayfası & Modallar
     devTitle: 'Development Area',
     devSubtitle: 'Your learning journey and skills 🚀',
     devAddCourse: 'Add Course',
@@ -422,12 +504,69 @@ const translations = {
     formProjectStatus: 'Status',
     
     formSkillName: 'Skill / Tech Name',
-    formSkillLevel: 'Level (%)'
+    formSkillLevel: 'Level (%)',
+
+    profileTabPersonal: 'Personal Info',
+    profileTabResume: 'Resume Data',
+    profileTabSecurity: 'Security & Password',
+    profileDetails: 'Profile Details',
+    profileFirstName: 'First Name',
+    profileLastName: 'Last Name',
+    profileEmailReadOnly: 'Email (Read Only)',
+    profilePhone: 'Phone',
+    profileLocation: 'Location',
+    profileTitle: 'Title',
+    profileBio: 'Bio',
+    profileSaveSuccess: 'Profile updated successfully!',
+    profileSaveError: 'Failed to save profile:',
+    resumeDataTitle: 'Resume Data',
+    resumeDataDesc: 'Education and experience added here will automatically appear in your resume.',
+    emailChangeTitle: 'Change Email',
+    emailChangeDesc: 'You must enter your current password to change your email.',
+    emailNew: 'New Email',
+    emailCurrentPass: 'Current Password (To Confirm)',
+    btnUpdateEmail: 'Update Email',
+    emailChangeConfirm: 'Are you sure you want to change your email address?',
+    emailChangeSuccess: 'Email changed! Please login again...',
+    passChangeTitle: 'Change Password',
+    passChangeDesc: 'Choose a strong password for your account security.',
+    passCurrent: 'Current Password',
+    passNew: 'New Password',
+    passNewConfirm: 'Confirm New Password',
+    btnUpdatePass: 'Update Password',
+    passChangeSuccess: 'Password changed successfully!',
+    passMismatch: 'New passwords do not match!',
+    profileCompany: 'Company',
+    profilePosition: 'Position',
+    profileStartDate: 'Start Date (e.g., Jan 2024)',
+    profileEndDate: 'End Date (e.g., Present)',
+    profileDesc: 'Description (What did you do?)',
+    profileSchool: 'School / University',
+    profileDegree: 'Degree / Major',
+    profileGpa: 'GPA (Optional)',
+    profileStartYear: 'Start Year',
+    profileEndYear: 'End Year',
+    noExperience: 'No experience added yet.',
+    noEducation: 'No education added yet.',
+
+    resumeControlTitle: 'CV Control',
+    resumeLanguage: 'Language',
+    btnDownloadPDF: 'Download PDF',
+    resumeInfoWarning: 'Your personal info, education, and experience are automatically fetched from your Profile. Go to the Profile page to edit.',
+    resumeAddToCv: 'Add from Pebble to CV',
+    resumeShowProjects: 'Show My Projects',
+    resumeShowCerts: 'Show My Certificates',
+    resumeShowSkills: 'Show My Skills',
+    resumeDefaultTitle: 'Job Title'
   }
 };
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(localStorage.getItem('app_lang') || 'tr');
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   const toggleLanguage = () => {
     const newLang = language === 'tr' ? 'en' : 'tr';

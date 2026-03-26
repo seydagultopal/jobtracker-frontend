@@ -13,7 +13,6 @@ export default function Dashboard() {
   const [streak, setStreak] = useState(0);
 
   useEffect(() => {
-    // 1. İstatistikleri Çekme
     api.get('/applications').then(res => {
       const apps = res.data;
       setStats({
@@ -25,7 +24,6 @@ export default function Dashboard() {
       });
     }).catch(err => console.error(err));
 
-    // 2. GERÇEK GÜNLÜK SERİ (STREAK) ALGORİTMASI
     const calculateStreak = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0); 
@@ -66,8 +64,15 @@ export default function Dashboard() {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
   const startDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; 
-  const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-  const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+  
+  // DİLE GÖRE AYLAR VE GÜNLER
+  const monthNames = language === 'tr' 
+    ? ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+  const dayNames = language === 'tr'
+    ? ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
+    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const hasEvent = (day) => {
     const monthStr = String(currentMonth + 1).padStart(2, '0');
@@ -84,12 +89,10 @@ export default function Dashboard() {
   );
 
   return (
-    // BÜYÜK ANA CONTAINER BURASI:
     <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none p-6 md:p-8 lg:p-10 border border-gray-100 dark:border-starlight/20 transition-colors duration-500 h-full flex flex-col">
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 animate-fade-in pb-2">
         
-        {/* SOL KOLON: İstatistikler ve STREAK KUTUSU */}
         <div className="lg:col-span-5 flex flex-col gap-4">
           
           <div className="flex flex-col gap-3">
@@ -105,7 +108,7 @@ export default function Dashboard() {
             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-peach/40 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
 
             <span className="relative z-10 text-[10px] font-black tracking-[0.2em] uppercase opacity-90 mb-1">
-              {language === 'tr' ? 'Günlük Seri' : 'Daily Streak'}
+              {t('dashStreak')}
             </span>
             
             <div className="relative z-10 flex items-center justify-center gap-2">
@@ -114,12 +117,11 @@ export default function Dashboard() {
             </div>
 
             <span className="relative z-10 text-[9px] font-bold opacity-80 mt-2 text-center px-2">
-              {language === 'tr' ? 'Seriyi bozmamak için yarın da gel!' : 'Come back tomorrow to keep it going!'}
+              {t('dashStreakMsg')}
             </span>
           </div>
         </div>
 
-        {/* SAĞ KOLON: Mini Takvim & Hatırlatıcı */}
         <div className="lg:col-span-7 flex flex-col gap-6 h-full">
           
           <div 
@@ -184,7 +186,7 @@ export default function Dashboard() {
                 ))
               ) : (
                 <p className="text-white/90 text-sm font-bold italic">
-                  {language === 'tr' ? 'Bugün planlanan bir etkinlik yok. Sakin bir gün! ☕' : 'No events planned for today. A quiet day! ☕'}
+                  {t('dashNoEvent')}
                 </p>
               )}
             </div>
