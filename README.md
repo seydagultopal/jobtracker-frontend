@@ -79,10 +79,6 @@ The Axios client adds the JWT from browser `localStorage` as a Bearer token for 
 
 **Known integration issue:** the registration page currently posts to `/auth/register`, but the backend endpoint is `/api/auth/register`. Align the route before testing account creation.
 
-## Screenshots
-
-Screenshots are not included in the repository yet. Add sanitized images under `docs/screenshots/` and embed the dashboard, tracker, calendar, and resume pages here. Do not include real personal information, JWTs, or account details in screenshots.
-
 ## Known limitations
 
 - The frontend requires a separately running backend for API-backed features.
