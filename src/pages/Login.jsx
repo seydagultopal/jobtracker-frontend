@@ -45,8 +45,7 @@ export default function Login() {
         password: formData.password
       };
 
-      const response = await api.post('/api/auth/login', payload);
-      localStorage.setItem('auth_token', response.data.token);
+      await api.post('/api/auth/login', payload);
       
       showToastMessage('success', t('msgLoginSuccess'));
       
