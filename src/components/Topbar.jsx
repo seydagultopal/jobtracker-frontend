@@ -18,27 +18,23 @@ export default function Topbar() {
   const navigate = useNavigate();
 
   const fetchUserData = async () => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const res = await api.get('/api/users/me');
-        if (res.data) {
-          setUserData({
-            name: res.data.firstName ? `${res.data.firstName} ${res.data.lastName || ''}` : '',
-            email: res.data.email || payload.sub,
-            photo: res.data.photo || null
-          });
-          // Veritabanında kapak resmi varsa al, yoksa varsayılanı kullan
-          if (res.data.coverPhoto) {
-            setCoverPhoto(res.data.coverPhoto);
-          } else {
-            setCoverPhoto(DEFAULT_COVER);
-          }
+    try {
+      const res = await api.get('/api/users/me');
+      if (res.data) {
+        setUserData({
+          name: res.data.firstName ? `${res.data.firstName} ${res.data.lastName || ''}` : '',
+          email: res.data.email || '',
+          photo: res.data.photo || null
+        });
+        // Veritabanında kapak resmi varsa al, yoksa varsayılanı kullan
+        if (res.data.coverPhoto) {
+          setCoverPhoto(res.data.coverPhoto);
+        } else {
+          setCoverPhoto(DEFAULT_COVER);
         }
-      } catch (error) {
-        console.error('User info error', error); 
       }
+    } catch (error) {
+      console.error('User info error', error);
     }
   };
 
@@ -59,9 +55,12 @@ export default function Topbar() {
     };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } finally {
+      navigate('/login');
+    }
   };
 
   const handleProfileClick = () => {
