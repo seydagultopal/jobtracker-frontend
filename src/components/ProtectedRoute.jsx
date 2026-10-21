@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 
@@ -6,23 +6,6 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
   const [status, setStatus] = useState('checking');
   const [retryKey, setRetryKey] = useState(0);
-
-  const checkSession = useCallback(async () => {
-    setStatus('checking');
-
-    try {
-      await api.get('/api/users/me');
-      setStatus('authenticated');
-    } catch (error) {
-      const statusCode = error.response?.status;
-
-      if (statusCode === 401 || statusCode === 403) {
-        setStatus('unauthenticated');
-      } else {
-        setStatus('error');
-      }
-    }
-  }, []);
 
   useEffect(() => {
     let active = true;
