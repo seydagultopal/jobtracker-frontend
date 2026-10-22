@@ -25,9 +25,9 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="pebble-sidebar-section-label"><span>YOUR WORKSPACE</span><span className="pebble-sidebar-live-dot" /></div>
+      <div className="pebble-sidebar-section-label"><span>WORKSPACE</span></div>
       <nav className="pebble-sidebar-nav flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar" aria-label="Main navigation">
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -35,8 +35,7 @@ export default function Sidebar() {
           >
             {({ isActive }) => (
               <>
-                <span className="pebble-nav-index">{String(index + 1).padStart(2, '0')}</span>
-                <span className="pebble-nav-icon"><item.icon size={18} strokeWidth={isActive ? 2.6 : 2.1} /></span>
+                <span className="pebble-nav-icon"><item.icon size={18} strokeWidth={isActive ? 2.4 : 2} /></span>
                 <span className="pebble-nav-name text-[13px] tracking-wide">{item.name}</span>
                 {isActive && <span className="pebble-nav-active-mark" aria-hidden="true" />}
               </>
@@ -47,11 +46,10 @@ export default function Sidebar() {
 
       <div className="pebble-sidebar-footer">
         <div className="pebble-sidebar-note">
-          <span className="pebble-sidebar-note-icon"><Sparkles size={16} /></span>
+          <span className="pebble-sidebar-note-icon"><Sparkles size={15} /></span>
           <div><p>Small steps.</p><p>Real progress.</p></div>
           <span className="pebble-sidebar-note-spark" aria-hidden="true">✳</span>
         </div>
-        <div className="pebble-sidebar-footer-meta"><span className="pebble-footer-mark">P</span><span>PEBBLE PRODUCTIVITY</span><span className="pebble-footer-version">01</span></div>
       </div>
     </aside>
   );
