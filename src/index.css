@@ -102,9 +102,9 @@ main { scrollbar-gutter: stable; }
 main > div { width: 100%; }
 
 /* Re-skin neutral Tailwind surfaces without changing their behaviour */
-[class*="bg-white"],
-[class*="bg-gray-50"],
-[class*="bg-gray-100"] {
+[class~="bg-white"],
+[class~="bg-gray-50"],
+[class~="bg-gray-100"] {
   background-color: var(--pebble-surface) !important;
 }
 :root.dark [class*="dark:bg-twilight"],
@@ -113,14 +113,14 @@ main > div { width: 100%; }
 :root.dark [class*="dark:bg-gray-900"] {
   background-color: var(--pebble-surface) !important;
 }
-[class*="border-gray-100"],
-[class*="border-gray-200"],
-[class*="border-gray-300"] {
+[class~="border-gray-100"],
+[class~="border-gray-200"],
+[class~="border-gray-300"] {
   border-color: var(--pebble-line) !important;
 }
 :root.dark [class*="dark:border-starlight"] { border-color: var(--pebble-line) !important; }
-[class*="text-gray-800"], [class*="text-gray-900"] { color: var(--pebble-ink) !important; }
-[class*="text-gray-500"], [class*="text-gray-600"], [class*="text-gray-700"] { color: var(--pebble-muted) !important; }
+[class~="text-gray-800"], [class~="text-gray-900"] { color: var(--pebble-ink) !important; }
+[class~="text-gray-500"], [class~="text-gray-600"], [class~="text-gray-700"] { color: var(--pebble-muted) !important; }
 :root.dark [class*="dark:text-gray-300"],
 :root.dark [class*="dark:text-gray-400"] { color: var(--pebble-muted) !important; }
 
