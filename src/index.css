@@ -6,12 +6,12 @@
 
 :root {
   color-scheme: light;
-  --pebble-canvas: #f3f0e9;
-  --pebble-surface: #fffdf9;
-  --pebble-surface-soft: #f0e9df;
+  --pebble-canvas: #e7e3da;
+  --pebble-surface: #f7f3eb;
+  --pebble-surface-soft: #eae4d9;
   --pebble-ink: #272335;
   --pebble-muted: #777184;
-  --pebble-line: #e3d8ca;
+  --pebble-line: #d4cabb;
   --pebble-sage: #9caf91;
   --pebble-lavender: #b7a0f6;
   --pebble-neon-orange: #ff5a1f;
@@ -92,8 +92,8 @@ aside nav a {
   font-weight: 600 !important;
 }
 aside nav a[aria-current="page"] {
-  color: #2e2840 !important;
-  background: linear-gradient(110deg, #ffe0cb, #ffb18d 58%, #f2dfff) !important;
+  color: #ffffff !important;
+  background: #ff5a1f !important;
   box-shadow: inset 0 0 0 1px rgba(117, 96, 150, .1), 0 5px 14px rgba(74, 53, 94, .06) !important;
 }
 :root.dark aside nav a[aria-current="page"] {
@@ -161,8 +161,8 @@ button:active { transform: translateY(1px); }
 .pebble-dashboard { color: var(--pebble-ink); }
 .dash-welcome {
   min-height: 270px;
-  color: #30263e;
-  background: linear-gradient(112deg, #e3eadb 0%, #f1e7f7 54%, #ffe3d7 100%);
+  color: #ffffff;
+  background: linear-gradient(112deg, #ff5a1f 0%, #ff713d 58%, #ff9a67 100%);
   border: 1px solid rgba(112, 87, 129, .09);
   box-shadow: 0 20px 55px rgba(65, 43, 69, .07);
 }
@@ -217,8 +217,8 @@ button:active { transform: translateY(1px); }
 }
 .dash-stat-card:hover { transform:translateY(-5px); box-shadow:0 17px 32px rgba(54,39,61,.1); }
 .dash-tone-sage { background:linear-gradient(145deg,#e1eadb,#f3f4e9); color:#405c48; }
-.dash-tone-peach { background:linear-gradient(145deg,#ffe3d4,#fff0e8); color:#9b5b47; }
-.dash-tone-lilac { background:linear-gradient(145deg,#eae1fa,#f5effc); color:#6d5596; }
+.dash-tone-peach { background:linear-gradient(145deg,#ff5a1f,#ff8a50); color:#ffffff; }
+.dash-tone-lilac { background:linear-gradient(145deg,#e1d5ff,#f0e9ff); color:#6d5596; }
 .dash-tone-rose { background:linear-gradient(145deg,#f8dfe7,#fff0f1); color:#985a76; }
 .dash-tone-gold { background:linear-gradient(145deg,#f6e9c9,#fff5df); color:#8b6a30; }
 :root.dark .dash-tone-sage { background:linear-gradient(145deg,#263c37,#26322f); color:#a7e0c7; border-color:#3c5a50; }
