@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, CheckCircle2, ChevronLeft, ChevronRight, Circle, Frown, Meh, Plus, Save, Smile, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, ChevronLeft, ChevronRight, Circle, Frown, Meh, Plus, Save, Smile, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
@@ -79,7 +79,7 @@ export default function Agenda() {
   };
 
   const handleAddTodo = (e) => {
-    if (e.key === 'Enter' || e.type === 'click') {
+    if (e.key === 'Enter' || e.type === 'click' || e.type === 'submit') {
       e.preventDefault();
       if (!newTodo.trim()) return;
       setTodos([...todos, { text: newTodo, completed: false }]);
