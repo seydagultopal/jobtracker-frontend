@@ -6,12 +6,12 @@
 
 :root {
   color-scheme: light;
-  --pebble-canvas: #fff2e7;
-  --pebble-surface: #fffaf5;
-  --pebble-surface-soft: #ffe3d0;
+  --pebble-canvas: #f3f0e9;
+  --pebble-surface: #fffdf9;
+  --pebble-surface-soft: #f0e9df;
   --pebble-ink: #272335;
   --pebble-muted: #777184;
-  --pebble-line: #f2d1bd;
+  --pebble-line: #e3d8ca;
   --pebble-sage: #9caf91;
   --pebble-lavender: #b7a0f6;
   --pebble-neon-orange: #ff5a1f;
@@ -48,7 +48,7 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(ellipse at 92% 3%, rgba(183, 160, 246, .19), transparent 30rem),
-    radial-gradient(ellipse at 0% 22%, rgba(255, 90, 31, .13), transparent 27rem),
+    radial-gradient(ellipse at 0% 22%, rgba(255, 90, 31, .12), transparent 27rem),
     radial-gradient(ellipse at 85% 92%, rgba(255, 177, 117, .19), transparent 31rem),
     var(--pebble-canvas),
     var(--pebble-canvas);
