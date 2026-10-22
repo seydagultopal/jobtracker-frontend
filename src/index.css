@@ -496,436 +496,176 @@ input:focus, textarea:focus, select:focus {
 :root.dark .profile-empty-state > span { background: #493023; color: #ffbf8b; }
 
 
-/* Distinctive workspace sidebar — editorial labels, numbered routes, orange active rail */
+/* Workspace sidebar — single source of truth, quiet Notion-inspired styling */
 .pebble-sidebar {
   width: 264px;
+  flex: 0 0 264px;
   overflow: hidden;
-  background: #fff3e5 !important;
-  border-right: 1px solid #e7a66d !important;
-  box-shadow: 10px 0 34px rgba(111, 52, 15, .09);
+  background: #fff8ef !important;
+  border-right: 1px solid var(--pebble-line) !important;
+  box-shadow: 8px 0 28px rgba(52, 32, 21, .035);
 }
 .pebble-sidebar-brand {
-  height: 94px !important;
-  padding-inline: 22px !important;
-  gap: 12px !important;
-  border-bottom: 1px solid rgba(166, 75, 19, .16) !important;
-  position: relative;
-}
-.pebble-sidebar-brand::after {
-  content: "";
-  position: absolute;
-  left: 22px;
-  right: 22px;
-  bottom: -1px;
-  height: 2px;
-  background: linear-gradient(90deg, #e94f0c, rgba(233,79,12,0));
+  height: 84px !important;
+  padding-inline: 20px !important;
+  gap: 11px !important;
+  border-bottom: 1px solid var(--pebble-line) !important;
 }
 .pebble-sidebar-logo {
   display: grid;
   place-items: center;
-  width: 43px;
-  height: 43px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
-  border-radius: 15px;
-  background: #e94f0c;
-  box-shadow: 0 7px 16px rgba(201,69,14,.22);
+  border-radius: 11px;
+  background: #ff5a1f;
+  box-shadow: 0 4px 12px rgba(201, 69, 14, .14);
 }
-.pebble-sidebar-logo img, .pebble-sidebar-logo svg { max-height: 27px; }
+.pebble-sidebar-logo img, .pebble-sidebar-logo svg { max-height: 24px; }
 .pebble-sidebar-wordmark {
   display: block;
-  color: #392315;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -.065em;
+  color: var(--pebble-ink);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.055em;
   line-height: 1.05;
 }
-.pebble-sidebar-period { color: #e94f0c; }
+.pebble-sidebar-period { color: #ff5a1f; }
 .pebble-sidebar-tagline {
   display: block;
-  margin-top: 5px;
-  color: #95664a;
+  margin-top: 4px;
+  color: var(--pebble-muted);
   font-size: 8px;
-  font-weight: 800;
-  letter-spacing: .18em;
+  font-weight: 700;
+  letter-spacing: .13em;
 }
 .pebble-sidebar-section-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 27px 23px 12px;
-  color: #9c6b4b;
+  padding: 25px 22px 10px;
+  color: var(--pebble-muted);
   font-size: 9px;
-  font-weight: 900;
-  letter-spacing: .15em;
+  font-weight: 800;
+  letter-spacing: .12em;
 }
 .pebble-sidebar-live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #e94f0c;
-  box-shadow: 0 0 0 4px rgba(233,79,12,.12);
+  background: #ff5a1f;
+  box-shadow: 0 0 0 4px rgba(255, 90, 31, .1);
 }
-.pebble-sidebar-nav { padding: 0 12px 14px !important; }
+.pebble-sidebar-nav { padding: 0 12px 12px !important; }
 .pebble-nav-link {
   position: relative;
-  min-height: 51px;
+  min-height: 44px;
   gap: 11px !important;
-  padding: 9px 12px !important;
+  padding: 8px 11px !important;
   border: 1px solid transparent !important;
-  border-radius: 13px !important;
+  border-radius: 11px !important;
   color: #79563f !important;
   background: transparent !important;
   transform: none !important;
 }
 .pebble-nav-link:hover {
   color: #a83c0a !important;
-  background: rgba(255, 218, 185, .72) !important;
-  border-color: rgba(217,71,11,.08) !important;
-  transform: translateX(2px) !important;
+  background: #ffead6 !important;
+  border-color: transparent !important;
 }
 .pebble-nav-index {
   width: 19px;
   flex: 0 0 19px;
   color: #b88c6d;
-  font-family: 'DM Sans', sans-serif;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  opacity: .8;
 }
 .pebble-nav-icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 9px;
   color: #a95727;
   background: rgba(255, 255, 255, .58);
-  transition: color .2s ease, background .2s ease, transform .2s ease;
+  transition: color .2s ease, background .2s ease;
 }
-.pebble-nav-name { flex: 1; font-size: 12px !important; }
+.pebble-nav-name { flex: 1; font-size: 13px !important; font-weight: 600; letter-spacing: 0 !important; }
 .pebble-nav-active-mark {
-  width: 5px;
-  height: 22px;
-  flex: 0 0 5px;
+  width: 4px;
+  height: 20px;
+  flex: 0 0 4px;
   border-radius: 9px;
   background: #fff1df;
-  box-shadow: 0 0 0 2px rgba(255,255,255,.12);
 }
 .pebble-nav-link[aria-current="page"] {
   color: #fff8f0 !important;
-  background: linear-gradient(105deg, #c83e08, #ed5814) !important;
-  border-color: rgba(154, 48, 5, .25) !important;
-  box-shadow: 0 8px 17px rgba(160,54,7,.2), inset 0 1px 0 rgba(255,255,255,.15) !important;
+  background: #ff5a1f !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(255, 90, 31, .15) !important;
 }
-.pebble-nav-link[aria-current="page"] .pebble-nav-index { color: #ffd3b4; opacity: 1; }
+.pebble-nav-link[aria-current="page"] .pebble-nav-index { color: #ffe0ca; }
 .pebble-nav-link[aria-current="page"] .pebble-nav-icon {
   color: #fff8f0;
-  background: rgba(255,255,255,.16);
-  transform: rotate(-3deg);
+  background: rgba(255, 255, 255, .15);
 }
-.pebble-nav-link[aria-current="page"] .pebble-nav-name { font-weight: 800; }
-.pebble-sidebar-footer { padding: 12px 13px 15px; margin-top: auto; }
+.pebble-nav-link[aria-current="page"] .pebble-nav-name { font-weight: 750; }
+.pebble-sidebar-footer { padding: 12px 12px 16px; margin-top: auto; }
 .pebble-sidebar-note {
   position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   overflow: hidden;
-  padding: 14px 11px;
+  padding: 13px 11px;
   border: 1px solid #f0c69f;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #ffe4c7, #fff1df 75%);
+  border-radius: 14px;
+  background: #ffead6;
 }
 .pebble-sidebar-note-icon {
   display: grid;
   place-items: center;
-  width: 31px;
-  height: 31px;
-  flex: 0 0 31px;
-  border-radius: 10px;
-  color: #a83b0b;
-  background: #fffaf4;
-}
-.pebble-sidebar-note p { margin: 0; color: #6c3b20; font-size: 11px; font-weight: 800; line-height: 1.45; }
-.pebble-sidebar-note p + p { color: #a35425; font-weight: 600; }
-.pebble-sidebar-note-spark { position: absolute; right: -5px; bottom: -17px; color: rgba(217,71,11,.12); font-size: 63px; line-height: 1; }
-.pebble-sidebar-footer-meta {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 15px 4px 0;
-  color: #a17b60;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: .09em;
-}
-.pebble-footer-mark {
-  display: grid;
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  border: 1px solid #dba579;
-  border-radius: 6px;
-  color: #a83b0b;
-  font-size: 10px;
-  letter-spacing: 0;
-}
-.pebble-footer-version { margin-left: auto; color: #b88c6d; font-variant-numeric: tabular-nums; }
-:root.dark .pebble-sidebar {
-  background: #211b20 !important;
-  border-right-color: #49352c !important;
-  box-shadow: 10px 0 34px rgba(0,0,0,.2);
-}
-:root.dark .pebble-sidebar-brand { border-bottom-color: #49352c !important; }
-:root.dark .pebble-sidebar-wordmark { color: #fff2e5; }
-:root.dark .pebble-sidebar-tagline, :root.dark .pebble-sidebar-section-label { color: #b99a82; }
-:root.dark .pebble-nav-link { color: #d9c7b8 !important; }
-:root.dark .pebble-nav-link:hover { color: #ffd0a8 !important; background: #342720 !important; border-color: #49352c !important; }
-:root.dark .pebble-nav-index { color: #967a68; }
-:root.dark .pebble-nav-icon { color: #ffb77d; background: #342720; }
-:root.dark .pebble-nav-link[aria-current="page"] {
-  color: #fff8f0 !important;
-  background: linear-gradient(105deg, #a83c12, #c94e19) !important;
-  border-color: #9f451e !important;
-}
-:root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-index { color: #ffd0a8; }
-:root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-icon { color: #fff8f0; background: rgba(255,255,255,.13); }
-:root.dark .pebble-sidebar-note { background: linear-gradient(135deg, #392720, #302329 75%); border-color: #624235; }
-:root.dark .pebble-sidebar-note-icon { color: #ffbf8b; background: #493023; }
-:root.dark .pebble-sidebar-note p { color: #fff0e2; }
-:root.dark .pebble-sidebar-note p + p { color: #e6b18a; }
-:root.dark .pebble-sidebar-note-spark { color: rgba(255,145,71,.12); }
-:root.dark .pebble-sidebar-footer-meta { color: #a98a74; }
-:root.dark .pebble-footer-mark { color: #ffbf8b; border-color: #75503a; }
-@media (max-width: 760px) {
-  .pebble-sidebar { width: 232px; }
-  .pebble-sidebar-brand { padding-inline: 17px !important; }
-  .pebble-sidebar-section-label { padding-inline: 18px; }
-}
-
-
-/* Refined sidebar: quiet Notion-like structure with a restrained Pebble-orange signature */
-.pebble-sidebar {
-  width: 252px;
-  background: #fff8ef !important;
-  border-right: 1px solid rgba(111, 73, 48, .10) !important;
-  box-shadow: 5px 0 24px rgba(79, 45, 22, .045);
-}
-.pebble-sidebar-brand {
-  height: 84px !important;
-  padding-inline: 22px !important;
-  gap: 11px !important;
-  border-bottom: 1px solid rgba(111, 73, 48, .09) !important;
-}
-.pebble-sidebar-brand::after { display: none; }
-.pebble-sidebar-logo {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  box-shadow: 0 3px 9px rgba(201, 69, 14, .12);
-}
-.pebble-sidebar-logo img, .pebble-sidebar-logo svg { max-height: 24px; }
-.pebble-sidebar-wordmark { font-size: 22px; letter-spacing: -.055em; }
-.pebble-sidebar-tagline {
-  margin-top: 4px;
-  color: #a18a78;
-  font-size: 8px;
-  letter-spacing: .13em;
-}
-.pebble-sidebar-section-label {
-  padding: 25px 22px 10px;
-  color: #a18a78;
-  font-size: 9px;
-  letter-spacing: .12em;
-}
-.pebble-sidebar-live-dot { display: none; }
-.pebble-sidebar-nav { padding: 0 12px 12px !important; }
-.pebble-nav-link {
-  min-height: 46px;
-  gap: 10px !important;
-  padding: 7px 10px !important;
-  border-radius: 11px !important;
-  color: #6e5b4d !important;
-  transition: background-color .18s ease, color .18s ease, transform .18s ease !important;
-}
-.pebble-nav-link:hover {
-  color: #a94317 !important;
-  background: #f7ecdf !important;
-  border-color: transparent !important;
-  transform: translateX(1px) !important;
-}
-.pebble-nav-index { display: none; }
-.pebble-nav-icon {
   width: 30px;
   height: 30px;
-  flex-basis: 30px;
+  flex: 0 0 30px;
   border-radius: 9px;
-  color: #a45a32;
-  background: transparent;
+  color: #a83b0b;
+  background: #fff8ef;
 }
-.pebble-nav-link:nth-child(2) .pebble-nav-icon { color: #bb6a38; }
-.pebble-nav-link:nth-child(3) .pebble-nav-icon { color: #8c7a58; }
-.pebble-nav-link:nth-child(4) .pebble-nav-icon { color: #a16c8b; }
-.pebble-nav-link:nth-child(5) .pebble-nav-icon { color: #6c9078; }
-.pebble-nav-link:nth-child(6) .pebble-nav-icon { color: #7b83a5; }
-.pebble-nav-name { font-size: 13px !important; font-weight: 600; letter-spacing: 0 !important; }
-.pebble-nav-active-mark { display: none; }
-.pebble-nav-link[aria-current="page"] {
-  color: #a83c0a !important;
-  background: #ffead7 !important;
-  border-color: rgba(217, 71, 11, .09) !important;
-  box-shadow: inset 3px 0 0 #e95416 !important;
-}
-.pebble-nav-link[aria-current="page"] .pebble-nav-icon {
-  color: #d94b11;
-  background: rgba(255,255,255,.68);
-  transform: none;
-}
-.pebble-nav-link[aria-current="page"] .pebble-nav-name { font-weight: 750; }
-.pebble-sidebar-footer { padding: 12px 12px 16px; }
-.pebble-sidebar-note {
-  gap: 9px;
-  padding: 12px 10px;
-  border: 1px solid rgba(210, 135, 77, .18);
-  border-radius: 13px;
-  background: #fff1e2;
-}
-.pebble-sidebar-note-icon {
-  width: 29px;
-  height: 29px;
-  flex-basis: 29px;
-  border-radius: 9px;
-  color: #c64b17;
-  background: #ffe0c2;
-}
-.pebble-sidebar-note p { color: #67432e; font-size: 11px; font-weight: 700; }
+.pebble-sidebar-note p { margin: 0; color: #67432e; font-size: 11px; font-weight: 700; line-height: 1.45; }
 .pebble-sidebar-note p + p { color: #9a6c4d; font-weight: 500; }
-.pebble-sidebar-note-spark { color: rgba(217, 71, 11, .08); }
+.pebble-sidebar-note-spark { position: absolute; right: -5px; bottom: -17px; color: rgba(217, 71, 11, .08); font-size: 63px; line-height: 1; }
+.pebble-sidebar-footer-meta { display: none !important; }
+
 :root.dark .pebble-sidebar {
-  background: #1d1920 !important;
-  border-right-color: rgba(224, 190, 164, .10) !important;
-  box-shadow: 5px 0 24px rgba(0,0,0,.12);
+  background: #211b20 !important;
+  border-right-color: rgba(224, 190, 164, .1) !important;
+  box-shadow: 8px 0 28px rgba(0, 0, 0, .12);
 }
-:root.dark .pebble-sidebar-brand { border-bottom-color: rgba(224, 190, 164, .09) !important; }
+:root.dark .pebble-sidebar-brand { border-bottom-color: rgba(224, 190, 164, .1) !important; }
+:root.dark .pebble-sidebar-wordmark { color: #fff2e5; }
 :root.dark .pebble-sidebar-tagline,
 :root.dark .pebble-sidebar-section-label { color: #9e8d83; }
 :root.dark .pebble-nav-link { color: #c9bdb4 !important; }
-:root.dark .pebble-nav-link:hover {
-  color: #ffc18d !important;
-  background: #2b2426 !important;
-  border-color: transparent !important;
-}
-:root.dark .pebble-nav-icon { color: #d39a74; background: transparent; }
-:root.dark .pebble-nav-link[aria-current="page"] {
-  color: #ffc18d !important;
-  background: #38261f !important;
-  border-color: rgba(255, 145, 71, .10) !important;
-  box-shadow: inset 3px 0 0 #f07835 !important;
-}
-:root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-icon {
-  color: #ffb77d;
-  background: rgba(255,255,255,.045);
-}
-:root.dark .pebble-sidebar-note {
-  background: #292126;
-  border-color: rgba(255, 165, 103, .13);
-}
-:root.dark .pebble-sidebar-note-icon { color: #ffb77d; background: #3b2924; }
-:root.dark .pebble-sidebar-note p { color: #f0dfd1; }
-:root.dark .pebble-sidebar-note p + p { color: #bfa18b; }
-@media (max-width: 760px) {
-  .pebble-sidebar { width: 232px; }
-  .pebble-sidebar-brand { padding-inline: 17px !important; }
-  .pebble-sidebar-section-label { padding-inline: 18px; }
-}
-
-
-/* Refined sidebar: quiet Notion-like structure with a restrained Pebble-orange signature */
-.pebble-sidebar {
-  width: 252px;
-  background: #fff8ef !important;
-  border-right: 1px solid rgba(111, 73, 48, .10) !important;
-  box-shadow: 5px 0 24px rgba(79, 45, 22, .045);
-}
-.pebble-sidebar-brand {
-  height: 84px !important;
-  padding-inline: 22px !important;
-  gap: 11px !important;
-  border-bottom: 1px solid rgba(111, 73, 48, .09) !important;
-}
-.pebble-sidebar-brand::after { display: none; }
-.pebble-sidebar-logo {
-  width: 38px; height: 38px; border-radius: 12px;
-  box-shadow: 0 3px 9px rgba(201, 69, 14, .12);
-}
-.pebble-sidebar-logo img, .pebble-sidebar-logo svg { max-height: 24px; }
-.pebble-sidebar-wordmark { font-size: 22px; letter-spacing: -.055em; }
-.pebble-sidebar-tagline { margin-top: 4px; color: #a18a78; font-size: 8px; letter-spacing: .13em; }
-.pebble-sidebar-section-label { padding: 25px 22px 10px; color: #a18a78; font-size: 9px; letter-spacing: .12em; }
-.pebble-sidebar-live-dot, .pebble-nav-index, .pebble-nav-active-mark, .pebble-sidebar-footer-meta { display: none !important; }
-.pebble-sidebar-nav { padding: 0 12px 12px !important; }
-.pebble-nav-link {
-  min-height: 46px; gap: 10px !important; padding: 7px 10px !important;
-  border-radius: 11px !important; color: #6e5b4d !important;
-  transition: background-color .18s ease, color .18s ease, transform .18s ease !important;
-}
-.pebble-nav-link:hover {
-  color: #a94317 !important; background: #f7ecdf !important;
-  border-color: transparent !important; transform: translateX(1px) !important;
-}
-.pebble-nav-icon {
-  width: 30px; height: 30px; flex-basis: 30px; border-radius: 9px;
-  color: #a45a32; background: transparent;
-}
-.pebble-nav-link:nth-child(2) .pebble-nav-icon { color: #bb6a38; }
-.pebble-nav-link:nth-child(3) .pebble-nav-icon { color: #8c7a58; }
-.pebble-nav-link:nth-child(4) .pebble-nav-icon { color: #a16c8b; }
-.pebble-nav-link:nth-child(5) .pebble-nav-icon { color: #6c9078; }
-.pebble-nav-link:nth-child(6) .pebble-nav-icon { color: #7b83a5; }
-.pebble-nav-name { font-size: 13px !important; font-weight: 600; letter-spacing: 0 !important; }
-.pebble-nav-link[aria-current="page"] {
-  color: #a83c0a !important; background: #ffead7 !important;
-  border-color: rgba(217, 71, 11, .09) !important;
-  box-shadow: inset 3px 0 0 #e95416 !important;
-}
-.pebble-nav-link[aria-current="page"] .pebble-nav-icon {
-  color: #d94b11; background: rgba(255,255,255,.68); transform: none;
-}
-.pebble-nav-link[aria-current="page"] .pebble-nav-name { font-weight: 750; }
-.pebble-sidebar-footer { padding: 12px 12px 16px; }
-.pebble-sidebar-note {
-  gap: 9px; padding: 12px 10px; border: 1px solid rgba(210, 135, 77, .18);
-  border-radius: 13px; background: #fff1e2;
-}
-.pebble-sidebar-note-icon {
-  width: 29px; height: 29px; flex-basis: 29px; border-radius: 9px;
-  color: #c64b17; background: #ffe0c2;
-}
-.pebble-sidebar-note p { color: #67432e; font-size: 11px; font-weight: 700; }
-.pebble-sidebar-note p + p { color: #9a6c4d; font-weight: 500; }
-.pebble-sidebar-note-spark { color: rgba(217, 71, 11, .08); }
-:root.dark .pebble-sidebar {
-  background: #1d1920 !important; border-right-color: rgba(224, 190, 164, .10) !important;
-  box-shadow: 5px 0 24px rgba(0,0,0,.12);
-}
-:root.dark .pebble-sidebar-brand { border-bottom-color: rgba(224, 190, 164, .09) !important; }
-:root.dark .pebble-sidebar-tagline, :root.dark .pebble-sidebar-section-label { color: #9e8d83; }
-:root.dark .pebble-nav-link { color: #c9bdb4 !important; }
 :root.dark .pebble-nav-link:hover { color: #ffc18d !important; background: #2b2426 !important; border-color: transparent !important; }
+:root.dark .pebble-nav-index { color: #967a68; }
 :root.dark .pebble-nav-icon { color: #d39a74; background: transparent; }
 :root.dark .pebble-nav-link[aria-current="page"] {
-  color: #ffc18d !important; background: #38261f !important;
-  border-color: rgba(255, 145, 71, .10) !important; box-shadow: inset 3px 0 0 #f07835 !important;
+  color: #fff8f0 !important;
+  background: #b94c22 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .16) !important;
 }
+:root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-index { color: #ffe0ca; }
 :root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-icon { color: #ffb77d; background: rgba(255,255,255,.045); }
 :root.dark .pebble-sidebar-note { background: #292126; border-color: rgba(255, 165, 103, .13); }
 :root.dark .pebble-sidebar-note-icon { color: #ffb77d; background: #3b2924; }
 :root.dark .pebble-sidebar-note p { color: #f0dfd1; }
 :root.dark .pebble-sidebar-note p + p { color: #bfa18b; }
+
 @media (max-width: 760px) {
-  .pebble-sidebar { width: 232px; }
+  .pebble-sidebar { width: 232px; flex-basis: 232px; }
   .pebble-sidebar-brand { padding-inline: 17px !important; }
   .pebble-sidebar-section-label { padding-inline: 18px; }
 }
