@@ -220,7 +220,7 @@ const handleCoverUpload = (e) => {
   return (
     <div className="pebble-profile min-h-full space-y-5 pb-8 animate-fade-in">
       {toast.show && (
-        <div className={\`profile-toast \${toast.type === 'success' ? 'profile-toast-success' : 'profile-toast-error'}\`} role="status">
+        <div className={`profile-toast ${toast.type === 'success' ? 'profile-toast-success' : 'profile-toast-error'}`} role="status">
           {toast.type === 'success' ? <CheckCircle2 size={19} /> : <AlertCircle size={19} />}
           <span>{toast.message}</span>
         </div>
@@ -239,12 +239,12 @@ const handleCoverUpload = (e) => {
             <button
               key={idx}
               type="button"
-              aria-label={isTr ? \`Kapak rengi \${idx + 1}\` : \`Cover color \${idx + 1}\`}
+              aria-label={isTr ? `Kapak rengi ${idx + 1}` : `Cover color ${idx + 1}`}
               onClick={() => {
                 setProfileData(prev => ({ ...prev, coverPhoto: opt }));
                 window.dispatchEvent(new CustomEvent('coverPreview', { detail: opt }));
               }}
-              className={\`profile-cover-swatch profile-cover-swatch-\${idx} \${profileData.coverPhoto === opt ? 'is-selected' : ''}\`}
+              className={`profile-cover-swatch profile-cover-swatch-${idx} ${profileData.coverPhoto === opt ? 'is-selected' : ''}`}
             />
           ))}
           <label className="profile-cover-upload" title={isTr ? 'Kapak fotoğrafı yükle' : 'Upload cover photo'}>
@@ -279,14 +279,14 @@ const handleCoverUpload = (e) => {
           <p className="profile-subtitle">{isTr ? 'Hikâyeni, deneyimini ve hedeflerini tek bir yerde bir araya getir.' : 'Bring your story, experience and goals together in one place.'}</p>
         </div>
         <div className="profile-completion">
-          <div className="profile-completion-ring" style={{ '--profile-progress': \`\${completion}%\` }}><span>{completion}%</span></div>
+          <div className="profile-completion-ring" style={{ '--profile-progress': `${completion}%` }}><span>{completion}%</span></div>
           <div><strong>{isTr ? 'Profil tamamlandı' : 'Profile complete'}</strong><small>{isTr ? 'Her küçük detay fark yaratır.' : 'Every little detail matters.'}</small></div>
         </div>
       </div>
 
       <nav className="profile-tabs" aria-label={isTr ? 'Profil bölümleri' : 'Profile sections'}>
         {tabItems.map(({ id, icon: Icon, label }) => (
-          <button key={id} type="button" onClick={() => setActiveTab(id)} className={\`profile-tab \${activeTab === id ? 'is-active' : ''}\`}>
+          <button key={id} type="button" onClick={() => setActiveTab(id)} className={`profile-tab ${activeTab === id ? 'is-active' : ''}`}>
             <span className="profile-tab-icon"><Icon size={17} /></span>
             <span>{label}</span>
             {activeTab === id && <span className="profile-tab-indicator" />}
@@ -307,7 +307,7 @@ const handleCoverUpload = (e) => {
           <section className="profile-side-card profile-quick-card">
             <div className="profile-card-heading"><span className="profile-card-icon profile-icon-sage"><CheckCircle2 size={18} /></span><h3>{isTr ? 'Profil özeti' : 'Profile snapshot'}</h3></div>
             <div className="profile-quick-row"><span>{isTr ? 'İletişim bilgileri' : 'Contact details'}</span><strong>{[profileData.email, profileData.phone, profileData.location].filter(Boolean).length}/3</strong></div>
-            <div className="profile-mini-track"><span style={{ width: \`\${Math.round(([profileData.email, profileData.phone, profileData.location].filter(Boolean).length / 3) * 100)}%\` }} /></div>
+            <div className="profile-mini-track"><span style={{ width: `${Math.round(([profileData.email, profileData.phone, profileData.location].filter(Boolean).length / 3) * 100)}%` }} /></div>
             <div className="profile-quick-row"><span>{isTr ? 'Deneyim' : 'Experience'}</span><strong>{experience.length}</strong></div>
             <div className="profile-quick-row"><span>{isTr ? 'Eğitim' : 'Education'}</span><strong>{education.length}</strong></div>
             <div className="profile-quick-footer"><Shield size={15} />{isTr ? 'Bilgilerin hesabına özeldir.' : 'Your details stay in your account.'}</div>
@@ -327,7 +327,7 @@ const handleCoverUpload = (e) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div><label className={fieldLabel}>{isTr ? 'Ad' : 'First name'}</label><input className={fieldClass} type="text" value={profileData.firstName} onChange={e => setProfileData({ ...profileData, firstName: e.target.value })} placeholder={isTr ? 'Adın' : 'Your first name'} /></div>
                   <div><label className={fieldLabel}>{isTr ? 'Soyad' : 'Last name'}</label><input className={fieldClass} type="text" value={profileData.lastName} onChange={e => setProfileData({ ...profileData, lastName: e.target.value })} placeholder={isTr ? 'Soyadın' : 'Your last name'} /></div>
-                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'E-posta adresi' : 'Email address'} <span className="profile-readonly-label"><Lock size={11} />{isTr ? 'Değiştirmek için Güvenlik sekmesi' : 'Change via Security tab'}</span></label><input className={\`\${fieldClass} profile-field-locked\`} type="email" value={profileData.email} disabled /></div>
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'E-posta adresi' : 'Email address'} <span className="profile-readonly-label"><Lock size={11} />{isTr ? 'Değiştirmek için Güvenlik sekmesi' : 'Change via Security tab'}</span></label><input className={`${fieldClass} profile-field-locked`} type="email" value={profileData.email} disabled /></div>
                   <div><label className={fieldLabel}>{isTr ? 'Telefon' : 'Phone'}</label><div className="profile-input-wrap"><Phone size={16} /><input className={fieldClass} type="text" value={profileData.phone} onChange={e => setProfileData({ ...profileData, phone: e.target.value })} placeholder="+90 ..." /></div></div>
                   <div><label className={fieldLabel}>{isTr ? 'Konum' : 'Location'}</label><div className="profile-input-wrap"><MapPin size={16} /><input className={fieldClass} type="text" value={profileData.location} onChange={e => setProfileData({ ...profileData, location: e.target.value })} placeholder={isTr ? 'Şehir, ülke' : 'City, country'} /></div></div>
                 </div>
@@ -339,7 +339,7 @@ const handleCoverUpload = (e) => {
                   <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Mesleki unvan' : 'Professional title'}</label><div className="profile-input-wrap"><Briefcase size={16} /><input className={fieldClass} type="text" value={profileData.title} onChange={e => setProfileData({ ...profileData, title: e.target.value })} placeholder={isTr ? 'Örn. Java Backend Developer' : 'e.g. Java Backend Developer'} /></div></div>
                   <div><label className={fieldLabel}>LinkedIn</label><div className="profile-input-wrap"><Linkedin size={16} /><input className={fieldClass} type="text" value={profileData.linkedin} onChange={e => setProfileData({ ...profileData, linkedin: e.target.value })} placeholder="linkedin.com/in/..." /></div></div>
                   <div><label className={fieldLabel}>GitHub</label><div className="profile-input-wrap"><Github size={16} /><input className={fieldClass} type="text" value={profileData.github} onChange={e => setProfileData({ ...profileData, github: e.target.value })} placeholder="github.com/..." /></div></div>
-                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Hakkımda' : 'About me'}</label><textarea className={\`\${fieldClass} profile-bio-field\`} value={profileData.bio} onChange={e => setProfileData({ ...profileData, bio: e.target.value })} placeholder={isTr ? 'Kendinden, ilgi alanlarından ve kariyer hedeflerinden bahset...' : 'Tell us about yourself, your interests and career goals...'} rows={5} /><small className="profile-field-hint">{isTr ? 'Kısa ve samimi bir özet yeterli. Neyi öğrenmekte olduğunu da anlatabilirsin.' : 'A short, authentic summary is enough. You can mention what you are learning too.'}</small></div>
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Hakkımda' : 'About me'}</label><textarea className={`${fieldClass} profile-bio-field`} value={profileData.bio} onChange={e => setProfileData({ ...profileData, bio: e.target.value })} placeholder={isTr ? 'Kendinden, ilgi alanlarından ve kariyer hedeflerinden bahset...' : 'Tell us about yourself, your interests and career goals...'} rows={5} /><small className="profile-field-hint">{isTr ? 'Kısa ve samimi bir özet yeterli. Neyi öğrenmekte olduğunu da anlatabilirsin.' : 'A short, authentic summary is enough. You can mention what you are learning too.'}</small></div>
                 </div>
               </div>
 
@@ -364,7 +364,7 @@ const handleCoverUpload = (e) => {
                       <input className={fieldClass} type="text" placeholder={isTr ? 'Pozisyon' : 'Role'} value={exp.role} onChange={e => updateExperience(exp.id, 'role', e.target.value)} />
                       <input className={fieldClass} type="text" placeholder={isTr ? 'Başlangıç (Oca 2024)' : 'Start (Jan 2024)'} value={exp.startDate} onChange={e => updateExperience(exp.id, 'startDate', e.target.value)} />
                       <input className={fieldClass} type="text" placeholder={isTr ? 'Bitiş (Devam ediyor)' : 'End (Present)'} value={exp.endDate} onChange={e => updateExperience(exp.id, 'endDate', e.target.value)} />
-                      <textarea className={\`\${fieldClass} sm:col-span-2\`} rows={3} placeholder={isTr ? 'Sorumlulukların ve katkıların' : 'Your responsibilities and contributions'} value={exp.description} onChange={e => updateExperience(exp.id, 'description', e.target.value)} />
+                      <textarea className={`${fieldClass} sm:col-span-2`} rows={3} placeholder={isTr ? 'Sorumlulukların ve katkıların' : 'Your responsibilities and contributions'} value={exp.description} onChange={e => updateExperience(exp.id, 'description', e.target.value)} />
                     </div>
                   </div>
                 ))}</div>
@@ -376,7 +376,7 @@ const handleCoverUpload = (e) => {
                 <div className="space-y-4">{education.map((edu, index) => (
                   <div key={edu.id} className="profile-entry-card"><div className="profile-entry-number profile-number-sage">{String(index + 1).padStart(2, '0')}</div><button type="button" onClick={() => removeEducation(edu.id)} className="profile-remove-button" aria-label={isTr ? 'Eğitimi sil' : 'Remove education'}><Trash2 size={15} /></button>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input className={\`\${fieldClass} sm:col-span-2\`} type="text" placeholder={isTr ? 'Okul / üniversite' : 'School / university'} value={edu.school} onChange={e => updateEducation(edu.id, 'school', e.target.value)} />
+                      <input className={`${fieldClass} sm:col-span-2`} type="text" placeholder={isTr ? 'Okul / üniversite' : 'School / university'} value={edu.school} onChange={e => updateEducation(edu.id, 'school', e.target.value)} />
                       <input className={fieldClass} type="text" placeholder={isTr ? 'Bölüm / derece' : 'Degree / field of study'} value={edu.degree} onChange={e => updateEducation(edu.id, 'degree', e.target.value)} />
                       <input className={fieldClass} type="text" placeholder="GPA (opsiyonel)" value={edu.gpa} onChange={e => updateEducation(edu.id, 'gpa', e.target.value)} />
                       <input className={fieldClass} type="text" placeholder={isTr ? 'Başlangıç yılı' : 'Start year'} value={edu.startDate} onChange={e => updateEducation(edu.id, 'startDate', e.target.value)} />
@@ -398,7 +398,7 @@ const handleCoverUpload = (e) => {
               <form onSubmit={handleUpdateEmail} className="profile-security-block">
                 <div className="profile-security-heading"><span className="profile-card-icon profile-icon-lilac"><Mail size={18} /></span><div><h3>{isTr ? 'E-posta adresini değiştir' : 'Change email address'}</h3><p>{isTr ? 'Yeni adresi doğrulamak için mevcut şifren gerekir.' : 'Your current password is required to confirm the change.'}</p></div></div>
                 <label className={fieldLabel}>{isTr ? 'Yeni e-posta' : 'New email'}</label><input required className={fieldClass} type="email" value={emailUpdate.newEmail} onChange={e => setEmailUpdate({ ...emailUpdate, newEmail: e.target.value })} placeholder="name@example.com" />
-                <label className={\`\${fieldLabel} mt-4\`}>{isTr ? 'Mevcut şifre' : 'Current password'}</label>
+                <label className={`${fieldLabel} mt-4`}>{isTr ? 'Mevcut şifre' : 'Current password'}</label>
                 <div className="profile-password-wrap"><input required className={fieldClass} type={showEmailPassword ? 'text' : 'password'} value={emailUpdate.currentPassword} onChange={e => setEmailUpdate({ ...emailUpdate, currentPassword: e.target.value })} /><button type="button" onClick={() => setShowEmailPassword(!showEmailPassword)} aria-label={showEmailPassword ? 'Hide password' : 'Show password'}>{showEmailPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div>
                 <button type="submit" disabled={saving} className="profile-save-button mt-5"><Mail size={16} />{saving ? '…' : (isTr ? 'E-postayı güncelle' : 'Update email')}</button>
               </form>
