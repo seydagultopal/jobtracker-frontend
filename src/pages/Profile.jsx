@@ -4,10 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 const COVER_OPTIONS = [
-  'bg-gradient-to-r from-rose-300 to-orange-200 dark:from-rose-800 dark:to-orange-800',
-  'bg-gradient-to-r from-sky-300 to-indigo-200 dark:from-sky-800 dark:to-indigo-800',
-  'bg-gradient-to-r from-emerald-300 to-teal-200 dark:from-emerald-800 dark:to-teal-800',
-  'bg-gradient-to-r from-purple-300 to-pink-300 dark:from-purple-800 dark:to-pink-800'
+  'bg-gradient-to-r from-rose-300 to-orange-200 dark:from-rose-800 dark:to-orange-800'
 ];
 
 // JSON Çökmesini Önleyen Güvenli Çevirici
@@ -25,6 +22,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('personal'); 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [mediaChanged, setMediaChanged] = useState(false);
   
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
@@ -100,7 +98,10 @@ const handlePhotoUpload = (e) => {
   }
 
   const reader = new FileReader();
-  reader.onloadend = () => setProfileData({ ...profileData, photo: reader.result });
+  reader.onloadend = () => {
+    setProfileData(prev => ({ ...prev, photo: reader.result }));
+    setMediaChanged(true);
+  };
   reader.readAsDataURL(file);
 };
 
@@ -115,14 +116,15 @@ const handleCoverUpload = (e) => {
 
   const reader = new FileReader();
   reader.onloadend = () => {
-    setProfileData({ ...profileData, coverPhoto: reader.result });
+    setProfileData(prev => ({ ...prev, coverPhoto: reader.result }));
+    setMediaChanged(true);
     window.dispatchEvent(new CustomEvent('coverPreview', { detail: reader.result }));
   };
   reader.readAsDataURL(file);
 };
 
   const handleSaveProfile = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     setSaving(true);
     try {
       const payload = {
@@ -131,6 +133,7 @@ const handleCoverUpload = (e) => {
         educations: JSON.stringify(education)
       };
       await api.put('/api/users/me', payload);
+      setMediaChanged(false);
       showToast(language === 'tr' ? 'Profil başarıyla güncellendi!' : 'Profile updated successfully!', 'success');
       window.dispatchEvent(new Event('profileUpdated')); 
     } catch (error) {
@@ -234,23 +237,16 @@ const handleCoverUpload = (e) => {
         <div className="profile-cover-leaf profile-cover-leaf-two">✿</div>
 
         <div className="profile-cover-tools">
-          <span>{isTr ? 'KAPAK GÖRÜNÜMÜ' : 'COVER STYLE'}</span>
-          {COVER_OPTIONS.map((opt, idx) => (
-            <button
-              key={idx}
-              type="button"
-              aria-label={isTr ? `Kapak rengi ${idx + 1}` : `Cover color ${idx + 1}`}
-              onClick={() => {
-                setProfileData(prev => ({ ...prev, coverPhoto: opt }));
-                window.dispatchEvent(new CustomEvent('coverPreview', { detail: opt }));
-              }}
-              className={`profile-cover-swatch profile-cover-swatch-${idx} ${profileData.coverPhoto === opt ? 'is-selected' : ''}`}
-            />
-          ))}
+          <span>{isTr ? 'PEBBLE TEMASI' : 'PEBBLE THEME'}</span>
           <label className="profile-cover-upload" title={isTr ? 'Kapak fotoğrafı yükle' : 'Upload cover photo'}>
             <ImageIcon size={15} />
             <input type="file" accept="image/*" onChange={handleCoverUpload} />
           </label>
+          {mediaChanged && (
+            <button type="button" onClick={handleSaveProfile} disabled={saving} className="profile-save-button profile-media-save">
+              <Save size={14} />{saving ? (isTr ? 'Kaydediliyor…' : 'Saving…') : (isTr ? 'Kaydet' : 'Save')}
+            </button>
+          )}
         </div>
 
         <div className="profile-cover-content">
