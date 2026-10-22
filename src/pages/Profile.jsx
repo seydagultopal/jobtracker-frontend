@@ -203,366 +203,221 @@ const handleCoverUpload = (e) => {
   }
 
   const isCustomCover = profileData.coverPhoto && !profileData.coverPhoto.startsWith('bg-');
+  const isTr = language === 'tr';
+  const fullName = [profileData.firstName, profileData.lastName].filter(Boolean).join(' ') || (isTr ? 'Adını ekle' : 'Add your name');
+  const initials = [profileData.firstName, profileData.lastName].filter(Boolean).map(part => part[0]).join('').toUpperCase() || 'P';
+  const filledFields = [profileData.firstName, profileData.lastName, profileData.email, profileData.title, profileData.bio, profileData.phone, profileData.location, profileData.linkedin, profileData.github].filter(Boolean).length;
+  const completion = Math.round((filledFields / 9) * 100);
+  const tabItems = [
+    { id: 'personal', icon: User, label: isTr ? 'Kişisel bilgiler' : 'Personal details' },
+    { id: 'resume', icon: Briefcase, label: isTr ? 'Eğitim & deneyim' : 'Education & experience' },
+    { id: 'security', icon: Shield, label: isTr ? 'Güvenlik' : 'Security' }
+  ];
+
+  const fieldClass = 'profile-field w-full rounded-2xl px-4 py-3.5 text-sm transition-all';
+  const fieldLabel = 'mb-2 block text-xs font-bold tracking-wide';
 
   return (
-    <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none border border-gray-100 dark:border-starlight/20 transition-colors duration-500 min-h-full flex flex-col animate-fade-in overflow-hidden relative">
-      
+    <div className="pebble-profile min-h-full space-y-5 pb-8 animate-fade-in">
       {toast.show && (
-        <div className={`absolute top-6 right-6 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl z-50 animate-fade-in border ${
-          toast.type === 'success' 
-            ? 'bg-white dark:bg-twilight border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400' 
-            : 'bg-white dark:bg-twilight border-cherry/20 text-cherry'
-        }`}>
-          {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
-          <span className="font-bold text-sm tracking-wide">{toast.message}</span>
+        <div className={\`profile-toast \${toast.type === 'success' ? 'profile-toast-success' : 'profile-toast-error'}\`} role="status">
+          {toast.type === 'success' ? <CheckCircle2 size={19} /> : <AlertCircle size={19} />}
+          <span>{toast.message}</span>
         </div>
       )}
 
-      {/* COVER & HEADER ALANI */}
-      <div 
-        className={`h-36 md:h-48 relative shrink-0 transition-all duration-700 ease-in-out ${!isCustomCover ? profileData.coverPhoto : 'bg-gray-200 dark:bg-night'}`}
-        style={isCustomCover ? { backgroundImage: `url(${profileData.coverPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none"></div>
+      <section className="profile-cover">
+        <div className="profile-cover-art" />
+        <div className="profile-cover-orbit profile-cover-orbit-one" />
+        <div className="profile-cover-orbit profile-cover-orbit-two" />
+        <div className="profile-cover-leaf profile-cover-leaf-one">✳</div>
+        <div className="profile-cover-leaf profile-cover-leaf-two">✿</div>
 
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/20 shadow-sm z-10">
+        <div className="profile-cover-tools">
+          <span>{isTr ? 'KAPAK GÖRÜNÜMÜ' : 'COVER STYLE'}</span>
           {COVER_OPTIONS.map((opt, idx) => (
-            <button 
-              key={idx} 
+            <button
+              key={idx}
+              type="button"
+              aria-label={isTr ? \`Kapak rengi \${idx + 1}\` : \`Cover color \${idx + 1}\`}
               onClick={() => {
-                setProfileData({ ...profileData, coverPhoto: opt });
+                setProfileData(prev => ({ ...prev, coverPhoto: opt }));
                 window.dispatchEvent(new CustomEvent('coverPreview', { detail: opt }));
               }}
-              className={`w-6 h-6 rounded-full border-2 transition-all duration-300 ${profileData.coverPhoto === opt ? 'border-white scale-110 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'} ${opt.split(' ')[0]} ${opt.split(' ')[1]} ${opt.split(' ')[2]}`}
+              className={\`profile-cover-swatch profile-cover-swatch-\${idx} \${profileData.coverPhoto === opt ? 'is-selected' : ''}\`}
             />
           ))}
-          <div className="w-px h-6 bg-white/30 mx-1"></div>
-          <label className="cursor-pointer w-7 h-7 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white transition-colors">
-            <ImageIcon size={14} />
-            <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+          <label className="profile-cover-upload" title={isTr ? 'Kapak fotoğrafı yükle' : 'Upload cover photo'}>
+            <ImageIcon size={15} />
+            <input type="file" accept="image/*" onChange={handleCoverUpload} />
           </label>
         </div>
 
-        <div className="absolute -bottom-12 left-6 md:-bottom-16 md:left-10 flex items-end gap-5 z-10">
-          <label className="relative w-28 h-28 md:w-36 md:h-36 rounded-[2rem] bg-white dark:bg-night border-[5px] border-white dark:border-twilight flex flex-col items-center justify-center cursor-pointer hover:border-gray-100 dark:hover:border-starlight transition-colors overflow-hidden group shadow-lg shrink-0">
-            {profileData.photo ? (
-              <img src={profileData.photo} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <User size={48} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 transition-colors" />
-            )}
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <Camera className="text-white" size={28} />
-            </div>
-            <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+        <div className="profile-cover-content">
+          <label className="profile-avatar">
+            {profileData.photo ? <img src={profileData.photo} alt={isTr ? 'Profil fotoğrafı' : 'Profile'} /> : <span>{initials}</span>}
+            <span className="profile-avatar-edit"><Camera size={17} /></span>
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} />
           </label>
-          <div className="mb-4 hidden sm:block">
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              {profileData.firstName || 'Adınız'} {profileData.lastName || 'Soyadınız'}
-            </h1>
-            <p className="text-gray-100 font-bold tracking-widest uppercase text-xs mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              {profileData.title || 'Ünvan Belirtilmedi'}
-            </p>
+          <div className="profile-identity">
+            <div className="profile-identity-eyebrow"><span className="profile-status-dot" />{isTr ? 'KARİYER ALANIN' : 'YOUR CAREER SPACE'}</div>
+            <h1>{fullName}</h1>
+            <p>{profileData.title || (isTr ? 'Kariyer unvanını ekle' : 'Add your professional title')}</p>
+            {profileData.location && <span className="profile-location"><MapPin size={14} />{profileData.location}</span>}
           </div>
+          <div className="profile-cover-note">
+            <Sparkles size={17} />
+            <span>{isTr ? 'Küçük adımlar, büyük hayaller.' : 'Small steps, big dreams.'}</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="profile-topline">
+        <div>
+          <p className="profile-eyebrow">{isTr ? 'KİŞİSEL ALANIN' : 'YOUR PERSONAL SPACE'}</p>
+          <h2>{isTr ? 'Profilini şekillendir' : 'Shape your profile'}</h2>
+          <p className="profile-subtitle">{isTr ? 'Hikâyeni, deneyimini ve hedeflerini tek bir yerde bir araya getir.' : 'Bring your story, experience and goals together in one place.'}</p>
+        </div>
+        <div className="profile-completion">
+          <div className="profile-completion-ring" style={{ '--profile-progress': \`\${completion}%\` }}><span>{completion}%</span></div>
+          <div><strong>{isTr ? 'Profil tamamlandı' : 'Profile complete'}</strong><small>{isTr ? 'Her küçük detay fark yaratır.' : 'Every little detail matters.'}</small></div>
         </div>
       </div>
 
-      <div className="pt-20 md:pt-24 px-6 md:px-12 pb-8 flex-1 flex flex-col lg:flex-row gap-10">
-        
-        {/* SOL MENU */}
-        <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
-          <button 
-            onClick={() => setActiveTab('personal')}
-            className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all ${
-              activeTab === 'personal' 
-                ? 'bg-gray-100 dark:bg-starlight/20 text-gray-900 dark:text-white shadow-sm' 
-                : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-night/50 hover:text-gray-800 dark:hover:text-gray-200 border border-transparent'
-            }`}
-          >
-            <User size={18} strokeWidth={2.5} />
-            {language === 'tr' ? 'Kişisel Bilgiler' : 'Personal Info'}
+      <nav className="profile-tabs" aria-label={isTr ? 'Profil bölümleri' : 'Profile sections'}>
+        {tabItems.map(({ id, icon: Icon, label }) => (
+          <button key={id} type="button" onClick={() => setActiveTab(id)} className={\`profile-tab \${activeTab === id ? 'is-active' : ''}\`}>
+            <span className="profile-tab-icon"><Icon size={17} /></span>
+            <span>{label}</span>
+            {activeTab === id && <span className="profile-tab-indicator" />}
           </button>
-          
-          <button 
-            onClick={() => setActiveTab('resume')}
-            className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all ${
-              activeTab === 'resume' 
-                ? 'bg-gray-100 dark:bg-starlight/20 text-gray-900 dark:text-white shadow-sm' 
-                : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-night/50 hover:text-gray-800 dark:hover:text-gray-200 border border-transparent'
-            }`}
-          >
-            <FileText size={18} strokeWidth={2.5} />
-            {language === 'tr' ? 'Eğitim & Deneyim' : 'Resume Data'}
-          </button>
+        ))}
+      </nav>
 
-          <button 
-            onClick={() => setActiveTab('security')}
-            className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all ${
-              activeTab === 'security' 
-                ? 'bg-gray-100 dark:bg-starlight/20 text-gray-900 dark:text-white shadow-sm' 
-                : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-night/50 hover:text-gray-800 dark:hover:text-gray-200 border border-transparent'
-            }`}
-          >
-            <Shield size={18} strokeWidth={2.5} />
-            {language === 'tr' ? 'Güvenlik & Şifre' : 'Security & Password'}
-          </button>
-        </div>
+      <div className="profile-content-grid">
+        <aside className="profile-side-column">
+          <section className="profile-side-card profile-tip-card">
+            <div className="profile-card-icon profile-icon-lilac"><Sparkles size={19} /></div>
+            <p className="profile-card-eyebrow">{isTr ? 'KÜÇÜK BİR HATIRLATMA' : 'A LITTLE REMINDER'}</p>
+            <h3>{isTr ? 'Bu hikâye sana ait.' : 'This story is yours.'}</h3>
+            <p>{isTr ? 'Güçlü bir profil; becerilerini, yolculuğunu ve sıradaki hedefini görünür kılar.' : 'A thoughtful profile makes your skills, journey and next goal easier to see.'}</p>
+            <div className="profile-tip-decoration">✳</div>
+          </section>
 
-        {/* SAĞ İÇERİK ALANI */}
-        <div className="flex-1 max-w-3xl">
-          
-          {/* KİŞİSEL BİLGİLER */}
+          <section className="profile-side-card profile-quick-card">
+            <div className="profile-card-heading"><span className="profile-card-icon profile-icon-sage"><CheckCircle2 size={18} /></span><h3>{isTr ? 'Profil özeti' : 'Profile snapshot'}</h3></div>
+            <div className="profile-quick-row"><span>{isTr ? 'İletişim bilgileri' : 'Contact details'}</span><strong>{[profileData.email, profileData.phone, profileData.location].filter(Boolean).length}/3</strong></div>
+            <div className="profile-mini-track"><span style={{ width: \`\${Math.round(([profileData.email, profileData.phone, profileData.location].filter(Boolean).length / 3) * 100)}%\` }} /></div>
+            <div className="profile-quick-row"><span>{isTr ? 'Deneyim' : 'Experience'}</span><strong>{experience.length}</strong></div>
+            <div className="profile-quick-row"><span>{isTr ? 'Eğitim' : 'Education'}</span><strong>{education.length}</strong></div>
+            <div className="profile-quick-footer"><Shield size={15} />{isTr ? 'Bilgilerin hesabına özeldir.' : 'Your details stay in your account.'}</div>
+          </section>
+        </aside>
+
+        <section className="profile-main-card">
           {activeTab === 'personal' && (
-            <form onSubmit={handleSaveProfile} className="space-y-6 animate-fade-in bg-gray-50/50 dark:bg-night/20 p-8 rounded-[2rem] border border-gray-100 dark:border-starlight/20">
-              <h2 className="text-xl font-black text-gray-800 dark:text-white tracking-tight mb-6">{language === 'tr' ? 'Profil Detayları' : 'Profile Details'}</h2>
+            <form onSubmit={handleSaveProfile} className="profile-form">
+              <div className="profile-panel-heading">
+                <div><p className="profile-eyebrow">{isTr ? 'SENİ TANIYALIM' : 'GET TO KNOW YOU'}</p><h2>{isTr ? 'Kişisel bilgiler' : 'Personal details'}</h2><p>{isTr ? 'Kariyer profilinde görünmesini istediğin bilgileri düzenle.' : 'Edit the details you want to show on your career profile.'}</p></div>
+                <span className="profile-panel-illustration"><User size={23} /></span>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Ad' : 'First Name'}</label>
-                  <div className="relative">
-                    <User size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.firstName} onChange={e => setProfileData({...profileData, firstName: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Soyad' : 'Last Name'}</label>
-                  <div className="relative">
-                    <User size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.lastName} onChange={e => setProfileData({...profileData, lastName: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1 flex items-center gap-1">{language === 'tr' ? 'E-Posta (Salt Okunur)' : 'Email (Read Only)'} <Lock size={12} /></label>
-                  <div className="relative">
-                    <Mail size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="email" value={profileData.email} disabled className="w-full bg-gray-100 dark:bg-night border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium text-gray-500 cursor-not-allowed" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Telefon' : 'Phone'}</label>
-                  <div className="relative">
-                    <Phone size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Konum' : 'Location'}</label>
-                  <div className="relative">
-                    <MapPin size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.location} onChange={e => setProfileData({...profileData, location: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">LinkedIn</label>
-                  <div className="relative">
-                    <Linkedin size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.linkedin} onChange={e => setProfileData({...profileData, linkedin: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">GitHub</label>
-                  <div className="relative">
-                    <Github size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.github} onChange={e => setProfileData({...profileData, github: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Ünvan' : 'Title'}</label>
-                  <div className="relative">
-                    <Briefcase size={16} className="absolute left-4 top-3.5 text-gray-400" />
-                    <input type="text" value={profileData.title} onChange={e => setProfileData({...profileData, title: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl pl-11 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20" />
-                  </div>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">{language === 'tr' ? 'Hakkımda' : 'Bio'}</label>
-                  <textarea value={profileData.bio} onChange={e => setProfileData({...profileData, bio: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl p-4 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 h-24 resize-none custom-scrollbar" />
+              <div className="profile-form-section">
+                <h3><span>01</span>{isTr ? 'Temel bilgiler' : 'Basic information'}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><label className={fieldLabel}>{isTr ? 'Ad' : 'First name'}</label><input className={fieldClass} type="text" value={profileData.firstName} onChange={e => setProfileData({ ...profileData, firstName: e.target.value })} placeholder={isTr ? 'Adın' : 'Your first name'} /></div>
+                  <div><label className={fieldLabel}>{isTr ? 'Soyad' : 'Last name'}</label><input className={fieldClass} type="text" value={profileData.lastName} onChange={e => setProfileData({ ...profileData, lastName: e.target.value })} placeholder={isTr ? 'Soyadın' : 'Your last name'} /></div>
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'E-posta adresi' : 'Email address'} <span className="profile-readonly-label"><Lock size={11} />{isTr ? 'Değiştirmek için Güvenlik sekmesi' : 'Change via Security tab'}</span></label><input className={\`\${fieldClass} profile-field-locked\`} type="email" value={profileData.email} disabled /></div>
+                  <div><label className={fieldLabel}>{isTr ? 'Telefon' : 'Phone'}</label><div className="profile-input-wrap"><Phone size={16} /><input className={fieldClass} type="text" value={profileData.phone} onChange={e => setProfileData({ ...profileData, phone: e.target.value })} placeholder="+90 ..." /></div></div>
+                  <div><label className={fieldLabel}>{isTr ? 'Konum' : 'Location'}</label><div className="profile-input-wrap"><MapPin size={16} /><input className={fieldClass} type="text" value={profileData.location} onChange={e => setProfileData({ ...profileData, location: e.target.value })} placeholder={isTr ? 'Şehir, ülke' : 'City, country'} /></div></div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
-                <button type="submit" disabled={saving} className="px-8 py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-wider flex items-center gap-2">
-                  <Save size={18} /> {saving ? '...' : t('btnSave')}
-                </button>
+              <div className="profile-form-section">
+                <h3><span>02</span>{isTr ? 'Profesyonel kimlik' : 'Professional identity'}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Mesleki unvan' : 'Professional title'}</label><div className="profile-input-wrap"><Briefcase size={16} /><input className={fieldClass} type="text" value={profileData.title} onChange={e => setProfileData({ ...profileData, title: e.target.value })} placeholder={isTr ? 'Örn. Java Backend Developer' : 'e.g. Java Backend Developer'} /></div></div>
+                  <div><label className={fieldLabel}>LinkedIn</label><div className="profile-input-wrap"><Linkedin size={16} /><input className={fieldClass} type="text" value={profileData.linkedin} onChange={e => setProfileData({ ...profileData, linkedin: e.target.value })} placeholder="linkedin.com/in/..." /></div></div>
+                  <div><label className={fieldLabel}>GitHub</label><div className="profile-input-wrap"><Github size={16} /><input className={fieldClass} type="text" value={profileData.github} onChange={e => setProfileData({ ...profileData, github: e.target.value })} placeholder="github.com/..." /></div></div>
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Hakkımda' : 'About me'}</label><textarea className={\`\${fieldClass} profile-bio-field\`} value={profileData.bio} onChange={e => setProfileData({ ...profileData, bio: e.target.value })} placeholder={isTr ? 'Kendinden, ilgi alanlarından ve kariyer hedeflerinden bahset...' : 'Tell us about yourself, your interests and career goals...'} rows={5} /><small className="profile-field-hint">{isTr ? 'Kısa ve samimi bir özet yeterli. Neyi öğrenmekte olduğunu da anlatabilirsin.' : 'A short, authentic summary is enough. You can mention what you are learning too.'}</small></div>
+                </div>
               </div>
+
+              <div className="profile-form-footer"><span><Shield size={15} />{isTr ? 'Değişikliklerin yalnızca sen Kaydet dediğinde uygulanır.' : 'Changes apply when you select Save.'}</span><button type="submit" disabled={saving} className="profile-save-button"><Save size={17} />{saving ? (isTr ? 'Kaydediliyor…' : 'Saving…') : (isTr ? 'Değişiklikleri kaydet' : 'Save changes')}</button></div>
             </form>
           )}
 
-          {/* CV EĞİTİM VE DENEYİM TABI */}
           {activeTab === 'resume' && (
-            <div className="space-y-8 animate-fade-in bg-gray-50/50 dark:bg-night/20 p-8 rounded-[2rem] border border-gray-100 dark:border-starlight/20">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-black text-gray-800 dark:text-white tracking-tight">{language === 'tr' ? 'CV Bilgileri' : 'Resume Data'}</h2>
-                <button onClick={handleSaveProfile} disabled={saving} className="px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-wider flex items-center gap-2">
-                  <Save size={14} /> {saving ? '...' : t('btnSave')}
-                </button>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                {language === 'tr' ? 'Buraya eklediğiniz eğitim ve deneyim bilgileri, CV oluşturucuda otomatik olarak yer alacaktır.' : 'Education and experience added here will automatically appear in your resume.'}
-              </p>
-
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-sm font-black text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                    <Briefcase size={16} /> Deneyim
-                  </h3>
-                  <button onClick={addExperience} className="p-1.5 bg-white dark:bg-twilight shadow-sm hover:text-columbia rounded-lg transition-colors text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-starlight/30">
-                    <Plus size={16} strokeWidth={3} />
-                  </button>
-                </div>
-                
-                <div className="space-y-4">
-                  {experience.map((exp) => (
-                    <div key={exp.id} className="p-5 bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl relative group">
-                      <button onClick={() => removeExperience(exp.id)} className="absolute top-4 right-4 text-gray-400 hover:text-cherry transition-colors bg-gray-50 dark:bg-twilight p-1.5 rounded-lg z-10">
-                        <Trash2 size={14} />
-                      </button>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 pr-10">
-                        <input type="text" placeholder="Şirket" value={exp.company} onChange={e => updateExperience(exp.id, 'company', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia" />
-                        <input type="text" placeholder="Pozisyon" value={exp.role} onChange={e => updateExperience(exp.id, 'role', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia" />
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        <input type="text" placeholder="Başlangıç (Örn: Oca 2024)" value={exp.startDate} onChange={e => updateExperience(exp.id, 'startDate', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-columbia" />
-                        <input type="text" placeholder="Bitiş (Örn: Devam Ediyor)" value={exp.endDate} onChange={e => updateExperience(exp.id, 'endDate', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-columbia" />
-                      </div>
-                      <textarea placeholder="Açıklama (Ne yaptınız?)" value={exp.description} onChange={e => updateExperience(exp.id, 'description', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia resize-none h-20 custom-scrollbar" />
-                    </div>
-                  ))}
-                  {experience.length === 0 && <p className="text-xs text-gray-400 font-medium text-center italic">Henüz deneyim eklenmedi.</p>}
-                </div>
+            <div className="profile-form">
+              <div className="profile-panel-heading">
+                <div><p className="profile-eyebrow">{isTr ? 'KARİYER YOLCULUĞUN' : 'YOUR CAREER JOURNEY'}</p><h2>{isTr ? 'Eğitim & deneyim' : 'Education & experience'}</h2><p>{isTr ? 'Buradaki bilgiler CV oluşturucunda kullanılacak.' : 'These details will be used by your resume builder.'}</p></div>
+                <span className="profile-panel-illustration profile-illustration-peach"><GraduationCap size={24} /></span>
               </div>
 
-              <div className="pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-sm font-black text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                    <GraduationCap size={16} /> Eğitim
-                  </h3>
-                  <button onClick={addEducation} className="p-1.5 bg-white dark:bg-twilight shadow-sm hover:text-columbia rounded-lg transition-colors text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-starlight/30">
-                    <Plus size={16} strokeWidth={3} />
-                  </button>
-                </div>
-                
-                <div className="space-y-4">
-                  {education.map((edu) => (
-                    <div key={edu.id} className="p-5 bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 rounded-2xl relative group">
-                      <button onClick={() => removeEducation(edu.id)} className="absolute top-4 right-4 text-gray-400 hover:text-cherry transition-colors bg-gray-50 dark:bg-twilight p-1.5 rounded-lg z-10">
-                        <Trash2 size={14} />
-                      </button>
-                      <div className="grid grid-cols-1 gap-3 mb-3 pr-10">
-                        <input type="text" placeholder="Okul / Üniversite" value={edu.school} onChange={e => updateEducation(edu.id, 'school', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia" />
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                          <input type="text" placeholder="Bölüm / Derece" value={edu.degree} onChange={e => updateEducation(edu.id, 'degree', e.target.value)} className="sm:col-span-3 w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia" />
-                          <input type="text" placeholder="GPA (Ops)" value={edu.gpa} onChange={e => updateEducation(edu.id, 'gpa', e.target.value)} className="sm:col-span-1 w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-columbia" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="text" placeholder="Başlangıç (Yıl)" value={edu.startDate} onChange={e => updateEducation(edu.id, 'startDate', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-columbia" />
-                        <input type="text" placeholder="Bitiş (Yıl)" value={edu.endDate} onChange={e => updateEducation(edu.id, 'endDate', e.target.value)} className="w-full bg-gray-50 dark:bg-twilight border-none rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-columbia" />
-                      </div>
+              <div className="profile-form-section">
+                <div className="profile-section-title-row"><h3><span>01</span>{isTr ? 'İş deneyimi' : 'Work experience'}</h3><button type="button" onClick={addExperience} className="profile-add-button"><Plus size={16} />{isTr ? 'Deneyim ekle' : 'Add experience'}</button></div>
+                {experience.length === 0 && <div className="profile-empty-state"><span><Briefcase size={23} /></span><strong>{isTr ? 'İlk deneyimini ekle' : 'Add your first experience'}</strong><p>{isTr ? 'Stajlar, yarı zamanlı işler ve projelerdeki rollerin de burada yer alabilir.' : 'Internships, part-time jobs and project roles can go here too.'}</p></div>}
+                <div className="space-y-4">{experience.map((exp, index) => (
+                  <div key={exp.id} className="profile-entry-card"><div className="profile-entry-number">{String(index + 1).padStart(2, '0')}</div><button type="button" onClick={() => removeExperience(exp.id)} className="profile-remove-button" aria-label={isTr ? 'Deneyimi sil' : 'Remove experience'}><Trash2 size={15} /></button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Şirket / kurum' : 'Company / organization'} value={exp.company} onChange={e => updateExperience(exp.id, 'company', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Pozisyon' : 'Role'} value={exp.role} onChange={e => updateExperience(exp.id, 'role', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Başlangıç (Oca 2024)' : 'Start (Jan 2024)'} value={exp.startDate} onChange={e => updateExperience(exp.id, 'startDate', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Bitiş (Devam ediyor)' : 'End (Present)'} value={exp.endDate} onChange={e => updateExperience(exp.id, 'endDate', e.target.value)} />
+                      <textarea className={\`\${fieldClass} sm:col-span-2\`} rows={3} placeholder={isTr ? 'Sorumlulukların ve katkıların' : 'Your responsibilities and contributions'} value={exp.description} onChange={e => updateExperience(exp.id, 'description', e.target.value)} />
                     </div>
-                  ))}
-                  {education.length === 0 && <p className="text-xs text-gray-400 font-medium text-center italic">Henüz eğitim eklenmedi.</p>}
-                </div>
+                  </div>
+                ))}</div>
               </div>
+
+              <div className="profile-form-section">
+                <div className="profile-section-title-row"><h3><span>02</span>{isTr ? 'Eğitim' : 'Education'}</h3><button type="button" onClick={addEducation} className="profile-add-button"><Plus size={16} />{isTr ? 'Eğitim ekle' : 'Add education'}</button></div>
+                {education.length === 0 && <div className="profile-empty-state profile-empty-sage"><span><GraduationCap size={23} /></span><strong>{isTr ? 'Eğitim geçmişini ekle' : 'Add your education'}</strong><p>{isTr ? 'Üniversite, bölüm ve mezuniyet bilgilerini ekleyebilirsin.' : 'Add your university, degree and graduation details.'}</p></div>}
+                <div className="space-y-4">{education.map((edu, index) => (
+                  <div key={edu.id} className="profile-entry-card"><div className="profile-entry-number profile-number-sage">{String(index + 1).padStart(2, '0')}</div><button type="button" onClick={() => removeEducation(edu.id)} className="profile-remove-button" aria-label={isTr ? 'Eğitimi sil' : 'Remove education'}><Trash2 size={15} /></button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input className={\`\${fieldClass} sm:col-span-2\`} type="text" placeholder={isTr ? 'Okul / üniversite' : 'School / university'} value={edu.school} onChange={e => updateEducation(edu.id, 'school', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Bölüm / derece' : 'Degree / field of study'} value={edu.degree} onChange={e => updateEducation(edu.id, 'degree', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder="GPA (opsiyonel)" value={edu.gpa} onChange={e => updateEducation(edu.id, 'gpa', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Başlangıç yılı' : 'Start year'} value={edu.startDate} onChange={e => updateEducation(edu.id, 'startDate', e.target.value)} />
+                      <input className={fieldClass} type="text" placeholder={isTr ? 'Bitiş yılı' : 'End year'} value={edu.endDate} onChange={e => updateEducation(edu.id, 'endDate', e.target.value)} />
+                    </div>
+                  </div>
+                ))}</div>
+              </div>
+              <div className="profile-form-footer"><span><FileText size={15} />{isTr ? 'CV bilgilerin burada saklanır.' : 'Your resume details are saved here.'}</span><button type="button" onClick={handleSaveProfile} disabled={saving} className="profile-save-button"><Save size={17} />{saving ? (isTr ? 'Kaydediliyor…' : 'Saving…') : (isTr ? 'Bilgileri kaydet' : 'Save details')}</button></div>
             </div>
           )}
 
-          {/* GÜVENLİK TABI */}
           {activeTab === 'security' && (
-            <div className="space-y-10 animate-fade-in max-w-xl">
-              
-              <form onSubmit={handleUpdateEmail} className="border-b border-gray-200 dark:border-starlight/20 pb-10">
-                <div className="mb-6">
-                  <h2 className="text-xl font-black text-gray-800 dark:text-white tracking-tight mb-4">
-                    {language === 'tr' ? 'E-Posta Değiştir' : 'Change Email'}
-                  </h2>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">{language === 'tr' ? 'Yeni E-Posta' : 'New Email'}</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Mail size={16} className="text-gray-400" /></div>
-                      <input required type="email" value={emailUpdate.newEmail} onChange={e => setEmailUpdate({...emailUpdate, newEmail: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-11 pr-4 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-sm font-medium shadow-sm" />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">{language === 'tr' ? 'Mevcut Şifre (Onay İçin)' : 'Current Password (To Confirm)'}</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Key size={16} className="text-gray-400" /></div>
-                      <input required type={showEmailPassword ? "text" : "password"} value={emailUpdate.currentPassword} onChange={e => setEmailUpdate({...emailUpdate, currentPassword: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-11 pr-12 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-sm font-medium shadow-sm" />
-                      <button type="button" onClick={() => setShowEmailPassword(!showEmailPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                        {showEmailPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="pt-4">
-                  <button type="submit" disabled={saving} className="px-8 py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-gray-500/20 text-sm uppercase tracking-wider flex items-center gap-2 disabled:opacity-70 w-full md:w-auto justify-center">
-                    <Mail size={18} strokeWidth={2.5} />
-                    {saving ? (language === 'tr' ? 'Güncelleniyor...' : 'Updating...') : (language === 'tr' ? 'E-Postayı Güncelle' : 'Update Email')}
-                  </button>
-                </div>
+            <div className="profile-form">
+              <div className="profile-panel-heading">
+                <div><p className="profile-eyebrow">{isTr ? 'HESABININ KONTROLÜ SENDE' : 'YOU ARE IN CONTROL'}</p><h2>{isTr ? 'Güvenlik ayarları' : 'Security settings'}</h2><p>{isTr ? 'E-posta ve şifre değişikliklerini buradan yönet.' : 'Manage your email and password here.'}</p></div>
+                <span className="profile-panel-illustration profile-illustration-sage"><Shield size={24} /></span>
+              </div>
+              <form onSubmit={handleUpdateEmail} className="profile-security-block">
+                <div className="profile-security-heading"><span className="profile-card-icon profile-icon-lilac"><Mail size={18} /></span><div><h3>{isTr ? 'E-posta adresini değiştir' : 'Change email address'}</h3><p>{isTr ? 'Yeni adresi doğrulamak için mevcut şifren gerekir.' : 'Your current password is required to confirm the change.'}</p></div></div>
+                <label className={fieldLabel}>{isTr ? 'Yeni e-posta' : 'New email'}</label><input required className={fieldClass} type="email" value={emailUpdate.newEmail} onChange={e => setEmailUpdate({ ...emailUpdate, newEmail: e.target.value })} placeholder="name@example.com" />
+                <label className={\`\${fieldLabel} mt-4\`}>{isTr ? 'Mevcut şifre' : 'Current password'}</label>
+                <div className="profile-password-wrap"><input required className={fieldClass} type={showEmailPassword ? 'text' : 'password'} value={emailUpdate.currentPassword} onChange={e => setEmailUpdate({ ...emailUpdate, currentPassword: e.target.value })} /><button type="button" onClick={() => setShowEmailPassword(!showEmailPassword)} aria-label={showEmailPassword ? 'Hide password' : 'Show password'}>{showEmailPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div>
+                <button type="submit" disabled={saving} className="profile-save-button mt-5"><Mail size={16} />{saving ? '…' : (isTr ? 'E-postayı güncelle' : 'Update email')}</button>
               </form>
 
-              <form onSubmit={handleUpdatePassword}>
-                <div className="mb-6">
-                  <h2 className="text-xl font-black text-gray-800 dark:text-white tracking-tight">
-                    {language === 'tr' ? 'Şifre Değiştir' : 'Change Password'}
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {language === 'tr' ? 'Hesap güvenliğiniz için güçlü bir şifre seçin.' : 'Choose a strong password for your account security.'}
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">{language === 'tr' ? 'Mevcut Şifre' : 'Current Password'}</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Key size={16} className="text-gray-400" /></div>
-                      <input required type={showCurrentPassword ? "text" : "password"} value={passwords.current} onChange={e => setPasswords({...passwords, current: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-11 pr-12 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-sm font-medium shadow-sm" />
-                      <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                        {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">{language === 'tr' ? 'Yeni Şifre' : 'New Password'}</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Lock size={16} className="text-gray-400" /></div>
-                      <input required type={showNewPassword ? "text" : "password"} value={passwords.new} onChange={e => setPasswords({...passwords, new: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-11 pr-12 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-sm font-medium shadow-sm" />
-                      <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                        {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">{language === 'tr' ? 'Yeni Şifre (Tekrar)' : 'Confirm New Password'}</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Lock size={16} className="text-gray-400" /></div>
-                      <input required type={showConfirmPassword ? "text" : "password"} value={passwords.confirm} onChange={e => setPasswords({...passwords, confirm: e.target.value})} className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-11 pr-12 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-sm font-medium shadow-sm" />
-                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <button type="submit" disabled={saving} className="px-8 py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-gray-500/20 text-sm uppercase tracking-wider flex items-center gap-2 disabled:opacity-70 w-full md:w-auto justify-center">
-                    <Shield size={18} strokeWidth={2.5} />
-                    {saving ? (language === 'tr' ? 'Güncelleniyor...' : 'Updating...') : (language === 'tr' ? 'Şifreyi Güncelle' : 'Update Password')}
-                  </button>
-                </div>
+              <form onSubmit={handleUpdatePassword} className="profile-security-block">
+                <div className="profile-security-heading"><span className="profile-card-icon profile-icon-peach"><Key size={18} /></span><div><h3>{isTr ? 'Şifreni yenile' : 'Update your password'}</h3><p>{isTr ? 'Hesabını korumak için güçlü ve benzersiz bir şifre kullan.' : 'Use a strong, unique password to protect your account.'}</p></div></div>
+                {[
+                  { key: 'current', label: isTr ? 'Mevcut şifre' : 'Current password', show: showCurrentPassword, setShow: setShowCurrentPassword },
+                  { key: 'new', label: isTr ? 'Yeni şifre' : 'New password', show: showNewPassword, setShow: setShowNewPassword },
+                  { key: 'confirm', label: isTr ? 'Yeni şifreyi doğrula' : 'Confirm new password', show: showConfirmPassword, setShow: setShowConfirmPassword }
+                ].map(item => (
+                  <div key={item.key} className="mt-4"><label className={fieldLabel}>{item.label}</label><div className="profile-password-wrap"><input required className={fieldClass} type={item.show ? 'text' : 'password'} value={passwords[item.key]} onChange={e => setPasswords({ ...passwords, [item.key]: e.target.value })} /><button type="button" onClick={() => item.setShow(!item.show)} aria-label={item.show ? 'Hide password' : 'Show password'}>{item.show ? <EyeOff size={17} /> : <Eye size={17} />}</button></div></div>
+                ))}
+                <button type="submit" disabled={saving} className="profile-save-button mt-5"><Shield size={16} />{saving ? '…' : (isTr ? 'Şifreyi güncelle' : 'Update password')}</button>
               </form>
+              <div className="profile-security-note"><Lock size={16} /><p>{isTr ? 'Güvenliğin için şifreni kimseyle paylaşma ve farklı sitelerde aynı şifreyi kullanmamaya çalış.' : 'For your security, never share your password or reuse it across websites.'}</p></div>
             </div>
           )}
-
-        </div>
+        </section>
       </div>
     </div>
   );
