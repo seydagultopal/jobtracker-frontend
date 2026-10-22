@@ -704,3 +704,139 @@ input:focus, textarea:focus, select:focus {
   .pebble-sidebar-brand { padding-inline: 17px !important; }
   .pebble-sidebar-section-label { padding-inline: 18px; }
 }
+
+
+/* Refined sidebar: quiet Notion-like structure with a restrained Pebble-orange signature */
+.pebble-sidebar {
+  width: 252px;
+  background: #fff8ef !important;
+  border-right: 1px solid rgba(111, 73, 48, .10) !important;
+  box-shadow: 5px 0 24px rgba(79, 45, 22, .045);
+}
+.pebble-sidebar-brand {
+  height: 84px !important;
+  padding-inline: 22px !important;
+  gap: 11px !important;
+  border-bottom: 1px solid rgba(111, 73, 48, .09) !important;
+}
+.pebble-sidebar-brand::after { display: none; }
+.pebble-sidebar-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  box-shadow: 0 3px 9px rgba(201, 69, 14, .12);
+}
+.pebble-sidebar-logo img, .pebble-sidebar-logo svg { max-height: 24px; }
+.pebble-sidebar-wordmark { font-size: 22px; letter-spacing: -.055em; }
+.pebble-sidebar-tagline {
+  margin-top: 4px;
+  color: #a18a78;
+  font-size: 8px;
+  letter-spacing: .13em;
+}
+.pebble-sidebar-section-label {
+  padding: 25px 22px 10px;
+  color: #a18a78;
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+.pebble-sidebar-live-dot { display: none; }
+.pebble-sidebar-nav { padding: 0 12px 12px !important; }
+.pebble-nav-link {
+  min-height: 46px;
+  gap: 10px !important;
+  padding: 7px 10px !important;
+  border-radius: 11px !important;
+  color: #6e5b4d !important;
+  transition: background-color .18s ease, color .18s ease, transform .18s ease !important;
+}
+.pebble-nav-link:hover {
+  color: #a94317 !important;
+  background: #f7ecdf !important;
+  border-color: transparent !important;
+  transform: translateX(1px) !important;
+}
+.pebble-nav-index { display: none; }
+.pebble-nav-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  border-radius: 9px;
+  color: #a45a32;
+  background: transparent;
+}
+.pebble-nav-link:nth-child(2) .pebble-nav-icon { color: #bb6a38; }
+.pebble-nav-link:nth-child(3) .pebble-nav-icon { color: #8c7a58; }
+.pebble-nav-link:nth-child(4) .pebble-nav-icon { color: #a16c8b; }
+.pebble-nav-link:nth-child(5) .pebble-nav-icon { color: #6c9078; }
+.pebble-nav-link:nth-child(6) .pebble-nav-icon { color: #7b83a5; }
+.pebble-nav-name { font-size: 13px !important; font-weight: 600; letter-spacing: 0 !important; }
+.pebble-nav-active-mark { display: none; }
+.pebble-nav-link[aria-current="page"] {
+  color: #a83c0a !important;
+  background: #ffead7 !important;
+  border-color: rgba(217, 71, 11, .09) !important;
+  box-shadow: inset 3px 0 0 #e95416 !important;
+}
+.pebble-nav-link[aria-current="page"] .pebble-nav-icon {
+  color: #d94b11;
+  background: rgba(255,255,255,.68);
+  transform: none;
+}
+.pebble-nav-link[aria-current="page"] .pebble-nav-name { font-weight: 750; }
+.pebble-sidebar-footer { padding: 12px 12px 16px; }
+.pebble-sidebar-note {
+  gap: 9px;
+  padding: 12px 10px;
+  border: 1px solid rgba(210, 135, 77, .18);
+  border-radius: 13px;
+  background: #fff1e2;
+}
+.pebble-sidebar-note-icon {
+  width: 29px;
+  height: 29px;
+  flex-basis: 29px;
+  border-radius: 9px;
+  color: #c64b17;
+  background: #ffe0c2;
+}
+.pebble-sidebar-note p { color: #67432e; font-size: 11px; font-weight: 700; }
+.pebble-sidebar-note p + p { color: #9a6c4d; font-weight: 500; }
+.pebble-sidebar-note-spark { color: rgba(217, 71, 11, .08); }
+:root.dark .pebble-sidebar {
+  background: #1d1920 !important;
+  border-right-color: rgba(224, 190, 164, .10) !important;
+  box-shadow: 5px 0 24px rgba(0,0,0,.12);
+}
+:root.dark .pebble-sidebar-brand { border-bottom-color: rgba(224, 190, 164, .09) !important; }
+:root.dark .pebble-sidebar-tagline,
+:root.dark .pebble-sidebar-section-label { color: #9e8d83; }
+:root.dark .pebble-nav-link { color: #c9bdb4 !important; }
+:root.dark .pebble-nav-link:hover {
+  color: #ffc18d !important;
+  background: #2b2426 !important;
+  border-color: transparent !important;
+}
+:root.dark .pebble-nav-icon { color: #d39a74; background: transparent; }
+:root.dark .pebble-nav-link[aria-current="page"] {
+  color: #ffc18d !important;
+  background: #38261f !important;
+  border-color: rgba(255, 145, 71, .10) !important;
+  box-shadow: inset 3px 0 0 #f07835 !important;
+}
+:root.dark .pebble-nav-link[aria-current="page"] .pebble-nav-icon {
+  color: #ffb77d;
+  background: rgba(255,255,255,.045);
+}
+:root.dark .pebble-sidebar-note {
+  background: #292126;
+  border-color: rgba(255, 165, 103, .13);
+}
+:root.dark .pebble-sidebar-note-icon { color: #ffb77d; background: #3b2924; }
+:root.dark .pebble-sidebar-note p { color: #f0dfd1; }
+:root.dark .pebble-sidebar-note p + p { color: #bfa18b; }
+@media (max-width: 760px) {
+  .pebble-sidebar { width: 232px; }
+  .pebble-sidebar-brand { padding-inline: 17px !important; }
+  .pebble-sidebar-section-label { padding-inline: 18px; }
+}
