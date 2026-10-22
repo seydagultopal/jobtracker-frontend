@@ -6,16 +6,17 @@
 
 :root {
   color-scheme: light;
-  --pebble-canvas: #fff0dc;
-  --pebble-surface: #fff6e9;
-  --pebble-surface-soft: #f7e4d2;
+  --pebble-canvas: #fff2e7;
+  --pebble-surface: #fffaf5;
+  --pebble-surface-soft: #ffe3d0;
   --pebble-ink: #272335;
   --pebble-muted: #777184;
-  --pebble-line: #edd2bd;
+  --pebble-line: #f2d1bd;
   --pebble-sage: #9caf91;
   --pebble-lavender: #b7a0f6;
+  --pebble-neon-orange: #ff5a1f;
   --pebble-peach: #ffb39a;
-  --pebble-coral: #ff806b;
+  --pebble-coral: #ff5a1f;
   --pebble-shadow: 0 18px 48px rgba(52, 39, 54, .07);
   font-family: 'DM Sans', sans-serif;
   font-synthesis: none;
@@ -46,10 +47,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse at 88% 2%, rgba(195, 160, 246, .34), transparent 32rem),
-    radial-gradient(ellipse at 2% 25%, rgba(255, 164, 118, .28), transparent 30rem),
-    radial-gradient(ellipse at 78% 86%, rgba(255, 205, 119, .24), transparent 34rem),
-    radial-gradient(ellipse at 35% 65%, rgba(190, 220, 174, .26), transparent 32rem),
+    radial-gradient(ellipse at 92% 3%, rgba(183, 160, 246, .19), transparent 30rem),
+    radial-gradient(ellipse at 0% 22%, rgba(255, 90, 31, .13), transparent 27rem),
+    radial-gradient(ellipse at 85% 92%, rgba(255, 177, 117, .19), transparent 31rem),
+    var(--pebble-canvas),
     var(--pebble-canvas);
   color: var(--pebble-ink);
   font-family: 'DM Sans', sans-serif;
@@ -92,7 +93,7 @@ aside nav a {
 }
 aside nav a[aria-current="page"] {
   color: #2e2840 !important;
-  background: linear-gradient(115deg, #dce7d6, #eee5ff 72%, #ffe5d9) !important;
+  background: linear-gradient(110deg, #ffe0cb, #ffb18d 58%, #f2dfff) !important;
   box-shadow: inset 0 0 0 1px rgba(117, 96, 150, .1), 0 5px 14px rgba(74, 53, 94, .06) !important;
 }
 :root.dark aside nav a[aria-current="page"] {
@@ -171,7 +172,7 @@ button:active { transform: translateY(1px); }
   border-color: rgba(255,255,255,.08);
 }
 .dash-welcome h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; letter-spacing: -.045em; }
-.dash-welcome h1 span { color: #8d6cb7; font-style: italic; }
+.dash-welcome h1 span { color: #f05a27; font-style: italic; }
 :root.dark .dash-welcome h1 span { color: #ffac9c; }
 .dash-eyebrow, .dash-kicker {
   display: flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800;
@@ -205,7 +206,7 @@ button:active { transform: translateY(1px); }
 .dash-kicker { color:#9a819d; }
 :root.dark .dash-kicker { color:#c1a3d7; }
 .dash-section-heading h2, .dash-calendar-card h2, .dash-reminders-card h2 { color:var(--pebble-ink); font-size:clamp(21px,2vw,27px); font-weight:600; line-height:1.25; }
-.dash-text-link { display:inline-flex; align-items:center; gap:5px; color:#8d6cb7; font-size:12px; font-weight:700; white-space:nowrap; }
+.dash-text-link { display:inline-flex; align-items:center; gap:5px; color:#f05a27; font-size:12px; font-weight:700; white-space:nowrap; }
 .dash-text-link:hover { color:var(--pebble-coral); }
 .dash-stat-card {
   min-height: 190px; position:relative; overflow:hidden; isolation:isolate;
@@ -252,7 +253,7 @@ button:active { transform: translateY(1px); }
 .dash-calendar-card { padding:23px; border-radius:28px; border:1px solid var(--pebble-line); background:var(--pebble-surface); box-shadow:var(--pebble-shadow); }
 .dash-calendar-year { color:var(--pebble-muted); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; letter-spacing:0; }
 .dash-round-link { display:grid; place-items:center; width:39px; height:39px; border-radius:50%; border:1px solid var(--pebble-line); color:var(--pebble-ink); background:var(--pebble-surface-soft); }
-.dash-round-link:hover { color:white; background:#8d6cb7; border-color:#8d6cb7; transform:rotate(5deg); }
+.dash-round-link:hover { color:white; background:#ff5a1f; border-color:#f05a27; transform:rotate(5deg); }
 .dash-day-name { padding-bottom:5px; text-align:center; color:var(--pebble-muted); font-size:10px; font-weight:800; }
 .dash-calendar-day { min-height:34px; position:relative; display:flex; align-items:center; justify-content:center; border-radius:11px; color:var(--pebble-ink); font-size:11px; font-weight:600; transition:background .2s ease,transform .2s ease; }
 .dash-calendar-day:hover { background:var(--pebble-surface-soft); transform:scale(1.06); }
