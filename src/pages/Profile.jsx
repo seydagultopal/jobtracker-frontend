@@ -1,4 +1,4 @@
-import { AlertCircle, Briefcase, Camera, CheckCircle2, Eye, EyeOff, FileText, Github, GraduationCap, Image as ImageIcon, Key, Linkedin, Lock, Mail, MapPin, Phone, Plus, Save, Shield, Trash2, User } from 'lucide-react';
+import { AlertCircle, Briefcase, Camera, CheckCircle2, Eye, EyeOff, FileText, Github, GraduationCap, Image as ImageIcon, Key, Linkedin, Lock, Mail, MapPin, Phone, Plus, Save, Shield, Sparkles, Trash2, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
@@ -226,7 +226,7 @@ const handleCoverUpload = (e) => {
         </div>
       )}
 
-      <section className="profile-cover">
+      <section className="profile-cover" style={isCustomCover ? { backgroundImage: `url(${profileData.coverPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { backgroundImage: ['linear-gradient(112deg,#f6cbd7,#ffe1c8)', 'linear-gradient(112deg,#b8dcec,#d9d0fa)', 'linear-gradient(112deg,#c8e0c3,#d4eee5)', 'linear-gradient(112deg,#d7c3f0,#f2cce4)'][COVER_OPTIONS.indexOf(profileData.coverPhoto)] || undefined }}>
         <div className="profile-cover-art" />
         <div className="profile-cover-orbit profile-cover-orbit-one" />
         <div className="profile-cover-orbit profile-cover-orbit-two" />
