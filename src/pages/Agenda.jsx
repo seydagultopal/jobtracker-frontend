@@ -108,120 +108,115 @@ export default function Agenda() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  const progress = todos.length ? Math.round((completedCount / todos.length) * 100) : 0;
+  const isToday = formatDateForApi(currentDate) === formatDateForApi(new Date());
+
   return (
-    // DÜZELTME: h-full yerine min-h-full kullanıldı. Böylece içerik arttıkça container da aşağıya doğru genişler.
-    <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none p-6 md:p-8 lg:p-10 border border-gray-100 dark:border-starlight/20 transition-colors duration-500 min-h-full flex flex-col space-y-6 animate-fade-in">
-      
-      {/* HEADER */}
-      <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-4 md:p-6 border border-gray-100 dark:border-starlight/20 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 transition-colors">
-        
-        <div className="flex items-center gap-4 bg-white dark:bg-night/50 p-2 rounded-2xl border border-gray-100 dark:border-starlight/20 shadow-sm">
-          <button onClick={() => changeDate(-1)} className="p-2 text-gray-400 hover:text-columbia hover:bg-gray-50 dark:hover:bg-twilight rounded-xl transition-all">
-            <ChevronLeft size={20} strokeWidth={3} />
-          </button>
-          <div className="flex items-center gap-2 px-2">
-            <CalendarIcon size={18} className="text-columbia" />
-            <span className="font-black text-gray-700 dark:text-gray-200 text-sm tracking-wide w-48 text-center">{displayDate}</span>
-          </div>
-          <button onClick={() => changeDate(1)} className="p-2 text-gray-400 hover:text-columbia hover:bg-gray-50 dark:hover:bg-twilight rounded-xl transition-all">
-            <ChevronRight size={20} strokeWidth={3} />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <button 
-            onClick={() => setCurrentDate(new Date())}
-            className="flex-1 md:flex-none px-6 py-3.5 bg-columbia/10 dark:bg-columbia/20 text-columbia font-black rounded-xl hover:bg-columbia hover:text-white transition-all text-xs uppercase tracking-widest text-center"
-          >
-            {language === 'tr' ? 'Bugün' : 'Today'}
-          </button>
-          <button 
-            onClick={handleSave}
-            disabled={saving || loading}
-            className="flex-1 md:flex-none px-8 py-3.5 bg-cambridge text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cambridge/20 text-xs uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-70 disabled:scale-100"
-          >
-            <Save size={16} strokeWidth={2.5} />
-            {saving ? (language === 'tr' ? 'Kaydediliyor...' : 'Saving...') : t('btnSave')}
-          </button>
-        </div>
-      </div>
-
-      {/* İÇERİK: Yapılacaklar, Ruh Hali ve Notlar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
-        
-        {/* SOL KOLON */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          
-          <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 border border-gray-100 dark:border-starlight/20 shrink-0">
-            <h3 className="text-sm font-black text-gray-800 dark:text-white tracking-widest uppercase mb-4 text-center">{t('agendaDailyMood')}</h3>
-            <div className="flex justify-center gap-4 md:gap-6">
-              {[
-                { val: 'BAD', icon: Frown, color: 'text-cherry hover:bg-cherry/10', active: 'bg-cherry/20 text-cherry border-cherry/30' },
-                { val: 'NEUTRAL', icon: Meh, color: 'text-peach hover:bg-peach/10', active: 'bg-peach/20 text-peach border-peach/30' },
-                { val: 'GOOD', icon: Smile, color: 'text-cambridge hover:bg-cambridge/10', active: 'bg-cambridge/20 text-cambridge border-cambridge/30' }
-              ].map((m) => (
-                <button
-                  key={m.val}
-                  onClick={() => setMood(m.val)}
-                  className={`p-4 rounded-2xl border-2 transition-all duration-300 shadow-sm ${
-                    mood === m.val 
-                      ? m.active 
-                      : `border-transparent bg-white dark:bg-night/50 ${m.color} opacity-60 hover:opacity-100`
-                  }`}
-                >
-                  <m.icon size={32} strokeWidth={2.5} />
-                </button>
-              ))}
+    <div className="agenda-page min-h-full flex flex-col gap-5 animate-fade-in">
+      <section className="relative overflow-hidden rounded-[2rem] border border-orange-200/70 dark:border-starlight/20 bg-[#fff8ef] dark:bg-twilight p-5 md:p-7 lg:p-8">
+        <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full border-[1.5rem] border-orange-200/35 dark:border-peach/10" aria-hidden="true" />
+        <div className="pointer-events-none absolute right-16 bottom-5 text-3xl text-orange-300/80 dark:text-peach/50 rotate-12" aria-hidden="true">✳</div>
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-orange-700/80 dark:text-peach">
+              {language === 'tr' ? 'KİŞİSEL ÇALIŞMA GÜNLÜĞÜ' : 'YOUR DAILY JOURNAL'}
+            </p>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#38291f] dark:text-gray-100">
+              {language === 'tr' ? 'Gününü tasarla.' : 'Make room for today.'}
+            </h1>
+            <p className="mt-2 max-w-xl text-sm md:text-base text-[#806b5c] dark:text-gray-400">
+              {language === 'tr' ? 'Küçük adımlar da ilerlemedir. Bugün kendine nasıl bir gün hazırlıyorsun?' : 'Small steps count. What kind of day are you making for yourself?'}
+            </p>
+            <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-[#594438] dark:text-gray-200">
+              <CalendarIcon size={17} className="text-orange-600 dark:text-peach" />
+              <span>{displayDate}</span>
+              {isToday && <span className="rounded-full bg-orange-100 dark:bg-peach/15 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-orange-800 dark:text-peach">{language === 'tr' ? 'Bugün' : 'Today'}</span>}
             </div>
           </div>
+          <div className="relative flex shrink-0 items-center gap-2 self-start md:self-auto">
+            <button onClick={() => changeDate(-1)} aria-label={language === 'tr' ? 'Önceki gün' : 'Previous day'} className="rounded-xl border border-orange-200/80 dark:border-starlight/20 bg-white/80 dark:bg-night/40 p-3 text-[#806b5c] dark:text-gray-300 transition hover:bg-white dark:hover:bg-night">
+              <ChevronLeft size={18} />
+            </button>
+            <button onClick={() => setCurrentDate(new Date())} className="rounded-xl border border-orange-200/80 dark:border-starlight/20 bg-white/80 dark:bg-night/40 px-4 py-3 text-xs font-bold text-[#594438] dark:text-gray-200 transition hover:bg-white dark:hover:bg-night">
+              {language === 'tr' ? 'Bugüne dön' : 'Jump to today'}
+            </button>
+            <button onClick={() => changeDate(1)} aria-label={language === 'tr' ? 'Sonraki gün' : 'Next day'} className="rounded-xl border border-orange-200/80 dark:border-starlight/20 bg-white/80 dark:bg-night/40 p-3 text-[#806b5c] dark:text-gray-300 transition hover:bg-white dark:hover:bg-night">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </section>
 
-          <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 border border-gray-100 dark:border-starlight/20 flex-1 flex flex-col min-h-[300px]">
-            <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight mb-6">{t('agendaTodoTitle')}</h3>
-            
-            <div className="flex items-center gap-3 mb-6 relative">
-              <input 
-                type="text" 
-                placeholder={t('agendaNewTodoPlaceholder')}
-                value={newTodo}
-                onChange={(e) => setNewTodo(e.target.value)}
-                onKeyDown={handleAddTodo}
-                className="w-full bg-white dark:bg-night/50 border border-gray-200 dark:border-starlight/30 text-gray-800 dark:text-gray-200 rounded-2xl pl-4 pr-12 py-3.5 outline-none focus:border-columbia focus:ring-2 focus:ring-columbia/20 transition-all font-medium text-sm shadow-sm"
-              />
-              <button 
-                onClick={handleAddTodo}
-                className="absolute right-2 p-2 bg-columbia text-white rounded-xl hover:bg-columbia/80 transition-all shadow-sm"
-              >
-                <Plus size={16} strokeWidth={3} />
-              </button>
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-label={language === 'tr' ? 'Günlük özet' : 'Daily summary'}>
+        <div className="rounded-2xl border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-4">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{language === 'tr' ? 'Günün planı' : 'On your list'}</p>
+          <div className="mt-2 flex items-end justify-between gap-2">
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">{todos.length}<span className="ml-1 text-sm font-medium text-gray-400">{language === 'tr' ? 'görev' : 'tasks'}</span></p>
+            <span className="rounded-xl bg-orange-50 dark:bg-peach/10 p-2 text-orange-700 dark:text-peach"><CalendarIcon size={18} /></span>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-4">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{language === 'tr' ? 'Tamamlanan' : 'Completed'}</p>
+          <div className="mt-2 flex items-end justify-between gap-2">
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">{completedCount}<span className="ml-1 text-sm font-medium text-gray-400">/ {todos.length}</span></p>
+            <span className="rounded-xl bg-green-50 dark:bg-cambridge/10 p-2 text-green-700 dark:text-cambridge"><CheckCircle2 size={18} /></span>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{language === 'tr' ? 'Günlük ilerleme' : 'Daily progress'}</p>
+            <span className="text-sm font-extrabold text-orange-700 dark:text-peach">{progress}%</span>
+          </div>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-orange-100 dark:bg-night">
+            <div className="h-full rounded-full bg-orange-500 transition-all duration-300 dark:bg-peach" style={{ width: `${progress}%` }} />
+          </div>
+          <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">{todos.length === 0 ? (language === 'tr' ? 'İlk görevini ekleyerek başla.' : 'Add your first task to begin.') : (language === 'tr' ? 'Kendi hızında ilerle.' : 'Keep moving at your own pace.')}</p>
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
+        <section className="xl:col-span-7 rounded-[1.75rem] border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-5 md:p-6 flex flex-col min-w-0">
+          <div className="flex items-start justify-between gap-3 mb-5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700 dark:text-peach">{language === 'tr' ? 'ÖNCE BUGÜN' : 'ONE THING AT A TIME'}</p>
+              <h2 className="mt-1 text-xl font-black text-gray-900 dark:text-gray-100">{t('agendaTodoTitle')}</h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{language === 'tr' ? 'Aklındakileri listele, bitirdikçe işaretle.' : 'Get it out of your head and onto your list.'}</p>
             </div>
+            <span className="rounded-2xl bg-orange-50 dark:bg-peach/10 p-3 text-orange-700 dark:text-peach"><CheckCircle2 size={21} /></span>
+          </div>
 
-            {/* DÜZELTME: Sabit bir yüksekliğe sıkışıp kaydırma çubuğu çıkarmasın diye esnek bir liste yapısına geçildi */}
+          <form className="flex items-center gap-2 mb-5" onSubmit={(e) => { e.preventDefault(); handleAddTodo(e); }}>
+            <input
+              type="text"
+              placeholder={t('agendaNewTodoPlaceholder')}
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              className="min-w-0 flex-1 rounded-xl border border-gray-200 dark:border-starlight/25 bg-[#fffaf5] dark:bg-night/40 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200/50 dark:focus:ring-peach/15"
+            />
+            <button type="submit" aria-label={language === 'tr' ? 'Görev ekle' : 'Add task'} className="shrink-0 rounded-xl bg-orange-500 px-4 py-3 text-white shadow-sm transition hover:bg-orange-600 active:scale-95">
+              <Plus size={18} strokeWidth={2.5} />
+            </button>
+          </form>
+
+          <div className="flex-1">
             {loading ? (
-              <div className="flex-1 flex justify-center items-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">
-                {t('loading')}
-              </div>
+              <div className="py-12 text-center text-xs font-bold uppercase tracking-widest text-gray-400 animate-pulse">{t('loading')}</div>
             ) : todos.length === 0 ? (
-              <div className="flex-1 flex justify-center items-center text-gray-400 dark:text-gray-500 italic text-sm text-center px-4">
-                {t('agendaNoTodo')}
+              <div className="rounded-2xl border border-dashed border-orange-200 dark:border-starlight/25 bg-orange-50/40 dark:bg-night/20 px-5 py-10 text-center">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 dark:bg-peach/10 text-orange-700 dark:text-peach"><Sparkles size={22} /></div>
+                <p className="font-bold text-gray-800 dark:text-gray-100">{language === 'tr' ? 'Bugün için yeni bir başlangıç' : 'A fresh page for today'}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('agendaNoTodo')}</p>
               </div>
             ) : (
-              <div className="flex-1 space-y-3 pb-4">
+              <div className="space-y-2">
                 {todos.map((todo, index) => (
-                  <div key={index} className="flex items-center justify-between group bg-white dark:bg-night/40 p-3.5 rounded-2xl border border-gray-100 dark:border-starlight/20 hover:border-columbia/30 transition-all shadow-sm">
-                    <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleTodo(index)}>
-                      {todo.completed ? (
-                        <CheckCircle2 size={20} className="text-cambridge shrink-0" strokeWidth={2.5} />
-                      ) : (
-                        <Circle size={20} className="text-gray-300 dark:text-gray-600 shrink-0" strokeWidth={2.5} />
-                      )}
-                      <span className={`text-sm font-bold transition-all ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}>
-                        {todo.text}
-                      </span>
-                    </div>
-                    <button 
-                      onClick={() => deleteTodo(index)}
-                      className="p-2 text-gray-300 dark:text-gray-600 hover:text-cherry bg-gray-50 dark:bg-twilight hover:bg-cherry/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                    >
+                  <div key={index} className={`group flex items-center gap-3 rounded-xl border p-3 transition-all ${todo.completed ? 'border-gray-100 bg-gray-50/70 dark:border-starlight/10 dark:bg-night/20' : 'border-gray-200/80 bg-white dark:border-starlight/20 dark:bg-night/25 hover:border-orange-200 dark:hover:border-peach/30'}`}>
+                    <button type="button" aria-label={todo.completed ? (language === 'tr' ? 'Tamamlanmadı olarak işaretle' : 'Mark incomplete') : (language === 'tr' ? 'Tamamlandı olarak işaretle' : 'Mark complete')} onClick={() => toggleTodo(index)} className="shrink-0 rounded-full text-orange-600 transition hover:scale-110 dark:text-peach">
+                      {todo.completed ? <CheckCircle2 size={21} /> : <Circle size={21} className="text-gray-300 dark:text-gray-600" />}
+                    </button>
+                    <span className={`min-w-0 flex-1 break-words text-sm font-medium ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}>{todo.text}</span>
+                    <button type="button" aria-label={language === 'tr' ? 'Görevi sil' : 'Delete task'} onClick={() => deleteTodo(index)} className="shrink-0 rounded-lg p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -229,27 +224,64 @@ export default function Agenda() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* SAĞ KOLON: Çalışma Notları & Günlük */}
-        {/* DÜZELTME: h-[500px] kaldırıldı, minimum 400px ama içerik arttıkça sonsuza kadar esneyebilen hale getirildi */}
-        <div className="lg:col-span-7 bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 md:p-8 border border-gray-100 dark:border-starlight/20 flex flex-col min-h-[400px]">
-          <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight mb-6">{t('agendaNotesTitle')}</h3>
-          
-          {loading ? (
-             <div className="flex-1 flex justify-center items-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">
-               {t('loading')}
-             </div>
-          ) : (
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t('agendaNotesPlaceholder')}
-              className="w-full flex-1 min-h-[300px] bg-white dark:bg-night/30 border border-gray-200 dark:border-starlight/20 text-gray-800 dark:text-gray-200 rounded-[2rem] p-6 outline-none focus:border-peach focus:ring-4 focus:ring-peach/10 transition-all font-medium text-sm resize-y custom-scrollbar leading-relaxed shadow-sm"
-            />
-          )}
-        </div>
+        <div className="xl:col-span-5 flex flex-col gap-5 min-w-0">
+          <section className="rounded-[1.75rem] border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-5 md:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700 dark:text-peach">{language === 'tr' ? 'KENDİNE BİR BAK' : 'CHECK IN WITH YOURSELF'}</p>
+                <h2 className="mt-1 text-lg font-black text-gray-900 dark:text-gray-100">{t('agendaDailyMood')}</h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{language === 'tr' ? 'Bugün nasıl hissediyorsun?' : 'How are you feeling today?'}</p>
+              </div>
+              <span className="text-2xl" aria-hidden="true">✳</span>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                { val: 'BAD', icon: Frown, label: language === 'tr' ? 'Zor' : 'Low', active: 'border-red-200 bg-red-50 text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-300' },
+                { val: 'NEUTRAL', icon: Meh, label: language === 'tr' ? 'Normal' : 'Okay', active: 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-300' },
+                { val: 'GOOD', icon: Smile, label: language === 'tr' ? 'İyi' : 'Good', active: 'border-green-200 bg-green-50 text-green-700 dark:border-green-400/20 dark:bg-green-500/10 dark:text-green-300' }
+              ].map((m) => (
+                <button key={m.val} type="button" onClick={() => setMood(m.val)} aria-pressed={mood === m.val} className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 transition ${mood === m.val ? m.active : 'border-gray-200 bg-gray-50/70 text-gray-400 hover:border-orange-200 hover:text-gray-600 dark:border-starlight/20 dark:bg-night/25 dark:text-gray-400'}`}>
+                  <m.icon size={23} />
+                  <span className="text-xs font-bold">{m.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
 
+          <section className="flex-1 rounded-[1.75rem] border border-gray-200/80 dark:border-starlight/20 bg-white dark:bg-twilight p-5 md:p-6 flex flex-col min-h-[260px]">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700 dark:text-peach">{language === 'tr' ? 'AKLINDA KALSIN' : 'A THOUGHT TO KEEP'}</p>
+                <h2 className="mt-1 text-lg font-black text-gray-900 dark:text-gray-100">{t('agendaNotesTitle')}</h2>
+              </div>
+              <span className="text-2xl text-orange-400 dark:text-peach" aria-hidden="true">✎</span>
+            </div>
+            {loading ? (
+              <div className="flex-1 py-10 text-center text-xs font-bold uppercase tracking-widest text-gray-400 animate-pulse">{t('loading')}</div>
+            ) : (
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t('agendaNotesPlaceholder')}
+                className="min-h-[190px] w-full flex-1 resize-y rounded-xl border border-dashed border-orange-200 dark:border-starlight/20 bg-[#fffaf5] dark:bg-night/30 p-4 text-sm leading-7 text-gray-800 dark:text-gray-200 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200/40 dark:focus:ring-peach/10"
+              />
+            )}
+            <p className="mt-3 text-[11px] text-gray-400">{language === 'tr' ? 'Notlarını kaybetmemek için gün sonunda kaydet.' : 'Save your notes before you leave the page.'}</p>
+          </section>
+        </div>
+      </div>
+
+      <div className="sticky bottom-3 z-10 flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={saving || loading}
+          className="flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-orange-900/10 transition hover:bg-orange-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Save size={16} />
+          {saving ? (language === 'tr' ? 'Kaydediliyor...' : 'Saving...') : saving === false && agendaId ? (language === 'tr' ? 'Değişiklikleri kaydet' : 'Save changes') : t('btnSave')}
+        </button>
       </div>
     </div>
   );
