@@ -1703,3 +1703,9 @@ input:focus, textarea:focus, select:focus {
   .pebble-topbar-profile { padding: 3px !important; }
   .pebble-topbar-control { padding-inline: 8px !important; }
 }
+
+
+/* Keep the topbar foreground legible after removing the old photographic header. */
+.pebble-topbar-page-icon svg { color: var(--pebble-neon-orange) !important; }
+:root.dark .pebble-topbar-page-icon svg { color: #ff9b77 !important; }
+.pebble-topbar-control span { color: var(--pebble-ink) !important; }
