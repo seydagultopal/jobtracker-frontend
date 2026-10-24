@@ -222,15 +222,6 @@ export default function Development() {
   return (
     <>
       <main className="development-page">
-        <header className="development-hero">
-          <div className="development-hero-copy">
-            <div className="development-eyebrow"><span />{tr ? 'KENDİNE YATIRIM YAP' : 'INVEST IN YOURSELF'}</div>
-            <h1>{tr ? 'Gelişim alanın' : 'Your growth space'}<span>.</span></h1>
-            <p>{tr ? 'Öğrendiklerini, ürettiklerini ve geliştirdiğin becerileri tek bir yerde takip et.' : 'Keep track of what you learn, build and get better at — all in one place.'}</p>
-          </div>
-          <div className="development-hero-mark"><GraduationCap size={38} strokeWidth={1.35} /><span>{tr ? 'HER GÜN BİR ADIM' : 'ONE STEP AT A TIME'}</span></div>
-        </header>
-
         <section className="development-stats">
           <article className="development-stat-card"><span className="development-stat-icon"><BookOpen size={19} /></span><div><span>{tr ? 'EĞİTİMLER' : 'COURSES'}</span><strong>{courses.length}</strong><small>{tr ? `${completedCourses} tamamlandı` : `${completedCourses} completed`}</small></div><span className="development-stat-decoration">01</span></article>
           <article className="development-stat-card"><span className="development-stat-icon project"><FolderGit2 size={19} /></span><div><span>{tr ? 'PROJELER' : 'PROJECTS'}</span><strong>{projects.length}</strong><small>{tr ? `${completedProjects} tamamlandı` : `${completedProjects} completed`}</small></div><span className="development-stat-decoration">02</span></article>
