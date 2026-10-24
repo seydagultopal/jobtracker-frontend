@@ -135,7 +135,6 @@ export default function Agenda() {
           <button type="button" className="agenda-today-button" onClick={() => setCurrentDate(new Date())}>{language === 'tr' ? 'Bugün' : 'Today'}</button>
           <button type="button" onClick={() => changeDate(1)} aria-label={language === 'tr' ? 'Sonraki gün' : 'Next day'}><ChevronRight size={17} /></button>
         </div>
-        <span className="agenda-header-index" aria-hidden="true">№ 01</span>
       </header>
 
       <div className="agenda-editorial-grid">
