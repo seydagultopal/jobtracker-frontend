@@ -146,12 +146,7 @@ export default function Resume() {
 
   return (
     <main className="resume-page">
-      <header className="resume-page-heading">
-        <div>
-          <div className="resume-eyebrow"><span />{labels.eyebrow}</div>
-          <h1>{labels.title}<span>.</span></h1>
-          <p>{labels.subtitle}</p>
-        </div>
+      <header className="resume-page-heading resume-page-heading-compact">
         <button type="button" className="resume-download-button" onClick={downloadPDF}><Download size={17} />{labels.download}</button>
       </header>
 
