@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search, Plus, BriefcaseBusiness, CalendarDays, TrendingUp, CircleCheck, MapPin, Trash2, Eye, X, SlidersHorizontal } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 import ApplicationFormModal from '../components/ApplicationFormModal';
 import StatusUpdateModal from '../components/StatusUpdateModal';
@@ -18,7 +17,6 @@ export default function Tracker() {
   const [statusFilter, setStatusFilter] = useState('ALL'); 
 
   const { t } = useLanguage(); 
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchApplications();
@@ -112,20 +110,6 @@ export default function Tracker() {
         console.error("Silme Hatası:", error); 
       }
     }
-  };
-
-  // YENİ: Dashboard ile uyumlu, Dengeli Kontrast Rozet Renkleri
-  const getStatusBadge = (status) => {
-    const safeStatus = status ? status.toUpperCase() : 'APPLIED';
-    const styles = {
-      'APPLIED': 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50',
-      'INTERVIEW': 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/50',
-      'ASSESSMENT': 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50',
-      'VIDEO_INTERVIEW': 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50',
-      'OFFER': 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50',
-      'REJECTED': 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50'
-    };
-    return styles[safeStatus] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
   };
 
   const statusOptions = [
