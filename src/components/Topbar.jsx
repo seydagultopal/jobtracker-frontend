@@ -88,49 +88,49 @@ export default function Topbar() {
   const isCustomCover = activeCover && !activeCover.startsWith('bg-');
 
   return (
-    <header className={`relative shadow-lg h-20 px-8 flex justify-between items-center transition-all duration-700 z-40 shrink-0 ${!isCustomCover ? activeCover : 'bg-gray-800'}`}>
+    <header className="pebble-topbar relative h-[76px] px-8 flex justify-between items-center transition-all duration-300 z-40 shrink-0">
       
       {isCustomCover && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="pebble-topbar-cover absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div 
-            className="absolute inset-0 opacity-80 scale-125" 
+            className="absolute inset-0 opacity-15 scale-110" 
             style={{ backgroundImage: `url(${activeCover})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(30px)' }}
           ></div>
-          <div className="absolute inset-0 bg-black/20 dark:bg-black/50"></div>
+          <div className="absolute inset-0 bg-transparent"></div>
         </div>
       )}
 
-      <div className="relative z-10 flex items-center gap-3">
-        <div className="w-10 h-10 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 shadow-sm">
+      <div className="pebble-topbar-heading relative z-10 flex items-center gap-3">
+        <div className="pebble-topbar-page-icon w-10 h-10 rounded-xl flex items-center justify-center">
           <PageIcon size={20} className="text-white" strokeWidth={2.5} />
         </div>
-        <h1 className="text-2xl font-black text-white tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{getPageInfo().title}</h1>
+        <h1 className="pebble-topbar-title text-2xl font-black tracking-tight">{getPageInfo().title}</h1>
       </div>
       
-      <div className="relative z-10 flex items-center gap-4">
-        <button onClick={toggleTheme} className={`relative w-14 h-7 rounded-full transition-colors duration-300 ease-in-out flex items-center px-1 shadow-inner ${isDarkMode ? 'bg-black/40' : 'bg-white/30'}`}>
+      <div className="pebble-topbar-actions relative z-10 flex items-center gap-3">
+        <button onClick={toggleTheme} className={`pebble-theme-toggle relative w-14 h-7 rounded-full transition-colors duration-300 ease-in-out flex items-center px-1 ${isDarkMode ? 'is-dark' : ''}`}>
           <div className={`w-5 h-5 rounded-full shadow-sm transform transition-transform duration-300 ease-in-out flex items-center justify-center ${isDarkMode ? 'translate-x-7 bg-starlight text-peach' : 'translate-x-0 bg-white text-orange-400'}`}>
             {isDarkMode ? <Moon size={12} strokeWidth={3} /> : <Sun size={12} strokeWidth={3} />}
           </div>
         </button>
 
-        <button onClick={toggleLanguage} className="group flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-[1.25rem] transition-all duration-300 border border-white/20 hover:scale-105 active:scale-95 backdrop-blur-sm">
+        <button onClick={toggleLanguage} className="pebble-topbar-control group flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95">
           <Globe size={14} strokeWidth={2.5} className="transition-transform duration-500 group-hover:rotate-180" />
           <span className="text-[10px] font-black tracking-widest">{language === 'tr' ? 'EN' : 'TR'}</span> 
         </button>
 
         <div className="relative">
-          <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-3 p-1.5 pr-4 bg-white/10 hover:bg-white/20 rounded-[1.25rem] transition-all border border-white/10 hover:border-white/30 backdrop-blur-sm">
+          <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="pebble-topbar-profile flex items-center gap-3 p-1.5 pr-4 rounded-full transition-all">
             {userData.photo ? (
               <img src={userData.photo} alt="Profile" className="w-10 h-10 rounded-xl object-cover shadow-sm border border-white/20" />
             ) : (
-              <div className="w-10 h-10 bg-white text-gray-800 rounded-xl flex items-center justify-center font-black text-lg shadow-sm">
+              <div className="pebble-topbar-avatar w-10 h-10 rounded-full flex items-center justify-center font-black text-lg">
                 {userData.name ? userData.name.charAt(0).toUpperCase() : (userData.email ? userData.email.charAt(0).toUpperCase() : 'U')}
               </div>
             )}
             <div className="text-left hidden md:block">
-              <span className="block text-xs font-black text-white drop-shadow-md">{userData.name || (userData.email ? userData.email.split('@')[0] : t('defaultUser'))}</span>
-              <span className="block text-[9px] font-bold text-white/90 uppercase tracking-widest mt-0.5">{t('myAccount')}</span>
+              <span className="pebble-topbar-user block text-xs font-black">{userData.name || (userData.email ? userData.email.split('@')[0] : t('defaultUser'))}</span>
+              <span className="pebble-topbar-account block text-[9px] font-bold uppercase tracking-widest mt-0.5">{t('myAccount')}</span>
             </div>
           </button>
 
