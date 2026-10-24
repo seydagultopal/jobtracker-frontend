@@ -162,7 +162,7 @@ export default function Tracker() {
         </section>
 
         <section className="tracker-list-panel">
-          <div className="tracker-list-heading"><div><span className="tracker-section-kicker">{isTr ? 'KARİYER YOLCULUĞUN' : 'YOUR NEXT CHAPTER'}</span><h2>{isTr ? 'Başvuruların' : 'Your applications'}</h2><p>{t('dashSubtitle')}</p></div><span className="tracker-result-count">{filteredApplications.length} <small>{t('colCompany')}</small></span></div>
+          <div className="tracker-list-heading tracker-list-heading-compact"><span className="tracker-result-count">{filteredApplications.length} <small>{t('colCompany')}</small></span></div>
           <div className="tracker-toolbar">
             <label className="tracker-search"><Search size={17}/><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t('colCompany') + ', ' + t('colPosition') + '...'} />{searchTerm && <button type="button" onClick={() => setSearchTerm('')} aria-label={isTr ? "Aramayı temizle" : "Clear search"}><X size={14}/></button>}</label>
             <label className="tracker-status-filter"><SlidersHorizontal size={15}/><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">{t('colStage')} · {applications.length}</option>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label} · {countByStatus(option.value)}</option>)}</select></label>
