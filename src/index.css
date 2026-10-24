@@ -1419,3 +1419,58 @@ input:focus, textarea:focus, select:focus {
 .development-toolbar-compact { justify-content: flex-end; }
 .development-toolbar-compact .development-search { width: min(100%, 460px); }
 .tracker-list-heading-compact { justify-content: flex-end; margin-bottom: 12px; }
+
+/* Remove the vertical space left by page titles now shown in the Topbar. */
+.agenda-editorial-header {
+  padding: 0 0 14px;
+}
+.agenda-editorial-grid {
+  padding-top: 16px;
+}
+.calendar-page {
+  padding-top: 0;
+}
+.calendar-hero-compact {
+  padding: 0;
+  margin: 0;
+}
+.development-page {
+  gap: 18px;
+}
+.tracker-page {
+  gap: 16px;
+}
+.tracker-hero-compact {
+  padding: 0;
+  margin: 0;
+}
+.tracker-list-heading-compact {
+  padding: 13px 25px 10px;
+  margin-bottom: 0;
+}
+.resume-page {
+  padding-top: 0;
+}
+.resume-page-heading-compact {
+  margin: 0 auto .75rem;
+  padding: 0;
+  min-height: 0;
+}
+@media (max-width: 640px) {
+  .agenda-editorial-header {
+    padding-bottom: 10px;
+  }
+  .agenda-editorial-grid {
+    padding-top: 12px;
+  }
+  .calendar-hero-compact {
+    padding: 0;
+  }
+  .tracker-list-heading-compact {
+    padding: 10px 15px 8px;
+  }
+  .resume-page-heading-compact {
+    margin-bottom: .5rem;
+  }
+}
+
