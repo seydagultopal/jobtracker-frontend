@@ -1,4 +1,4 @@
-import { BookOpen, Code2, Cpu, Database, Edit2, FolderGit2, LayoutTemplate, Plus, Server, Target, Trash2, TrendingUp } from 'lucide-react';
+import { BookOpen, Code2, Cpu, Database, Edit2, FolderGit2, LayoutTemplate, Plus, Search, Server, Target, Trash2, TrendingUp, GraduationCap, CircleCheck, ArrowUpRight, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CourseFormModal from '../components/CourseFormModal';
 import ProjectFormModal from '../components/ProjectFormModal';
@@ -13,6 +13,7 @@ export default function Development() {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Çizelge State'leri
   const [chartData, setChartData] = useState([0, 0, 0, 0, 0, 0, 0]); 
@@ -207,308 +208,75 @@ export default function Development() {
     return 'text-orange-500 dark:text-orange-400';
   };
 
+  const locale = language === 'tr' ? 'tr-TR' : 'en-US';
+  const query = searchTerm.trim().toLocaleLowerCase(locale);
+  const filteredCourses = courses.filter((item) => `${item.title || ''} ${item.platform || ''}`.toLocaleLowerCase(locale).includes(query));
+  const filteredProjects = projects.filter((item) => `${item.title || ''} ${item.tech || ''} ${item.status || ''}`.toLocaleLowerCase(locale).includes(query));
+  const filteredSkills = skills.filter((item) => `${item.name || ''}`.toLocaleLowerCase(locale).includes(query));
+  const completedCourses = courses.filter((item) => item.status === 'COMPLETED' || Number(item.progress) >= 100).length;
+  const completedProjects = projects.filter((item) => ['COMPLETED', 'Tamamlandı'].includes(item.status)).length;
+  const averageSkillLevel = skills.length ? Math.round(skills.reduce((sum, item) => sum + (Number(item.level) || 0), 0) / skills.length) : 0;
+  const weeklyAverage = chartData.length ? Math.round(chartData.reduce((sum, value) => sum + value, 0) / chartData.length) : 0;
+  const tr = language === 'tr';
+
   return (
     <>
-      <div className="space-y-6">
-        <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none p-6 md:p-8 lg:p-10 border border-gray-100 dark:border-starlight/20 transition-colors duration-500 space-y-8">
-          
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-            
-            {/* TABLO 1: Eğitimler */}
-            <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
-              <div className="p-6 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-blue-100 dark:bg-blue-900/40 rounded-xl text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50">
-                    <BookOpen size={20} strokeWidth={2.5} />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight">{t('devInProgress')}</h3>
-                </div>
-                <button 
-                  onClick={() => setShowCourseModal(true)}
-                  className="px-4 py-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 font-black rounded-xl hover:bg-blue-500 hover:text-white transition-all text-[10px] uppercase tracking-widest flex items-center gap-1.5"
-                >
-                  <Plus size={14} strokeWidth={3} /> {t('devAddCourse')}
-                </button>
-              </div>
-              
-              <div className="overflow-x-auto min-h-[200px]">
-                {loading ? (
-                  <div className="p-10 text-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">Yükleniyor...</div>
-                ) : courses.length === 0 ? (
-                  <div className="p-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">Henüz eğitim eklenmemiş.</div>
-                ) : (
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-gray-100/50 dark:bg-night/40 border-y border-gray-100 dark:border-starlight/20">
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Eğitim</th>
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">İlerleme</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-starlight/20">
-                      {courses.map((course) => (
-                        <tr key={course.id} className="hover:bg-gray-100/50 dark:hover:bg-night/30 transition-all group">
-                          <td className="px-6 py-5">
-                            <span className="block font-bold text-sm text-gray-700 dark:text-gray-200">{course.title}</span>
-                            <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{course.platform}</span>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-3 flex-1">
-                                <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[60px]">
-                                  <div 
-                                    className={`h-full rounded-full transition-all duration-1000 ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
-                                    style={{ width: `${course.progress || 0}%` }}
-                                  />
-                                </div>
-                                <span className={`text-xs font-black ${course.progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
-                                  %{course.progress || 0}
-                                </span>
-                              </div>
-                              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
-                                <button onClick={() => { setEditingCourse(course); setShowCourseModal(true); }} className="p-1.5 text-gray-400 hover:text-columbia transition-colors rounded-lg hover:bg-columbia/10">
-                                  <Edit2 size={14} strokeWidth={2.5} />
-                                </button>
-                                <button onClick={() => handleDeleteCourse(course.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
-                                  <Trash2 size={14} strokeWidth={2.5} />
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
-
-            {/* TABLO 2: Projeler */}
-            <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
-              <div className="p-6 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-purple-100 dark:bg-purple-900/40 rounded-xl text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50">
-                    <FolderGit2 size={20} strokeWidth={2.5} />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight">{t('devProjects')}</h3>
-                </div>
-                <button 
-                  onClick={() => setShowProjectModal(true)}
-                  className="px-4 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 font-black rounded-xl hover:bg-purple-500 hover:text-white transition-all text-[10px] uppercase tracking-widest flex items-center gap-1.5"
-                >
-                  <Plus size={14} strokeWidth={3} /> {t('devAddProject')}
-                </button>
-              </div>
-              
-              <div className="overflow-x-auto min-h-[200px]">
-                {loading ? (
-                  <div className="p-10 text-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">Yükleniyor...</div>
-                ) : projects.length === 0 ? (
-                  <div className="p-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">Henüz proje eklenmemiş.</div>
-                ) : (
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-gray-100/50 dark:bg-night/40 border-y border-gray-100 dark:border-starlight/20">
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Proje</th>
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Durum</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-starlight/20">
-                      {projects.map((project) => (
-                        <tr key={project.id} className="hover:bg-gray-100/50 dark:hover:bg-night/30 transition-all group">
-                          <td className="px-6 py-5">
-                            <span className="block font-bold text-sm text-gray-700 dark:text-gray-200">{project.title}</span>
-                            <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{project.tech}</span>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center justify-between gap-4">
-                              <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider inline-flex items-center ${
-                                project.status === 'Tamamlandı' || project.status === 'COMPLETED'
-                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50' 
-                                  : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50'
-                              }`}>
-                                {project.status || 'Devam Ediyor'}
-                              </span>
-                              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
-                                <button onClick={() => { setEditingProject(project); setShowProjectModal(true); }} className="p-1.5 text-gray-400 hover:text-columbia transition-colors rounded-lg hover:bg-columbia/10">
-                                  <Edit2 size={14} strokeWidth={2.5} />
-                                </button>
-                                <button onClick={() => handleDeleteProject(project.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
-                                  <Trash2 size={14} strokeWidth={2.5} />
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
-
-            {/* TABLO 3: Yetenekler */}
-            <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-starlight/20">
-              <div className="p-6 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-orange-100 dark:bg-orange-900/40 rounded-xl text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50">
-                    <Target size={20} strokeWidth={2.5} />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-800 dark:text-white tracking-tight">{t('devTargetSkills')}</h3>
-                </div>
-                <button 
-                  onClick={() => setShowSkillModal(true)}
-                  className="px-4 py-2 bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/50 font-black rounded-xl hover:bg-orange-500 hover:text-white transition-all text-[10px] uppercase tracking-widest flex items-center gap-1.5"
-                >
-                  <Plus size={14} strokeWidth={3} /> {t('devAddSkill')}
-                </button>
-              </div>
-              
-              <div className="overflow-x-auto min-h-[200px]">
-                {loading ? (
-                  <div className="p-10 text-center text-gray-400 font-bold text-xs uppercase tracking-widest animate-pulse">Yükleniyor...</div>
-                ) : skills.length === 0 ? (
-                  <div className="p-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">Henüz yetenek eklenmemiş.</div>
-                ) : (
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-gray-100/50 dark:bg-night/40 border-y border-gray-100 dark:border-starlight/20">
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Yetenek</th>
-                        <th className="px-6 py-4 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Seviye</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-starlight/20">
-                      {skills.map((skill) => {
-                        const IconComponent = getSkillIcon(skill.name);
-                        const colorClass = getSkillColor(skill.level);
-                        return (
-                          <tr key={skill.id} className="hover:bg-gray-100/50 dark:hover:bg-night/30 transition-all group">
-                            <td className="px-6 py-5">
-                              <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg bg-white dark:bg-night/50 border border-gray-100 dark:border-starlight/30 ${colorClass}`}>
-                                  <IconComponent size={16} strokeWidth={2.5} />
-                                </div>
-                                <span className="font-bold text-sm text-gray-700 dark:text-gray-300">{skill.name}</span>
-                              </div>
-                            </td>
-                            {/* DÜZELTİLEN ALAN: Taşan ve hizası bozulan Yetenekler buton kısmı flex yapısıyla sabitlendi */}
-                            <td className="px-6 py-5">
-                              <div className="flex items-center justify-between gap-4 w-full">
-                                <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <div className="flex-1 h-2 bg-gray-200 dark:bg-starlight/30 rounded-full overflow-hidden min-w-[40px]">
-                                    <div 
-                                      className="h-full rounded-full transition-all duration-1000"
-                                      style={{ 
-                                        width: `${skill.level || 0}%`, 
-                                        backgroundColor: skill.level > 75 ? '#10b981' : skill.level > 40 ? '#3b82f6' : '#f97316'
-                                      }}
-                                    />
-                                  </div>
-                                  <span className="text-xs font-black text-gray-500 dark:text-gray-400 shrink-0">%{skill.level || 0}</span>
-                                </div>
-                                <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity shrink-0">
-                                  <button onClick={() => { setEditingSkill(skill); setShowSkillModal(true); }} className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors rounded-lg hover:bg-orange-500/10">
-                                    <Edit2 size={14} strokeWidth={2.5} />
-                                  </button>
-                                  <button onClick={() => handleDeleteSkill(skill.id)} className="p-1.5 text-gray-400 hover:text-cherry transition-colors rounded-lg hover:bg-cherry/10">
-                                    <Trash2 size={14} strokeWidth={2.5} />
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
-
+      <main className="development-page">
+        <header className="development-hero">
+          <div className="development-hero-copy">
+            <div className="development-eyebrow"><span />{tr ? 'KENDİNE YATIRIM YAP' : 'INVEST IN YOURSELF'}</div>
+            <h1>{tr ? 'Gelişim alanın' : 'Your growth space'}<span>.</span></h1>
+            <p>{tr ? 'Öğrendiklerini, ürettiklerini ve geliştirdiğin becerileri tek bir yerde takip et.' : 'Keep track of what you learn, build and get better at — all in one place.'}</p>
           </div>
+          <div className="development-hero-mark"><GraduationCap size={38} strokeWidth={1.35} /><span>{tr ? 'HER GÜN BİR ADIM' : 'ONE STEP AT A TIME'}</span></div>
+        </header>
 
-          {/* GELİŞİM ÇİZELGESİ */}
-          <div className="bg-gray-50/50 dark:bg-night/20 rounded-[2rem] p-6 md:p-8 border border-gray-100 dark:border-starlight/20">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
-                <TrendingUp size={24} strokeWidth={2.5} />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-gray-800 dark:text-white tracking-tight">{t('devChartTitle')}</h3>
-                <p className="text-sm font-medium text-gray-400 mt-1">{t('devChartSubtitle')}</p>
-              </div>
-            </div>
+        <section className="development-stats">
+          <article className="development-stat-card"><span className="development-stat-icon"><BookOpen size={19} /></span><div><span>{tr ? 'EĞİTİMLER' : 'COURSES'}</span><strong>{courses.length}</strong><small>{tr ? `${completedCourses} tamamlandı` : `${completedCourses} completed`}</small></div><span className="development-stat-decoration">01</span></article>
+          <article className="development-stat-card"><span className="development-stat-icon project"><FolderGit2 size={19} /></span><div><span>{tr ? 'PROJELER' : 'PROJECTS'}</span><strong>{projects.length}</strong><small>{tr ? `${completedProjects} tamamlandı` : `${completedProjects} completed`}</small></div><span className="development-stat-decoration">02</span></article>
+          <article className="development-stat-card"><span className="development-stat-icon skill"><Target size={19} /></span><div><span>{tr ? 'YETENEKLER' : 'SKILLS'}</span><strong>{skills.length}</strong><small>{tr ? 'Takip edilen beceri' : 'Tracked skills'}</small></div><span className="development-stat-decoration">03</span></article>
+          <article className="development-stat-card"><span className="development-stat-icon activity"><TrendingUp size={19} /></span><div><span>{tr ? 'HAFTALIK ORTALAMA' : 'WEEKLY AVERAGE'}</span><strong>{weeklyAverage}<small>%</small></strong><small>{tr ? 'Ajanda etkinliklerinden' : 'From agenda activity'}</small></div><span className="development-stat-decoration">04</span></article>
+        </section>
 
-            <div className="h-64 flex items-end justify-between gap-2 md:gap-4 pt-10 border-b border-gray-200 dark:border-starlight/30 pb-4">
-              {chartData.map((val, i) => (
-                <div key={i} className="relative flex-1 flex justify-center group h-full items-end">
-                  <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 dark:bg-black text-white text-xs font-bold py-1.5 px-3 rounded-xl z-10 pointer-events-none shadow-lg">
-                    % {val}
-                  </div>
-                  <div className="w-full max-w-[3rem] bg-emerald-100 dark:bg-emerald-900/20 rounded-t-xl relative overflow-hidden h-full group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/40 transition-colors">
-                    <div 
-                      className="absolute bottom-0 w-full bg-emerald-500 rounded-t-xl transition-all duration-1000" 
-                      style={{ height: `${val}%` }} 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="flex justify-between gap-2 md:gap-4 mt-4 px-2">
-              {chartLabels.map((day, idx) => (
-                <div key={idx} className="flex-1 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  {day}
-                </div>
-              ))}
-            </div>
-          </div>
+        <section className="development-toolbar">
+          <div><span className="development-section-kicker">{tr ? 'KİŞİSEL TAKİP' : 'PERSONAL TRACKING'}</span><h2>{tr ? 'Neler üzerinde çalışıyorsun?' : 'What are you working on?'}</h2></div>
+          <label className="development-search"><Search size={16} /><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={tr ? 'Eğitim, proje veya yetenek ara...' : 'Search courses, projects or skills...'} /><span>{filteredCourses.length + filteredProjects.length + filteredSkills.length}</span>{searchTerm && <button type="button" aria-label={tr ? 'Aramayı temizle' : 'Clear search'} onClick={() => setSearchTerm('')}><X size={14} /></button>}</label>
+        </section>
 
-        </div>
-      </div>
-
-      {/* Modallar */}
-      <CourseFormModal 
-        show={showCourseModal} 
-        onClose={() => { setShowCourseModal(false); setEditingCourse(null); }} 
-        onSubmit={handleAddCourse}
-        initialData={editingCourse}
-      />
-      
-      <ProjectFormModal 
-        show={showProjectModal} 
-        onClose={() => { setShowProjectModal(false); setEditingProject(null); }} 
-        onSubmit={handleAddProject}
-        initialData={editingProject}
-      />
-      
-      <SkillFormModal 
-        show={showSkillModal} 
-        onClose={() => { setShowSkillModal(false); setEditingSkill(null); }} 
-        onSubmit={handleAddSkill}
-        initialData={editingSkill}
-      />
-
-      {/* SİLME MODALI */}
-      {deleteConfirm.show && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm transition-all duration-500">
-          <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm text-center border border-white/50 dark:border-starlight/50 animate-fade-in">
-            <div className="w-16 h-16 bg-cherry/10 text-cherry rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <Trash2 size={32} strokeWidth={2.5} />
+        <section className="development-content-grid">
+          <article className="development-collection">
+            <header className="development-collection-head"><span className="development-collection-icon course"><BookOpen size={19} /></span><div className="development-collection-title"><h3>{t('devInProgress')}</h3><p>{tr ? 'Öğrenme yolculuğundaki eğitimler' : 'Courses on your learning path'}</p></div><span className="development-count">{courses.length}</span><button type="button" className="development-add-button" onClick={() => { setEditingCourse(null); setShowCourseModal(true); }}><Plus size={15} />{t('devAddCourse')}</button></header>
+            <div className="development-collection-body">
+              {loading ? <div className="development-loading">{tr ? 'Gelişim verileri yükleniyor...' : 'Loading development data...'}</div> : filteredCourses.length === 0 ? <div className="development-empty"><BookOpen size={24} /><strong>{searchTerm ? (tr ? 'Eşleşen eğitim yok' : 'No matching courses') : (tr ? 'Öğrenmeye yer aç' : 'Make room to learn')}</strong><p>{searchTerm ? (tr ? 'Arama kelimeni değiştirebilirsin.' : 'Try another search term.') : (tr ? 'Takip etmek istediğin bir eğitimi ekleyerek başla.' : 'Add a course to start tracking your progress.')}</p>{!searchTerm && <button type="button" onClick={() => { setEditingCourse(null); setShowCourseModal(true); }}><Plus size={14} />{t('devAddCourse')}</button>}</div> : filteredCourses.map((course) => { const progress = Math.max(0, Math.min(100, Number(course.progress) || 0)); const done = course.status === 'COMPLETED' || progress >= 100; return <div key={course.id} className="development-item"><div className="development-item-symbol course"><BookOpen size={17} /></div><div className="development-item-main"><div className="development-item-title-row"><h4>{course.title}</h4><span className={`development-status ${done ? 'completed' : 'in-progress'}`}>{done ? (tr ? 'Tamamlandı' : 'Completed') : (tr ? 'Devam ediyor' : 'In progress')}</span></div><p>{course.platform || (tr ? 'Platform belirtilmedi' : 'Platform not specified')}</p><div className="development-progress-row"><div className="development-progress-track"><span style={{ width: `${progress}%` }} /></div><strong>{progress}%</strong></div></div><div className="development-item-actions"><button type="button" aria-label={tr ? 'Eğitimi düzenle' : 'Edit course'} onClick={() => { setEditingCourse(course); setShowCourseModal(true); }}><Edit2 size={15} /></button><button type="button" aria-label={tr ? 'Eğitimi sil' : 'Delete course'} onClick={() => handleDeleteCourse(course.id)}><Trash2 size={15} /></button></div></div>; })}
             </div>
-            <h3 className="text-xl font-black text-gray-800 dark:text-white tracking-tight mb-2">Emin misin?</h3>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">{t('confirmDelete')}</p>
-            
-            <div className="flex gap-4">
-              <button onClick={() => setDeleteConfirm({ show: false, id: null, type: null })} className="flex-1 py-3.5 px-4 bg-gray-100 dark:bg-night text-gray-600 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-night/80 transition-all text-sm uppercase tracking-wider">
-                {t('btnCancel')}
-              </button>
-              <button onClick={executeDelete} className="flex-1 py-3.5 px-4 bg-cherry text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cherry/20 text-sm uppercase tracking-wider">
-                Sil
-              </button>
+          </article>
+
+          <article className="development-collection">
+            <header className="development-collection-head"><span className="development-collection-icon project"><FolderGit2 size={19} /></span><div className="development-collection-title"><h3>{t('devProjects')}</h3><p>{tr ? 'Fikirden çalışan ürüne' : 'From idea to working product'}</p></div><span className="development-count">{projects.length}</span><button type="button" className="development-add-button" onClick={() => { setEditingProject(null); setShowProjectModal(true); }}><Plus size={15} />{t('devAddProject')}</button></header>
+            <div className="development-collection-body">
+              {loading ? <div className="development-loading">{tr ? 'Projeler yükleniyor...' : 'Loading projects...'}</div> : filteredProjects.length === 0 ? <div className="development-empty"><FolderGit2 size={24} /><strong>{searchTerm ? (tr ? 'Eşleşen proje yok' : 'No matching projects') : (tr ? 'Bir fikirle başla' : 'Start with an idea')}</strong><p>{searchTerm ? (tr ? 'Arama kelimeni değiştirebilirsin.' : 'Try another search term.') : (tr ? 'Üzerinde çalıştığın projeleri burada takip et.' : 'Track the projects you are building here.')}</p>{!searchTerm && <button type="button" onClick={() => { setEditingProject(null); setShowProjectModal(true); }}><Plus size={14} />{t('devAddProject')}</button>}</div> : filteredProjects.map((project) => { const done = ['COMPLETED', 'Tamamlandı'].includes(project.status); return <div key={project.id} className="development-item"><div className="development-item-symbol project"><Code2 size={17} /></div><div className="development-item-main"><div className="development-item-title-row"><h4>{project.title}</h4><span className={`development-status ${done ? 'completed' : 'in-progress'}`}>{done ? (tr ? 'Tamamlandı' : 'Completed') : (project.status || (tr ? 'Devam ediyor' : 'In progress'))}</span></div><p>{project.tech || (tr ? 'Teknoloji belirtilmedi' : 'Tech stack not specified')}</p></div><div className="development-item-actions"><button type="button" aria-label={tr ? 'Projeyi düzenle' : 'Edit project'} onClick={() => { setEditingProject(project); setShowProjectModal(true); }}><Edit2 size={15} /></button><button type="button" aria-label={tr ? 'Projeyi sil' : 'Delete project'} onClick={() => handleDeleteProject(project.id)}><Trash2 size={15} /></button></div></div>; })}
             </div>
-          </div>
-        </div>
-      )}
+          </article>
+
+          <article className="development-collection development-skills-collection">
+            <header className="development-collection-head"><span className="development-collection-icon skill"><Target size={19} /></span><div className="development-collection-title"><h3>{t('devTargetSkills')}</h3><p>{tr ? 'Becerilerini zamanla güçlendir' : 'Strengthen your skills over time'}</p></div><span className="development-count">{skills.length}</span><button type="button" className="development-add-button" onClick={() => { setEditingSkill(null); setShowSkillModal(true); }}><Plus size={15} />{t('devAddSkill')}</button></header>
+            <div className="development-collection-body development-skills-body">
+              {loading ? <div className="development-loading">{tr ? 'Yetenekler yükleniyor...' : 'Loading skills...'}</div> : filteredSkills.length === 0 ? <div className="development-empty"><Target size={24} /><strong>{searchTerm ? (tr ? 'Eşleşen yetenek yok' : 'No matching skills') : (tr ? 'Becerilerini görünür kıl' : 'Make your skills visible')}</strong><p>{searchTerm ? (tr ? 'Arama kelimeni değiştirebilirsin.' : 'Try another search term.') : (tr ? 'Seviyesini takip etmek istediğin bir yetenek ekle.' : 'Add a skill to track your current level.')}</p>{!searchTerm && <button type="button" onClick={() => { setEditingSkill(null); setShowSkillModal(true); }}><Plus size={14} />{t('devAddSkill')}</button>}</div> : filteredSkills.map((skill) => { const IconComponent = getSkillIcon(skill.name); const level = Math.max(0, Math.min(100, Number(skill.level) || 0)); return <div key={skill.id} className="development-skill-item"><span className="development-item-symbol skill"><IconComponent size={17} /></span><div className="development-skill-main"><div className="development-item-title-row"><h4>{skill.name}</h4><strong>{level}%</strong></div><div className="development-progress-track"><span style={{ width: `${level}%` }} /></div><span className="development-skill-caption">{level >= 76 ? (tr ? 'İyi seviyede' : 'Strong') : level >= 41 ? (tr ? 'Gelişiyor' : 'Developing') : (tr ? 'Odak alanı' : 'Focus area')}</span></div><div className="development-item-actions"><button type="button" aria-label={tr ? 'Yeteneği düzenle' : 'Edit skill'} onClick={() => { setEditingSkill(skill); setShowSkillModal(true); }}><Edit2 size={15} /></button><button type="button" aria-label={tr ? 'Yeteneği sil' : 'Delete skill'} onClick={() => handleDeleteSkill(skill.id)}><Trash2 size={15} /></button></div></div>; })}
+            </div>
+            {!loading && skills.length > 0 && <footer className="development-skills-footer"><span>{tr ? 'Ortalama yetenek seviyesi' : 'Average skill level'}</span><strong>{averageSkillLevel}%</strong></footer>}
+          </article>
+
+          <article className="development-activity-panel">
+            <header className="development-activity-head"><span className="development-collection-icon activity"><TrendingUp size={19} /></span><div><h3>{t('devChartTitle')}</h3><p>{t('devChartSubtitle')}</p></div><span className="development-activity-average">{weeklyAverage}% <small>{tr ? 'ortalama' : 'average'}</small></span></header>
+            <div className="development-chart" role="img" aria-label={tr ? 'Son yedi günün ajanda etkinliği grafiği' : 'Agenda activity chart for the last seven days'}>{chartData.map((value, index) => <div className="development-chart-column" key={`${chartLabels[index]}-${index}`}><span className="development-chart-value">{value}%</span><div className="development-chart-track"><span style={{ height: `${Math.max(0, Math.min(100, value))}%` }} /></div><span className="development-chart-label">{chartLabels[index]}</span></div>)}</div>
+            <div className="development-chart-note"><CircleCheck size={15} />{tr ? 'Grafik, ajandandaki tamamlanan görevler, notlar ve ruh hâli kayıtlarından hesaplanır.' : 'Calculated from completed tasks, notes and mood entries in your agenda.'}<ArrowUpRight size={15} /></div>
+          </article>
+        </section>
+      </main>
+      <CourseFormModal show={showCourseModal} onClose={() => { setShowCourseModal(false); setEditingCourse(null); }} onSubmit={handleAddCourse} initialData={editingCourse} />
+      <ProjectFormModal show={showProjectModal} onClose={() => { setShowProjectModal(false); setEditingProject(null); }} onSubmit={handleAddProject} initialData={editingProject} />
+      <SkillFormModal show={showSkillModal} onClose={() => { setShowSkillModal(false); setEditingSkill(null); }} onSubmit={handleAddSkill} initialData={editingSkill} />
+      {deleteConfirm.show && <div className="development-delete-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setDeleteConfirm({ show: false, id: null, type: null }); }}><section className="development-delete-modal" role="dialog" aria-modal="true" aria-labelledby="development-delete-title"><span className="development-delete-icon"><Trash2 size={24} /></span><h3 id="development-delete-title">{tr ? 'Silmek istediğine emin misin?' : 'Are you sure you want to delete this?'}</h3><p>{t('confirmDelete')}</p><div><button type="button" onClick={() => setDeleteConfirm({ show: false, id: null, type: null })}>{t('btnCancel')}</button><button type="button" onClick={executeDelete}>{tr ? 'Sil' : 'Delete'}</button></div></section></div>}
     </>
   );
 }
