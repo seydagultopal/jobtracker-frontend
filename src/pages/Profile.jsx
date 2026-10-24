@@ -256,14 +256,9 @@ const handleCoverUpload = (e) => {
             <input type="file" accept="image/*" onChange={handlePhotoUpload} />
           </label>
           <div className="profile-identity">
-            <div className="profile-identity-eyebrow"><span className="profile-status-dot" />{isTr ? 'KARİYER ALANIN' : 'YOUR CAREER SPACE'}</div>
             <h1>{fullName}</h1>
             <p>{profileData.title || (isTr ? 'Kariyer unvanını ekle' : 'Add your professional title')}</p>
             {profileData.location && <span className="profile-location"><MapPin size={14} />{profileData.location}</span>}
-          </div>
-          <div className="profile-cover-note">
-            <Sparkles size={17} />
-            <span>{isTr ? 'Küçük adımlar, büyük hayaller.' : 'Small steps, big dreams.'}</span>
           </div>
         </div>
       </section>
