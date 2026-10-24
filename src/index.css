@@ -1403,3 +1403,15 @@ input:focus, textarea:focus, select:focus {
   .resume-paper-wrap { padding: 0 !important; overflow: visible !important; border: 0 !important; background: white !important; }
   .resume-paper { width: 210mm !important; max-width: none !important; min-height: 297mm !important; margin: 0 !important; box-shadow: none !important; }
 }
+
+
+/* Compact page headers: the current page name is already shown in Topbar. */
+.calendar-hero-compact { align-items: center; justify-content: flex-end; padding: 0 0 18px; min-height: 0; }
+.tracker-hero-compact { display: flex; align-items: center; justify-content: flex-end; min-height: 0; padding: 0 0 18px; }
+.resume-page-heading-compact { justify-content: flex-end; align-items: center; margin-bottom: 1rem; min-height: 0; }
+.profile-topline-compact { justify-content: flex-end; margin-top: -0.25rem; }
+.profile-topline-compact .profile-completion { margin-left: auto; }
+@media (max-width: 600px) {
+  .calendar-hero-compact, .tracker-hero-compact { padding-bottom: 14px; }
+  .profile-topline-compact { margin-top: 0; }
+}
