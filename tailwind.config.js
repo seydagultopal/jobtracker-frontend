@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class', // Dark mode özelliğini aktif ettik
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -8,18 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        alabaster: '#EEEFE8',
-        columbia: '#C5D7E8', 
-        cherry: '#E9ACBB',
-        cambridge: '#8FBC93',
-        peach: '#FCEBBF',
-        // Tatlı ve soft Dark Mode renklerimiz:
-        night: '#252432',     // Ana arka plan (Gece)
-        twilight: '#2F2E3E',  // Kartlar ve Modallar (Alacakaranlık)
-        starlight: '#4A495C'  // Çizgiler ve Hover efektleri (Yıldız Işığı)
+        alabaster: '#F8F4ED',
+        columbia: '#B7A0F6',
+        cherry: '#FF806B',
+        cambridge: '#9CAF91',
+        peach: '#FFB39A',
+        night: '#15101F',
+        twilight: '#21182F',
+        starlight: '#40304F'
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['DM Sans', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
       }
     },
   },

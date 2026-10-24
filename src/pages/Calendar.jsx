@@ -1,213 +1,220 @@
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { CalendarDays, ChevronLeft, ChevronRight, Plus, Trash2, Clock3, Search, X, CalendarCheck2, ArrowUpRight, ListFilter } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useEvents } from '../context/EventContext';
 import { useLanguage } from '../context/LanguageContext';
+
+const pad = (value) => String(value).padStart(2, '0');
+const toDateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const eventTypes = ['BOOTCAMP', 'INTERVIEW', 'MEETING', 'DEADLINE'];
 
 export default function Calendar() {
   const { events, addEvent, deleteEvent } = useEvents();
   const { t, language } = useLanguage();
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const isTr = language === 'tr';
+  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [selectedDate, setSelectedDate] = useState(toDateKey(today));
   const [showModal, setShowModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
-  
+  const [search, setSearch] = useState('');
+  const [activeFilter, setActiveFilter] = useState('ALL');
   const [formData, setFormData] = useState({
-    title: '',
-    time: '10:00',
-    type: 'BOOTCAMP', 
-    isRecurring: false,
-    recurringWeeks: 4
+    title: '', time: '10:00', type: 'BOOTCAMP', isRecurring: false, recurringWeeks: '4'
   });
 
-  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-  const getFirstDayOfMonth = (year, month) => {
-    let day = new Date(year, month, 1).getDay();
-    return day === 0 ? 6 : day - 1; 
+  const monthNames = isTr
+    ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
+    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const dayNames = isTr ? ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const typeLabels = {
+    BOOTCAMP: isTr ? 'Eğitim' : 'Learning',
+    INTERVIEW: isTr ? 'Mülakat' : 'Interview',
+    MEETING: isTr ? 'Toplantı' : 'Meeting',
+    DEADLINE: isTr ? 'Son tarih' : 'Deadline'
+  };
+  const typeDescriptions = {
+    BOOTCAMP: isTr ? 'Bootcamp / Eğitim' : 'Bootcamp / Learning',
+    INTERVIEW: isTr ? 'Mülakat / Sınav' : 'Interview / Assessment',
+    MEETING: isTr ? 'Toplantı' : 'Meeting',
+    DEADLINE: isTr ? 'Teslim tarihi' : 'Deadline'
   };
 
-  const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
-  const firstDay = getFirstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
-  
-  // DİLE GÖRE AYLAR VE GÜNLER
-  const monthNames = language === 'tr' 
-    ? ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
-    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-  const dayNames = language === 'tr'
-    ? ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
-    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const firstDay = (monthStart.getDay() + 6) % 7;
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const calendarCells = useMemo(() => {
+    const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1 - firstDay);
+    return Array.from({ length: 42 }, (_, index) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + index);
+      return { date, key: toDateKey(date), inMonth: date.getMonth() === currentDate.getMonth() };
+    });
+  }, [currentDate, firstDay]);
 
-  const handlePrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  const monthEvents = useMemo(
+    () => events.filter((event) => event.date?.startsWith(`${currentDate.getFullYear()}-${pad(currentDate.getMonth() + 1)}-`)),
+    [events, currentDate]
+  );
+  const visibleEvents = useMemo(() => events.filter((event) => {
+    const matchesSearch = !search.trim() || event.title?.toLowerCase().includes(search.trim().toLowerCase());
+    const matchesType = activeFilter === 'ALL' || event.type === activeFilter;
+    return matchesSearch && matchesType;
+  }), [events, search, activeFilter]);
+  const selectedEvents = visibleEvents
+    .filter((event) => event.date === selectedDate)
+    .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  const totalMonthEvents = monthEvents.length;
+  const interviewCount = monthEvents.filter((event) => event.type === 'INTERVIEW').length;
+  const deadlineCount = monthEvents.filter((event) => event.type === 'DEADLINE').length;
+  const selectedDateObject = new Date(`${selectedDate}T12:00:00`);
+  const selectedDateLabel = selectedDateObject.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
 
-  const openModalForDate = (day) => {
-    const monthStr = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const dayStr = String(day).padStart(2, '0');
-    setSelectedDate(`${currentDate.getFullYear()}-${monthStr}-${dayStr}`);
+  const changeMonth = (offset) => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1));
+  };
+  const goToToday = () => {
+    const now = new Date();
+    setCurrentDate(new Date(now.getFullYear(), now.getMonth(), 1));
+    setSelectedDate(toDateKey(now));
+  };
+  const openModalForDate = (dateKey = selectedDate) => {
+    setSelectedDate(dateKey);
+    setFormData({ title: '', time: '10:00', type: 'BOOTCAMP', isRecurring: false, recurringWeeks: '4' });
     setShowModal(true);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newEvents = [];
-    const baseDate = new Date(selectedDate);
-
-    const weeksToAdd = formData.isRecurring ? parseInt(formData.recurringWeeks) : 1;
-
-    for (let i = 0; i < weeksToAdd; i++) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const title = formData.title.trim();
+    if (!title || !selectedDate) return;
+    const baseDate = new Date(`${selectedDate}T12:00:00`);
+    const count = formData.isRecurring ? Number(formData.recurringWeeks) : 1;
+    const newEvents = Array.from({ length: count }, (_, index) => {
       const eventDate = new Date(baseDate);
-      eventDate.setDate(baseDate.getDate() + (i * 7)); 
-      
-      const monthStr = String(eventDate.getMonth() + 1).padStart(2, '0');
-      const dayStr = String(eventDate.getDate()).padStart(2, '0');
-      const formattedDate = `${eventDate.getFullYear()}-${monthStr}-${dayStr}`;
-
-      newEvents.push({
-        id: Date.now() + i,
-        title: formData.title,
-        date: formattedDate,
+      eventDate.setDate(baseDate.getDate() + index * 7);
+      return {
+        id: globalThis.crypto?.randomUUID?.() || Date.now() + index,
+        title,
+        date: toDateKey(eventDate),
         time: formData.time,
         type: formData.type
-      });
-    }
-
+      };
+    });
     addEvent(newEvents);
     setShowModal(false);
-    setFormData({ title: '', time: '10:00', type: 'BOOTCAMP', isRecurring: false, recurringWeeks: 4 });
+    setFormData({ title: '', time: '10:00', type: 'BOOTCAMP', isRecurring: false, recurringWeeks: '4' });
   };
 
-  const getEventColor = (type) => {
-    const colors = {
-      'BOOTCAMP': 'bg-cambridge/20 text-cambridge border-cambridge/30',
-      'INTERVIEW': 'bg-peach/30 text-orange-600 border-peach/50',
-      'MEETING': 'bg-columbia/30 text-columbia border-columbia/40',
-      'DEADLINE': 'bg-cherry/20 text-cherry border-cherry/30'
-    };
-    return colors[type] || 'bg-gray-100 text-gray-600';
-  };
+  const typeClass = (type) => ({
+    BOOTCAMP: 'calendar-type-learning',
+    INTERVIEW: 'calendar-type-interview',
+    MEETING: 'calendar-type-meeting',
+    DEADLINE: 'calendar-type-deadline'
+  }[type] || 'calendar-type-default');
 
   return (
-    <div className="h-full flex flex-col gap-3 animate-fade-in pb-2">
-      
-      <div className="bg-white dark:bg-twilight rounded-[2rem] px-6 py-4 flex justify-between items-center shadow-sm border border-columbia/20 dark:border-starlight/30 transition-colors duration-500 shrink-0">
-        <h2 className="text-2xl md:text-3xl font-black text-cherry tracking-tight">
-          {monthNames[currentDate.getMonth()]} <span className="text-columbia">{currentDate.getFullYear()}</span>
-        </h2>
-        <div className="flex gap-2">
-          <button onClick={handlePrevMonth} className="w-10 h-10 flex items-center justify-center rounded-xl bg-alabaster dark:bg-night text-gray-600 dark:text-gray-300 hover:bg-columbia/20 hover:text-columbia transition-all"><ChevronLeft size={20} /></button>
-          <button onClick={handleNextMonth} className="w-10 h-10 flex items-center justify-center rounded-xl bg-alabaster dark:bg-night text-gray-600 dark:text-gray-300 hover:bg-columbia/20 hover:text-columbia transition-all"><ChevronRight size={20} /></button>
+    <main className="calendar-page">
+      <header className="calendar-hero calendar-hero-compact">
+        <div className="calendar-hero-actions">
+          <button type="button" className="calendar-today-button" onClick={goToToday}>{isTr ? 'Bugüne dön' : 'Today'}</button>
+          <button type="button" className="calendar-add-button" onClick={() => openModalForDate(selectedDate)}><Plus size={17} />{isTr ? 'Etkinlik ekle' : 'Add event'}</button>
         </div>
-      </div>
+      </header>
 
-      <div className="bg-white dark:bg-twilight rounded-[2rem] p-4 shadow-sm border border-columbia/20 dark:border-starlight/30 flex-1 flex flex-col transition-colors duration-500 min-h-0">
-        
-        <div className="grid grid-cols-7 gap-2 md:gap-4 mb-2 shrink-0">
-          {dayNames.map(day => (
-            <div key={day} className="text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{day}</div>
-          ))}
-        </div>
+      <section className="calendar-overview" aria-label={isTr ? 'Aylık özet' : 'Monthly overview'}>
+        <div className="calendar-overview-label"><span className="calendar-overview-icon"><CalendarDays size={18} /></span><div><span>{isTr ? 'BU AY' : 'THIS MONTH'}</span><strong>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</strong></div></div>
+        <div className="calendar-overview-stat"><strong>{totalMonthEvents}</strong><span>{isTr ? 'planlı etkinlik' : 'planned events'}</span></div>
+        <div className="calendar-overview-stat"><strong>{interviewCount}</strong><span>{isTr ? 'mülakat' : 'interviews'}</span></div>
+        <div className="calendar-overview-stat"><strong>{deadlineCount}</strong><span>{isTr ? 'son tarih' : 'deadlines'}</span></div>
+      </section>
 
-        <div className="grid grid-cols-7 gap-2 flex-1 auto-rows-fr min-h-0">
-          {Array.from({ length: firstDay }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-alabaster/30 dark:bg-night/30 rounded-xl md:rounded-2xl border border-transparent"></div>
-          ))}
-          
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1;
-            const monthStr = String(currentDate.getMonth() + 1).padStart(2, '0');
-            const dayStr = String(day).padStart(2, '0');
-            const fullDate = `${currentDate.getFullYear()}-${monthStr}-${dayStr}`;
-            const dayEvents = events.filter(e => e.date === fullDate);
-            
-            const isToday = new Date().toISOString().split('T')[0] === fullDate;
+      <div className="calendar-workspace">
+        <section className="calendar-month-panel">
+          <div className="calendar-month-toolbar">
+            <div><span className="calendar-section-kicker">{isTr ? 'AYLIK GÖRÜNÜM' : 'MONTH VIEW'}</span><h2>{monthNames[currentDate.getMonth()]} <span>{currentDate.getFullYear()}</span></h2></div>
+            <div className="calendar-month-controls">
+              <button type="button" aria-label={isTr ? 'Önceki ay' : 'Previous month'} onClick={() => changeMonth(-1)}><ChevronLeft size={18} /></button>
+              <button type="button" aria-label={isTr ? 'Sonraki ay' : 'Next month'} onClick={() => changeMonth(1)}><ChevronRight size={18} /></button>
+            </div>
+          </div>
+          <div className="calendar-weekdays">{dayNames.map((day) => <span key={day}>{day}</span>)}</div>
+          <div className="calendar-grid">
+            {calendarCells.map(({ date, key, inMonth }) => {
+              const dayEvents = visibleEvents.filter((event) => event.date === key).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+              const isToday = key === toDateKey(today);
+              const isSelected = key === selectedDate;
+              return (
+                <button
+                  type="button"
+                  key={key}
+                  onClick={() => setSelectedDate(key)}
+                  onDoubleClick={() => openModalForDate(key)}
+                  className={`calendar-day-cell ${inMonth ? '' : 'is-outside'} ${isToday ? 'is-today' : ''} ${isSelected ? 'is-selected' : ''}`}
+                  aria-label={`${date.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}, ${dayEvents.length} ${isTr ? 'etkinlik' : 'events'}`}
+                  aria-pressed={isSelected}
+                >
+                  <span className="calendar-day-number">{date.getDate()}</span>
+                  <span className="calendar-day-events">
+                    {dayEvents.slice(0, 3).map((item) => <span key={item.id} className={`calendar-event-chip ${typeClass(item.type)}`} title={item.title}><i />{item.title}</span>)}
+                    {dayEvents.length > 3 && <span className="calendar-more-events">+{dayEvents.length - 3} {isTr ? 'daha' : 'more'}</span>}
+                  </span>
+                  {dayEvents.length > 0 && <span className="calendar-mobile-dots" aria-hidden="true">{dayEvents.slice(0, 3).map((item) => <i key={item.id} className={typeClass(item.type)} />)}</span>}
+                </button>
+              );
+            })}
+          </div>
+          <div className="calendar-legend">
+            {eventTypes.map((type) => <span key={type}><i className={typeClass(type)} />{typeLabels[type]}</span>)}
+            <span className="calendar-double-click-hint">{isTr ? 'Güne çift tıkla: hızlı ekle' : 'Double-click a day to quick-add'}</span>
+          </div>
+        </section>
 
-            return (
-              <div 
-                key={day} 
-                onClick={() => openModalForDate(day)}
-                className={`relative p-2 rounded-xl md:rounded-2xl border border-columbia/10 dark:border-starlight/20 flex flex-col gap-1 cursor-pointer transition-all hover:border-columbia hover:shadow-md overflow-hidden ${isToday ? 'bg-peach/10 border-peach/30' : 'bg-white dark:bg-night'}`}
-              >
-                <span className={`text-xs md:text-sm font-black ${isToday ? 'text-peach' : 'text-gray-400 dark:text-gray-500'}`}>{day}</span>
-                
-                <div className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1">
-                  {dayEvents.map(evt => (
-                    <div key={evt.id} className={`group relative text-[10px] leading-tight font-bold px-2 py-1.5 rounded-lg border flex items-center shrink-0 min-h-[26px] ${getEventColor(evt.type)}`} title={evt.title}>
-                      <span className="truncate w-full pr-4">{evt.time} - {evt.title}</span>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); deleteEvent(evt.id); }}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-cherry hover:scale-110 transition-all bg-white/90 dark:bg-night/90 rounded p-0.5"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <aside className="calendar-day-panel">
+          <div className="calendar-day-panel-head">
+            <div><span className="calendar-section-kicker">{isTr ? 'GÜNÜN PLANI' : 'DAILY PLAN'}</span><h2>{selectedDateObject.getDate()} <span>{monthNames[selectedDateObject.getMonth()]}</span></h2><p>{selectedDateLabel}</p></div>
+            <button type="button" aria-label={isTr ? 'Seçili güne etkinlik ekle' : 'Add event to selected day'} onClick={() => openModalForDate(selectedDate)}><Plus size={18} /></button>
+          </div>
+          <div className="calendar-day-panel-tools">
+            <label className="calendar-search"><Search size={15} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={isTr ? 'Etkinlik ara...' : 'Search events...'} /></label>
+            <label className="calendar-filter" aria-label={isTr ? 'Etkinlik türüne göre filtrele' : 'Filter by event type'}><ListFilter size={15} /><select value={activeFilter} onChange={(event) => setActiveFilter(event.target.value)}><option value="ALL">{isTr ? 'Tüm türler' : 'All types'}</option>{eventTypes.map((type) => <option key={type} value={type}>{typeLabels[type]}</option>)}</select></label>
+          </div>
+          <div className="calendar-selected-date-row"><span>{isTr ? 'SEÇİLİ GÜN' : 'SELECTED DAY'}</span><strong>{selectedEvents.length} {isTr ? 'etkinlik' : 'events'}</strong></div>
+          <div className="calendar-selected-events">
+            {selectedEvents.length === 0 ? (
+              <div className="calendar-empty-day"><span className="calendar-empty-icon"><CalendarCheck2 size={23} /></span><strong>{isTr ? 'Bu gün henüz boş' : 'Nothing planned yet'}</strong><p>{isTr ? 'Küçük bir plan ekleyerek gününü netleştirebilirsin.' : 'Add a small plan to give your day some shape.'}</p><button type="button" onClick={() => openModalForDate(selectedDate)}><Plus size={15} />{isTr ? 'Etkinlik oluştur' : 'Create event'}</button></div>
+            ) : selectedEvents.map((event) => (
+              <article key={event.id} className="calendar-selected-event">
+                <div className={`calendar-event-type-mark ${typeClass(event.type)}`} />
+                <div className="calendar-selected-event-time"><Clock3 size={13} />{event.time || (isTr ? 'Saat belirtilmedi' : 'No time')}</div>
+                <h3>{event.title}</h3>
+                <span className={`calendar-event-category ${typeClass(event.type)}`}>{typeLabels[event.type] || (isTr ? 'Diğer' : 'Other')}</span>
+                <button type="button" className="calendar-delete-event" aria-label={isTr ? `${event.title} etkinliğini sil` : `Delete ${event.title}`} onClick={() => deleteEvent(event.id)}><Trash2 size={14} /></button>
+              </article>
+            ))}
+          </div>
+          <div className="calendar-day-panel-footer"><span>{isTr ? 'Planlar değişebilir. Önemli olan bir sonraki adım.' : 'Plans can change. What matters is the next step.'}</span><ArrowUpRight size={16} /></div>
+        </aside>
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-columbia/20 dark:bg-night/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-twilight p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white/50 dark:border-starlight/50">
-            <h3 className="text-2xl font-black text-cherry tracking-tight mb-6 flex justify-between">
-              {t('calAddEvent')}
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-cherry">×</button>
-            </h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calTitle')}</label>
-                <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200" placeholder="Örn: Java Bootcamp" />
+        <div className="calendar-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowModal(false); }}>
+          <section className="calendar-modal" role="dialog" aria-modal="true" aria-labelledby="calendar-modal-title">
+            <div className="calendar-modal-heading"><div><span className="calendar-section-kicker">{isTr ? 'YENİ PLAN' : 'NEW PLAN'}</span><h2 id="calendar-modal-title">{t('calAddEvent')}</h2></div><button type="button" aria-label={isTr ? 'Kapat' : 'Close'} onClick={() => setShowModal(false)}><X size={19} /></button></div>
+            <p className="calendar-modal-date"><CalendarDays size={15} />{new Date(`${selectedDate}T12:00:00`).toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <form onSubmit={handleSubmit} className="calendar-event-form">
+              <label>{t('calTitle')}<input autoFocus required maxLength={100} type="text" value={formData.title} onChange={(event) => setFormData({ ...formData, title: event.target.value })} placeholder={isTr ? 'Örn. Teknik mülakat, Java eğitimi...' : 'e.g. Technical interview, Java course...'} /></label>
+              <div className="calendar-form-row">
+                <label>{t('calTime')}<input required type="time" value={formData.time} onChange={(event) => setFormData({ ...formData, time: event.target.value })} /></label>
+                <label>{t('calType')}<select value={formData.type} onChange={(event) => setFormData({ ...formData, type: event.target.value })}>{eventTypes.map((type) => <option key={type} value={type}>{typeDescriptions[type]}</option>)}</select></label>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calDate')}</label>
-                  <input type="text" disabled value={selectedDate} className="w-full p-3 bg-gray-100 dark:bg-starlight/20 rounded-xl outline-none font-bold text-gray-500" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calTime')}</label>
-                  <input required type="time" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200 [color-scheme:light] dark:[color-scheme:dark]" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('calType')}</label>
-                <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full p-3 bg-alabaster/50 dark:bg-night rounded-xl outline-none font-bold text-gray-700 dark:text-gray-200">
-                  <option value="BOOTCAMP">{t('calTypeBootcamp')}</option>
-                  <option value="INTERVIEW">{t('calTypeInterview')}</option>
-                  <option value="MEETING">{t('calTypeMeeting')}</option>
-                  <option value="DEADLINE">{t('calTypeDeadline')}</option>
-                </select>
-              </div>
-
-              <div className="bg-columbia/10 dark:bg-starlight/20 p-4 rounded-2xl border border-columbia/20 dark:border-starlight/30 mt-4">
-                <label className="flex items-center gap-2 cursor-pointer mb-3">
-                  <input type="checkbox" checked={formData.isRecurring} onChange={e => setFormData({...formData, isRecurring: e.target.checked})} className="w-4 h-4 text-cherry rounded border-gray-300" />
-                  <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('calRecurring')}</span>
-                </label>
-                
-                {formData.isRecurring && (
-                  <div className="animate-fade-in flex items-center gap-3">
-                    <span className="text-xs font-bold text-gray-500">{t('calWeeks')}</span>
-                    <select value={formData.recurringWeeks} onChange={e => setFormData({...formData, recurringWeeks: e.target.value})} className="p-2 bg-white dark:bg-night rounded-xl outline-none font-bold text-sm text-columbia">
-                      <option value="2">2 Hafta</option>
-                      <option value="4">4 Hafta (1 Ay)</option>
-                      <option value="8">8 Hafta (2 Ay)</option>
-                      <option value="12">12 Hafta (3 Ay)</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              <button type="submit" className="w-full mt-4 py-4 bg-cherry text-white font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-cherry/20 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                <Plus size={16} /> {t('calSaveEvent')}
-              </button>
+              <label className="calendar-recurring-toggle"><input type="checkbox" checked={formData.isRecurring} onChange={(event) => setFormData({ ...formData, isRecurring: event.target.checked })} /><span><strong>{t('calRecurring')}</strong><small>{isTr ? 'Aynı etkinliği haftalık olarak ekle' : 'Repeat this event every week'}</small></span></label>
+              {formData.isRecurring && <label>{t('calWeeks')}<select value={formData.recurringWeeks} onChange={(event) => setFormData({ ...formData, recurringWeeks: event.target.value })}><option value="2">{isTr ? '2 hafta' : '2 weeks'}</option><option value="4">{isTr ? '4 hafta (1 ay)' : '4 weeks (1 month)'}</option><option value="8">{isTr ? '8 hafta (2 ay)' : '8 weeks (2 months)'}</option><option value="12">{isTr ? '12 hafta (3 ay)' : '12 weeks (3 months)'}</option></select></label>}
+              <div className="calendar-modal-actions"><button type="button" className="calendar-cancel-button" onClick={() => setShowModal(false)}>{isTr ? 'Vazgeç' : 'Cancel'}</button><button type="submit" className="calendar-confirm-button"><Plus size={16} />{t('calSaveEvent')}</button></div>
             </form>
-          </div>
+          </section>
         </div>
       )}
-    </div>
+    </main>
   );
 }
