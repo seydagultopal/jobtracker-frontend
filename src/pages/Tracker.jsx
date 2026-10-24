@@ -142,14 +142,8 @@ export default function Tracker() {
   return (
     <>
       <main className="tracker-page">
-        <header className="tracker-hero">
-          <div className="tracker-hero-copy">
-            <span className="tracker-eyebrow"><span />{t('dashTitle')}</span>
-            <h1>{t('dashTitle')}<span>.</span></h1>
-            <p>{t('dashSubtitle')}</p>
-          </div>
+        <header className="tracker-hero tracker-hero-compact">
           <button type="button" className="tracker-primary-button" onClick={() => setShowAddModal(true)}><Plus size={17} />{t('addNew')}</button>
-          <div className="tracker-hero-art" aria-hidden="true"><BriefcaseBusiness size={44} strokeWidth={1.2}/><span>CAREER IN PROGRESS</span></div>
         </header>
 
         <section className="tracker-summary-grid" aria-label="Application overview">
