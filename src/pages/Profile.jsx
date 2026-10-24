@@ -268,12 +268,7 @@ const handleCoverUpload = (e) => {
         </div>
       </section>
 
-      <div className="profile-topline">
-        <div>
-          <p className="profile-eyebrow">{isTr ? 'KİŞİSEL ALANIN' : 'YOUR PERSONAL SPACE'}</p>
-          <h2>{isTr ? 'Profilini şekillendir' : 'Shape your profile'}</h2>
-          <p className="profile-subtitle">{isTr ? 'Hikâyeni, deneyimini ve hedeflerini tek bir yerde bir araya getir.' : 'Bring your story, experience and goals together in one place.'}</p>
-        </div>
+      <div className="profile-topline profile-topline-compact">
         <div className="profile-completion">
           <div className="profile-completion-ring" style={{ '--profile-progress': `${completion}%` }}><span>{completion}%</span></div>
           <div><strong>{isTr ? 'Profil tamamlandı' : 'Profile complete'}</strong><small>{isTr ? 'Her küçük detay fark yaratır.' : 'Every little detail matters.'}</small></div>
