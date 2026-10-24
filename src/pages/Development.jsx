@@ -229,8 +229,7 @@ export default function Development() {
           <article className="development-stat-card"><span className="development-stat-icon activity"><TrendingUp size={19} /></span><div><span>{tr ? 'HAFTALIK ORTALAMA' : 'WEEKLY AVERAGE'}</span><strong>{weeklyAverage}<small>%</small></strong><small>{tr ? 'Ajanda etkinliklerinden' : 'From agenda activity'}</small></div><span className="development-stat-decoration">04</span></article>
         </section>
 
-        <section className="development-toolbar">
-          <div><span className="development-section-kicker">{tr ? 'KİŞİSEL TAKİP' : 'PERSONAL TRACKING'}</span><h2>{tr ? 'Neler üzerinde çalışıyorsun?' : 'What are you working on?'}</h2></div>
+        <section className="development-toolbar development-toolbar-compact">
           <label className="development-search"><Search size={16} /><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={tr ? 'Eğitim, proje veya yetenek ara...' : 'Search courses, projects or skills...'} /><span>{filteredCourses.length + filteredProjects.length + filteredSkills.length}</span>{searchTerm && <button type="button" aria-label={tr ? 'Aramayı temizle' : 'Clear search'} onClick={() => setSearchTerm('')}><X size={14} /></button>}</label>
         </section>
 
