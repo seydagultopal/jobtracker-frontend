@@ -115,12 +115,7 @@ export default function Calendar() {
 
   return (
     <main className="calendar-page">
-      <header className="calendar-hero">
-        <div className="calendar-hero-copy">
-          <div className="calendar-eyebrow"><span />{isTr ? 'PLANINI GÖR, GÜNÜNÜ YÖNET' : 'SEE YOUR PLAN, OWN YOUR DAY'}</div>
-          <h1>{isTr ? 'Takvimin' : 'Your calendar'}<span>.</span></h1>
-          <p>{isTr ? 'Mülakatlarını, eğitimlerini ve önemli tarihlerini tek bir yerde toparla.' : 'Keep interviews, learning sessions and important dates in one place.'}</p>
-        </div>
+      <header className="calendar-hero calendar-hero-compact">
         <div className="calendar-hero-actions">
           <button type="button" className="calendar-today-button" onClick={goToToday}>{isTr ? 'Bugüne dön' : 'Today'}</button>
           <button type="button" className="calendar-add-button" onClick={() => openModalForDate(selectedDate)}><Plus size={17} />{isTr ? 'Etkinlik ekle' : 'Add event'}</button>
