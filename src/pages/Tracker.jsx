@@ -16,7 +16,8 @@ export default function Tracker() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL'); 
 
-  const { t } = useLanguage(); 
+  const { t, language } = useLanguage();
+  const isTr = language === 'tr'; 
 
   useEffect(() => {
     fetchApplications();
@@ -120,7 +121,7 @@ export default function Tracker() {
     { value: 'OFFER', label: t('statusOffer') },
     { value: 'REJECTED', label: t('statusRejected') },
   ];
-  const normalizedQuery = searchTerm.trim().toLocaleLowerCase();
+  const normalizedQuery = searchTerm.trim().toLocaleLowerCase(isTr ? 'tr-TR' : 'en-US');
   const filteredApplications = useMemo(() => applications.filter((app) => {
     const company = app.companyName || app.company_name || '';
     const position = app.position || '';
@@ -153,29 +154,29 @@ export default function Tracker() {
 
         <section className="tracker-summary-grid" aria-label="Application overview">
           <button type="button" className={`tracker-summary-card ${statusFilter === 'ALL' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('ALL')}>
-            <span className="tracker-summary-icon"><BriefcaseBusiness size={19}/></span><span className="tracker-summary-copy"><small>{t('colCompany') ? (typeof t('colCompany') === 'string' ? 'TOTAL APPLICATIONS' : 'TOTAL APPLICATIONS') : 'TOTAL APPLICATIONS'}</small><strong>{applications.length}</strong><em>{t('dashSubtitle')}</em></span><span className="tracker-summary-number">01</span>
+            <span className="tracker-summary-icon"><BriefcaseBusiness size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'TOPLAM BAŞVURU' : 'TOTAL APPLICATIONS'}</small><strong>{applications.length}</strong><em>{t('dashSubtitle')}</em></span><span className="tracker-summary-number">01</span>
           </button>
           <button type="button" className={`tracker-summary-card ${statusFilter === 'INTERVIEW' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('INTERVIEW')}>
-            <span className="tracker-summary-icon interview"><CalendarDays size={19}/></span><span className="tracker-summary-copy"><small>{t('statusInterview')}</small><strong>{countByStatus('INTERVIEW') + countByStatus('VIDEO_INTERVIEW')}</strong><em>{t('statusVideo')}</em></span><span className="tracker-summary-number">02</span>
+            <span className="tracker-summary-icon interview"><CalendarDays size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'MÜLAKATLAR' : 'INTERVIEWS'}</small><strong>{countByStatus('INTERVIEW') + countByStatus('VIDEO_INTERVIEW')}</strong><em>{t('statusVideo')}</em></span><span className="tracker-summary-number">02</span>
           </button>
           <button type="button" className={`tracker-summary-card ${statusFilter === 'OFFER' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('OFFER')}>
-            <span className="tracker-summary-icon offer"><CircleCheck size={19}/></span><span className="tracker-summary-copy"><small>{t('statusOffer')}</small><strong>{countByStatus('OFFER')}</strong><em>{t('statusOffer')}</em></span><span className="tracker-summary-number">03</span>
+            <span className="tracker-summary-icon offer"><CircleCheck size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'TEKLİFLER' : 'OFFERS'}</small><strong>{countByStatus('OFFER')}</strong><em>{t('statusOffer')}</em></span><span className="tracker-summary-number">03</span>
           </button>
           <button type="button" className={`tracker-summary-card ${statusFilter === 'APPLIED' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('APPLIED')}>
-            <span className="tracker-summary-icon activity"><TrendingUp size={19}/></span><span className="tracker-summary-copy"><small>{t('statusApplied')}</small><strong>{countByStatus('APPLIED')}</strong><em>{t('statusApplied')}</em></span><span className="tracker-summary-number">04</span>
+            <span className="tracker-summary-icon activity"><TrendingUp size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'BAŞVURULDU' : 'APPLIED'}</small><strong>{countByStatus('APPLIED')}</strong><em>{t('statusApplied')}</em></span><span className="tracker-summary-number">04</span>
           </button>
         </section>
 
         <section className="tracker-list-panel">
-          <div className="tracker-list-heading"><div><span className="tracker-section-kicker">YOUR NEXT CHAPTER</span><h2>{t('colAction') === 'Actions' ? 'Your applications' : 'Başvuruların'}</h2><p>{t('dashSubtitle')}</p></div><span className="tracker-result-count">{filteredApplications.length} <small>{t('colCompany')}</small></span></div>
+          <div className="tracker-list-heading"><div><span className="tracker-section-kicker">{isTr ? 'KARİYER YOLCULUĞUN' : 'YOUR NEXT CHAPTER'}</span><h2>{isTr ? 'Başvuruların' : 'Your applications'}</h2><p>{t('dashSubtitle')}</p></div><span className="tracker-result-count">{filteredApplications.length} <small>{t('colCompany')}</small></span></div>
           <div className="tracker-toolbar">
-            <label className="tracker-search"><Search size={17}/><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t('colCompany') + ', ' + t('colPosition') + '...'} />{searchTerm && <button type="button" onClick={() => setSearchTerm('')} aria-label="Clear search"><X size={14}/></button>}</label>
+            <label className="tracker-search"><Search size={17}/><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t('colCompany') + ', ' + t('colPosition') + '...'} />{searchTerm && <button type="button" onClick={() => setSearchTerm('')} aria-label={isTr ? "Aramayı temizle" : "Clear search"}><X size={14}/></button>}</label>
             <label className="tracker-status-filter"><SlidersHorizontal size={15}/><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">{t('colStage')} · {applications.length}</option>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label} · {countByStatus(option.value)}</option>)}</select></label>
           </div>
 
           {loading ? <div className="tracker-state"><span className="tracker-state-spinner"/><strong>{t('loading')}</strong></div>
           : errorMsg ? <div className="tracker-state tracker-error"><strong>⚠ {errorMsg}</strong><button type="button" onClick={fetchApplications}>{t('loading')}</button></div>
-          : filteredApplications.length === 0 ? <div className="tracker-state"><span className="tracker-state-icon"><BriefcaseBusiness size={26}/></span><strong>{applications.length ? (searchTerm ? 'Aramana uygun başvuru bulunamadı' : 'Bu aşamada başvuru yok') : t('emptyList')}</strong><p>{applications.length ? 'Arama veya filtreyi değiştirmeyi deneyebilirsin.' : t('dashSubtitle')}</p>{!applications.length && <button type="button" className="tracker-primary-button" onClick={() => setShowAddModal(true)}><Plus size={16}/>{t('addNew')}</button>}</div>
+          : filteredApplications.length === 0 ? <div className="tracker-state"><span className="tracker-state-icon"><BriefcaseBusiness size={26}/></span><strong>{applications.length ? (searchTerm ? 'Aramana uygun başvuru bulunamadı' : 'Bu aşamada başvuru yok') : t('emptyList')}</strong><p>{applications.length ? (isTr ? 'Arama veya filtreyi değiştirmeyi deneyebilirsin.' : 'Try changing your search or filter.') : t('dashSubtitle')}</p>{!applications.length && <button type="button" className="tracker-primary-button" onClick={() => setShowAddModal(true)}><Plus size={16}/>{t('addNew')}</button>}</div>
           : <div className="tracker-application-list">
             {filteredApplications.map((app) => {
               const appId = app.id || app.job_application_id;
