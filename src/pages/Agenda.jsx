@@ -122,7 +122,6 @@ export default function Agenda() {
     <div className="agenda-editorial min-h-full animate-fade-in">
       <header className="agenda-editorial-header">
         <div className="agenda-editorial-heading">
-          <p className="agenda-overline">{language === 'tr' ? 'PEBBLE JOURNAL  /  GÜNLÜK' : 'PEBBLE JOURNAL  /  DAILY'}</p>
           <div className="agenda-date-lockup">
             <span className="agenda-date-number">{dayNumber}</span>
             <div className="agenda-date-copy">
@@ -130,8 +129,6 @@ export default function Agenda() {
               <span>{weekdayLabel}</span>
             </div>
           </div>
-          <h1>{greeting}</h1>
-          <p className="agenda-intro">{language === 'tr' ? 'Aklından geçenleri bırak, gününe yer aç.' : 'Leave a thought here. Make room for the day.'}</p>
         </div>
         <div className="agenda-date-controls">
           <button type="button" onClick={() => changeDate(-1)} aria-label={language === 'tr' ? 'Önceki gün' : 'Previous day'}><ChevronLeft size={17} /></button>
