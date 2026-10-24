@@ -1415,3 +1415,7 @@ input:focus, textarea:focus, select:focus {
   .calendar-hero-compact, .tracker-hero-compact { padding-bottom: 14px; }
   .profile-topline-compact { margin-top: 0; }
 }
+
+.development-toolbar-compact { justify-content: flex-end; }
+.development-toolbar-compact .development-search { width: min(100%, 460px); }
+.tracker-list-heading-compact { justify-content: flex-end; margin-bottom: 12px; }
