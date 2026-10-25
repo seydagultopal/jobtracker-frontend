@@ -3,8 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import Logo from './Logo';
 
-export default function Sidebar() {
-  const { t } = useLanguage();
+export default function Sidebar({ isOpen = false, onClose = () => {} }) {
+  const { t, language } = useLanguage();
 
   const menuItems = [
     { path: '/dashboard', name: t('menuDashboard'), icon: LayoutDashboard },
@@ -16,7 +16,9 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="pebble-sidebar w-64 flex-shrink-0 bg-white dark:bg-twilight border-r border-gray-100 dark:border-starlight/20 flex flex-col transition-colors duration-500 z-50">
+    <>
+      {isOpen && <button type="button" className="pebble-sidebar-backdrop" aria-label={language === 'tr' ? 'Menüyü kapat' : 'Close navigation'} onClick={onClose} />}
+      <aside id="pebble-primary-navigation" className={`pebble-sidebar w-64 flex-shrink-0 bg-white dark:bg-twilight border-r border-gray-100 dark:border-starlight/20 flex flex-col transition-colors duration-500 z-50 ${isOpen ? 'is-mobile-open' : ''}`}>
       <div className="pebble-sidebar-brand h-20 flex items-center gap-3 px-6 border-b border-gray-100 dark:border-starlight/20 shrink-0">
         <div className="pebble-sidebar-logo"><Logo className="w-auto h-8" /></div>
         <div className="min-w-0">
@@ -25,12 +27,13 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="pebble-sidebar-section-label"><span>WORKSPACE</span></div>
+      <div className="pebble-sidebar-section-label"><span>{language === 'tr' ? 'ÇALIŞMA ALANI' : 'WORKSPACE'}</span></div>
       <nav className="pebble-sidebar-nav flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar" aria-label="Main navigation">
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={onClose}
             className={({ isActive }) => `pebble-nav-link flex items-center gap-3.5 px-4 py-3 rounded-[1.1rem] font-bold transition-all duration-300 ${isActive ? 'is-active' : ''}`}
           >
             {({ isActive }) => (
@@ -47,10 +50,11 @@ export default function Sidebar() {
       <div className="pebble-sidebar-footer">
         <div className="pebble-sidebar-note">
           <span className="pebble-sidebar-note-icon"><Sparkles size={15} /></span>
-          <div><p>Small steps.</p><p>Real progress.</p></div>
+          <div><p>{language === 'tr' ? 'Küçük adımlar.' : 'Small steps.'}</p><p>{language === 'tr' ? 'Gerçek ilerleme.' : 'Real progress.'}</p></div>
           <span className="pebble-sidebar-note-spark" aria-hidden="true">✳</span>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
