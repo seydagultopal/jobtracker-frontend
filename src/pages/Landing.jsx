@@ -1,4 +1,4 @@
-import { ArrowDownRight, ArrowRight, BookOpen, CalendarDays, Check, CircleCheck, FileText, Globe, LayoutDashboard, ListTodo, Moon, Sun, TrendingUp, Users } from 'lucide-react';
+import { ArrowDownRight, ArrowRight, BookOpen, CalendarDays, Check, CircleCheck, FileText, Globe, LayoutDashboard, ListTodo, Moon, Sun, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
