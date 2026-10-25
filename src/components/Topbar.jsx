@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, FileText, Globe, LayoutDashboard, ListTodo, Moon, Sun, TrendingUp, User } from 'lucide-react';
+import { BookOpen, Calendar, FileText, Globe, LayoutDashboard, ListTodo, Menu, Moon, Sun, TrendingUp, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -7,7 +7,7 @@ import api from '../services/api';
 
 const DEFAULT_COVER = 'bg-gradient-to-r from-rose-400 to-orange-300 dark:from-rose-900 dark:to-orange-900';
 
-export default function Topbar() {
+export default function Topbar({ onMenuClick = () => {}, isMobileNavOpen = false }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [userData, setUserData] = useState({ name: '', email: '', photo: null });
   const [coverPhoto, setCoverPhoto] = useState(DEFAULT_COVER);
@@ -100,11 +100,14 @@ export default function Topbar() {
         </div>
       )}
 
-      <div className="pebble-topbar-heading relative z-10 flex items-center gap-3">
+      <div className="pebble-topbar-leading relative z-10 flex items-center gap-3">
+        <button type="button" className="pebble-mobile-menu-button" onClick={onMenuClick} aria-label={isMobileNavOpen ? (language === 'tr' ? 'Menüyü kapat' : 'Close menu') : (language === 'tr' ? 'Menüyü aç' : 'Open menu')} aria-expanded={isMobileNavOpen} aria-controls="pebble-primary-navigation">{isMobileNavOpen ? <X size={20} /> : <Menu size={20} />}</button>
+        <div className="pebble-topbar-heading relative z-10 flex items-center gap-3">
         <div className="pebble-topbar-page-icon w-10 h-10 rounded-xl flex items-center justify-center">
           <PageIcon size={20} className="text-white" strokeWidth={2.5} />
         </div>
         <h1 className="pebble-topbar-title text-2xl font-black tracking-tight">{getPageInfo().title}</h1>
+        </div>
       </div>
       
       <div className="pebble-topbar-actions relative z-10 flex items-center gap-3">
