@@ -5,6 +5,7 @@ import { EventProvider } from './context/EventContext.jsx'; // YENİ EKLENDİ
 import { LanguageProvider } from './context/LanguageContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import './index.css'
+import './styles/pebble-design-system.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
