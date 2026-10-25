@@ -1809,3 +1809,69 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   .pebble-topbar-actions { gap: 4px !important; }
   .pebble-topbar-account { display: none; }
 }
+
+
+/* Responsive navigation: drawer on narrow screens, fixed rail on desktop. */
+.pebble-topbar-leading { min-width: 0; }
+.pebble-mobile-menu-button {
+  display: none;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--pebble-line);
+  border-radius: 12px;
+  color: var(--pebble-ink);
+  background: var(--pebble-surface);
+}
+.pebble-sidebar-backdrop { display: none; }
+.pebble-main { min-width: 0; }
+@media (max-width: 760px) {
+  .pebble-mobile-menu-button { display: inline-flex; }
+  .pebble-sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0;
+    z-index: 70 !important;
+    width: min(290px, calc(100vw - 52px)) !important;
+    flex-basis: auto !important;
+    transform: translateX(-105%);
+    transition: transform .24s ease !important;
+    background: var(--pebble-canvas) !important;
+    box-shadow: none !important;
+    overflow-y: auto;
+  }
+  .pebble-sidebar.is-mobile-open { transform: translateX(0); box-shadow: 18px 0 48px rgba(35, 24, 32, .16) !important; }
+  .pebble-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background: rgba(25, 18, 25, .42);
+    backdrop-filter: blur(2px);
+  }
+  .pebble-topbar { gap: 10px; }
+  .pebble-topbar-heading { min-width: 0; }
+  .pebble-topbar-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pebble-main { padding: 18px !important; }
+}
+@media (max-width: 480px) {
+  .pebble-topbar { height: 64px; padding-inline: 10px !important; }
+  .pebble-mobile-menu-button { width: 34px; height: 34px; flex-basis: 34px; border-radius: 10px; }
+  .pebble-topbar-page-icon { display: none !important; }
+  .pebble-topbar-title { font-size: .98rem !important; max-width: 32vw; }
+  .pebble-topbar-actions { gap: 4px !important; }
+  .pebble-theme-toggle { width: 34px !important; min-width: 34px; height: 34px !important; }
+  .pebble-theme-toggle > div { width: 24px !important; height: 24px !important; }
+  .pebble-theme-toggle.is-dark > div { transform: translateX(0) !important; }
+  .pebble-topbar-control { min-height: 34px; padding-inline: 7px !important; }
+  .pebble-topbar-profile { padding: 2px !important; }
+}
+:root.dark .pebble-mobile-menu-button { background: var(--pebble-surface); border-color: var(--pebble-line); }
+@media (prefers-reduced-motion: reduce) {
+  .pebble-sidebar { transition: none !important; }
+}
