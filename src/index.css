@@ -1875,3 +1875,86 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 @media (prefers-reduced-motion: reduce) {
   .pebble-sidebar { transition: none !important; }
 }
+
+
+/* Reduce decorative color blocks: content and hierarchy should lead, accent should support. */
+.dash-welcome {
+  color: var(--pebble-ink) !important;
+  background:
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--pebble-peach) 24%, transparent), transparent 18rem),
+    var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+  box-shadow: var(--pebble-shadow) !important;
+}
+.dash-welcome h1 { color: var(--pebble-ink) !important; }
+.dash-welcome h1 span { color: var(--pebble-neon-orange) !important; }
+.dash-welcome-copy { color: var(--pebble-muted) !important; }
+.dash-eyebrow { color: var(--pebble-neon-orange) !important; }
+.dash-primary-action {
+  background: var(--pebble-neon-orange) !important;
+  color: #fffaf6 !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--pebble-neon-orange) 16%, transparent) !important;
+}
+.dash-primary-action:hover { box-shadow: 0 10px 22px color-mix(in srgb, var(--pebble-neon-orange) 22%, transparent) !important; }
+:root.dark .dash-welcome {
+  color: var(--pebble-ink) !important;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255, 134, 94, .11), transparent 18rem),
+    var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+}
+:root.dark .dash-welcome h1, :root.dark .dash-welcome-copy { color: var(--pebble-ink) !important; }
+:root.dark .dash-welcome-copy { color: var(--pebble-muted) !important; }
+:root.dark .dash-welcome h1 span { color: var(--pebble-neon-orange) !important; }
+:root.dark .dash-primary-action { background: var(--pebble-neon-orange) !important; color: #291b1d !important; }
+/* Dashboard metrics share a neutral base; small icon tints preserve scanability without competing. */
+.dash-stat-card,
+.dash-tone-sage, .dash-tone-peach, .dash-tone-lilac, .dash-tone-rose, .dash-tone-gold {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+  box-shadow: 0 6px 18px rgba(64, 43, 29, .035) !important;
+}
+.dash-stat-card:hover { border-color: color-mix(in srgb, var(--pebble-neon-orange) 32%, var(--pebble-line)) !important; }
+.dash-stat-icon { color: var(--pebble-neon-orange); background: color-mix(in srgb, var(--pebble-neon-orange) 10%, var(--pebble-surface-soft)) !important; }
+.dash-stat-label, .dash-stat-note { color: var(--pebble-muted) !important; }
+.dash-stat-arrow { color: var(--pebble-neon-orange) !important; }
+:root.dark .dash-stat-card, :root.dark .dash-tone-sage, :root.dark .dash-tone-peach,
+:root.dark .dash-tone-lilac, :root.dark .dash-tone-rose, :root.dark .dash-tone-gold {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .12) !important;
+}
+:root.dark .dash-stat-icon { color: var(--pebble-neon-orange); background: color-mix(in srgb, var(--pebble-neon-orange) 13%, var(--pebble-surface-soft)) !important; }
+.dash-streak-card {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(135deg, var(--pebble-surface), color-mix(in srgb, var(--pebble-sage) 12%, var(--pebble-surface))) !important;
+  border: 1px solid var(--pebble-line);
+  box-shadow: var(--pebble-shadow) !important;
+}
+.dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light { color: var(--pebble-ink) !important; }
+.dash-flame-badge { color: var(--pebble-neon-orange) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 12%, var(--pebble-surface)) !important; box-shadow: none !important; }
+.dash-streak-progress span { background: var(--pebble-line) !important; }
+.dash-streak-progress span.is-filled { background: var(--pebble-neon-orange) !important; box-shadow: none !important; }
+:root.dark .dash-streak-card {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(135deg, var(--pebble-surface), color-mix(in srgb, var(--pebble-sage) 9%, var(--pebble-surface))) !important;
+  border-color: var(--pebble-line);
+}
+:root.dark .dash-streak-card h2, :root.dark .dash-streak-copy,
+:root.dark .dash-streak-unit, :root.dark .dash-kicker-light { color: var(--pebble-ink) !important; }
+.profile-cover {
+  background:
+    radial-gradient(ellipse at 86% 8%, color-mix(in srgb, var(--pebble-peach) 34%, transparent), transparent 20rem),
+    var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+  box-shadow: var(--pebble-shadow) !important;
+}
+.profile-cover-art { opacity: .22 !important; }
+:root.dark .profile-cover {
+  background:
+    radial-gradient(ellipse at 86% 8%, rgba(255, 134, 94, .12), transparent 20rem),
+    var(--pebble-surface) !important;
+  border-color: var(--pebble-line) !important;
+}
