@@ -1709,3 +1709,103 @@ input:focus, textarea:focus, select:focus {
 .pebble-topbar-page-icon svg { color: var(--pebble-neon-orange) !important; }
 :root.dark .pebble-topbar-page-icon svg { color: #ff9b77 !important; }
 .pebble-topbar-control span { color: var(--pebble-ink) !important; }
+
+
+/* Pebble design-system refinement: warm editorial light theme + deep plum dark theme. */
+:root {
+  color-scheme: light;
+  --pebble-canvas: #F7F2EB;
+  --pebble-surface: #FFFCF7;
+  --pebble-surface-soft: #F0E7DC;
+  --pebble-ink: #30251F;
+  --pebble-muted: #75665C;
+  --pebble-line: #E5DCD0;
+  --pebble-sage: #71866A;
+  --pebble-lavender: #B9A7D8;
+  --pebble-neon-orange: #D9572B;
+  --pebble-peach: #F2B99D;
+  --pebble-coral: #D9572B;
+  --pebble-shadow: 0 12px 34px rgba(64, 43, 29, .055);
+  accent-color: var(--pebble-neon-orange);
+}
+:root.dark {
+  color-scheme: dark;
+  --pebble-canvas: #1D1720;
+  --pebble-surface: #29212C;
+  --pebble-surface-soft: #352A38;
+  --pebble-ink: #F8EFE7;
+  --pebble-muted: #C5B4AA;
+  --pebble-line: #493B4A;
+  --pebble-sage: #A0B79A;
+  --pebble-lavender: #C7B1E8;
+  --pebble-neon-orange: #FF865E;
+  --pebble-peach: #FFB49A;
+  --pebble-coral: #FF865E;
+  --pebble-shadow: 0 16px 38px rgba(0, 0, 0, .20);
+}
+html, body { background-color: var(--pebble-canvas); }
+:root.dark body {
+  background:
+    radial-gradient(ellipse at 88% 0%, rgba(255, 134, 94, .075), transparent 30rem),
+    radial-gradient(ellipse at 8% 90%, rgba(199, 177, 232, .055), transparent 28rem),
+    var(--pebble-canvas);
+}
+::selection { background: color-mix(in srgb, var(--pebble-neon-orange) 24%, transparent); color: var(--pebble-ink); }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pebble-neon-orange) 78%, white);
+  outline-offset: 3px;
+}
+:root.dark input:focus-visible, :root.dark textarea:focus-visible, :root.dark select:focus-visible,
+:root.dark button:focus-visible, :root.dark a:focus-visible {
+  outline-color: var(--pebble-neon-orange);
+}
+/* One restrained brand accent; status colors retain their semantic meaning. */
+.pebble-sidebar { background: transparent !important; border-right-color: color-mix(in srgb, var(--pebble-line) 70%, transparent) !important; }
+.pebble-sidebar-brand { border-bottom-color: color-mix(in srgb, var(--pebble-line) 70%, transparent) !important; }
+.pebble-sidebar-section-label { color: var(--pebble-muted); font-weight: 700; }
+.pebble-nav-link { color: var(--pebble-muted) !important; }
+.pebble-nav-link:hover { color: var(--pebble-ink) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 7%, transparent) !important; }
+.pebble-nav-link[aria-current="page"] {
+  color: var(--pebble-ink) !important;
+  background: color-mix(in srgb, var(--pebble-neon-orange) 10%, var(--pebble-surface)) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-neon-orange) !important;
+}
+.pebble-nav-link[aria-current="page"] .pebble-nav-icon { color: var(--pebble-neon-orange) !important; }
+:root.dark .pebble-nav-link[aria-current="page"] {
+  color: var(--pebble-ink) !important;
+  background: color-mix(in srgb, var(--pebble-neon-orange) 13%, var(--pebble-surface)) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-neon-orange) !important;
+}
+.pebble-sidebar-note { background: color-mix(in srgb, var(--pebble-surface) 72%, transparent) !important; border-color: var(--pebble-line) !important; }
+.pebble-topbar { background: color-mix(in srgb, var(--pebble-canvas) 84%, transparent) !important; border-bottom-color: color-mix(in srgb, var(--pebble-line) 72%, transparent) !important; }
+.pebble-topbar-page-icon { color: var(--pebble-neon-orange) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 9%, transparent) !important; }
+.pebble-topbar-title { color: var(--pebble-ink) !important; }
+.pebble-topbar-control, .pebble-topbar-profile, .pebble-theme-toggle {
+  color: var(--pebble-ink) !important;
+  background: color-mix(in srgb, var(--pebble-surface) 86%, transparent) !important;
+  border-color: var(--pebble-line) !important;
+}
+.pebble-topbar-control:hover, .pebble-topbar-profile:hover { border-color: color-mix(in srgb, var(--pebble-neon-orange) 48%, var(--pebble-line)) !important; }
+.pebble-topbar-control svg, .pebble-topbar-page-icon svg { color: var(--pebble-neon-orange) !important; }
+:root.dark .pebble-topbar-control, :root.dark .pebble-topbar-profile, :root.dark .pebble-theme-toggle {
+  background: color-mix(in srgb, var(--pebble-surface) 90%, transparent) !important;
+  border-color: var(--pebble-line) !important;
+}
+:root.dark .pebble-topbar-account { color: var(--pebble-muted) !important; }
+/* Shared surfaces use consistent geometry; preserve specialized CV paper and calendar cells. */
+.tracker-summary-card, .tracker-application-card, .tracker-list-panel,
+.agenda-editorial-card, .calendar-panel, .development-card, .profile-card,
+.resume-settings-panel, .dash-stat-card, .dash-calendar-card, .dash-reminders-card {
+  border-color: var(--pebble-line);
+  box-shadow: 0 8px 24px rgba(64, 43, 29, .035);
+}
+:root.dark .tracker-summary-card, :root.dark .tracker-application-card, :root.dark .tracker-list-panel,
+:root.dark .agenda-editorial-card, :root.dark .calendar-panel, :root.dark .development-card,
+:root.dark .profile-card, :root.dark .resume-settings-panel, :root.dark .dash-stat-card,
+:root.dark .dash-calendar-card, :root.dark .dash-reminders-card { box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
+@media (max-width: 560px) {
+  .pebble-topbar { padding-inline: 10px; }
+  .pebble-topbar-title { font-size: 1rem !important; }
+  .pebble-topbar-actions { gap: 4px !important; }
+  .pebble-topbar-account { display: none; }
+}
