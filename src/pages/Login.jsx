@@ -122,7 +122,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen bg-alabaster dark:bg-night flex items-center justify-center p-4 overflow-hidden font-sans transition-colors duration-500">
+    <div className="auth-page auth-login relative min-h-screen bg-alabaster dark:bg-night flex items-center justify-center p-4 overflow-hidden font-sans transition-colors duration-500">
       
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-peach/40 dark:bg-peach/10 rounded-full blur-[100px] md:blur-[150px] opacity-70 animate-pulse"></div>
@@ -136,9 +136,9 @@ export default function Login() {
         </div>
       )}
 
-      <div className="relative z-10 w-full max-w-5xl bg-white/70 dark:bg-twilight/70 backdrop-blur-xl rounded-[3rem] p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-white/50 dark:border-starlight/30 animate-fade-in flex flex-col-reverse md:flex-row items-stretch gap-8">
+      <div className="auth-card relative z-10 w-full max-w-5xl bg-white/70 dark:bg-twilight/70 backdrop-blur-xl rounded-[3rem] p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-white/50 dark:border-starlight/30 animate-fade-in flex flex-col-reverse md:flex-row items-stretch gap-8">
         
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-2 md:px-6">
+        <div className="auth-form-panel w-full md:w-1/2 flex flex-col justify-center px-2 md:px-6">
           
           <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight mb-8 text-center md:text-left">{t('loginTitle')}</h2>
 
@@ -197,8 +197,8 @@ export default function Login() {
 
         </div>
 
-        <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-8 bg-peach/20 dark:bg-peach/10 rounded-[2.5rem] border border-peach/30 dark:border-peach/20">
-          <div className="bg-white dark:bg-twilight w-full max-w-[320px] aspect-square flex flex-col items-center justify-center text-center p-8 rounded-[2rem] shadow-xl shadow-peach/20 dark:shadow-none border border-white/80 dark:border-starlight/30 transition-transform duration-500 hover:scale-[1.02]">
+        <div className="auth-brand-panel w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-8 bg-peach/20 dark:bg-peach/10 rounded-[2.5rem] border border-peach/30 dark:border-peach/20">
+          <div className="auth-brand-card bg-white dark:bg-twilight w-full max-w-[320px] aspect-square flex flex-col items-center justify-center text-center p-8 rounded-[2rem] shadow-xl shadow-peach/20 dark:shadow-none border border-white/80 dark:border-starlight/30 transition-transform duration-500 hover:scale-[1.02]">
             <Logo className="w-24 h-24 md:w-28 md:h-28 shadow-sm rounded-[2rem] mb-6 rotate-[-2deg] hover:rotate-0 transition-transform duration-500" />
             <h1 className="text-4xl font-black text-cherry tracking-tighter mb-4">Pebble</h1>
             <p className="text-base md:text-lg font-bold text-gray-500 dark:text-gray-400 leading-relaxed">

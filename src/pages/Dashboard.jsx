@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  ArrowUpRight, BriefcaseBusiness, CalendarDays, CheckCircle2, Clock3,
+  Flame, Sparkles, Video, ClipboardCheck, PartyPopper, Bell, Leaf
+} from 'lucide-react';
 import { useEvents } from '../context/EventContext';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 export default function Dashboard() {
   const { t, language } = useLanguage();
-  const { events } = useEvents(); 
+  const { events } = useEvents();
   const navigate = useNavigate();
-  
+  const isTr = language === 'tr';
+
   const [stats, setStats] = useState({ total: 0, interview: 0, assessment: 0, video: 0, offer: 0 });
   const [streak, setStreak] = useState(0);
 
@@ -24,33 +29,23 @@ export default function Dashboard() {
       });
     }).catch(err => console.error(err));
 
-    const calculateStreak = () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let currentStreak = parseInt(localStorage.getItem('pebble_streak_count')) || 0;
+    const lastLogin = localStorage.getItem('pebble_last_login_date');
 
-      let currentStreak = parseInt(localStorage.getItem('pebble_streak_count')) || 0;
-      const lastLogin = localStorage.getItem('pebble_last_login_date');
+    if (lastLogin) {
+      const lastDate = new Date(parseInt(lastLogin));
+      const diffDays = Math.round((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) currentStreak += 1;
+      else if (diffDays > 1) currentStreak = 1;
+    } else {
+      currentStreak = 1;
+    }
 
-      if (lastLogin) {
-        const lastDate = new Date(parseInt(lastLogin));
-        const diffTime = today.getTime() - lastDate.getTime();
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-          currentStreak += 1;
-        } else if (diffDays > 1) {
-          currentStreak = 1;
-        }
-      } else {
-        currentStreak = 1;
-      }
-
-      localStorage.setItem('pebble_streak_count', currentStreak);
-      localStorage.setItem('pebble_last_login_date', today.getTime().toString());
-      setStreak(currentStreak);
-    };
-
-    calculateStreak();
+    localStorage.setItem('pebble_streak_count', currentStreak);
+    localStorage.setItem('pebble_last_login_date', today.getTime().toString());
+    setStreak(currentStreak);
   }, []);
 
   const todayStr = new Date().toISOString().split('T')[0];
@@ -63,137 +58,150 @@ export default function Dashboard() {
   const currentMonth = today.getMonth();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-  const startDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; 
-  
-  // DİLE GÖRE AYLAR VE GÜNLER
-  const monthNames = language === 'tr' 
-    ? ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
-    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-  const dayNames = language === 'tr'
-    ? ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
-    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const startDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+
+  const monthNames = isTr
+    ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
+    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const dayNames = isTr
+    ? ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
+    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   const hasEvent = (day) => {
-    const monthStr = String(currentMonth + 1).padStart(2, '0');
-    const dayStr = String(day).padStart(2, '0');
-    const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return events.some(e => e.date === dateStr);
   };
 
-  const StatBox = ({ label, value, colorClass }) => (
-    <div className={`bg-gray-50/50 dark:bg-night/20 px-5 py-3.5 rounded-[1.5rem] flex justify-between items-center shadow-sm border-2 transition-all hover:scale-[1.02] ${colorClass}`}>
-      <span className="font-bold text-gray-700 dark:text-gray-300 text-sm">{label}</span>
-      <span className="text-lg font-black">{value}</span>
-    </div>
-  );
+  const statCards = [
+    { label: t('statTotal'), value: stats.total, icon: BriefcaseBusiness, tone: 'sage', note: isTr ? 'Toplam başvuru' : 'Applications tracked' },
+    { label: t('statInterview'), value: stats.interview, icon: Clock3, tone: 'peach', note: isTr ? 'Görüşme aşaması' : 'In interview stage' },
+    { label: t('statAssessment'), value: stats.assessment, icon: ClipboardCheck, tone: 'lilac', note: isTr ? 'Değerlendirme' : 'Assessments' },
+    { label: t('statVideo'), value: stats.video, icon: Video, tone: 'rose', note: isTr ? 'Video görüşmesi' : 'Video interviews' },
+    { label: t('statOffer'), value: stats.offer, icon: PartyPopper, tone: 'gold', note: isTr ? 'Teklifler' : 'Offers received' },
+  ];
 
   return (
-    <div className="bg-white dark:bg-twilight rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none p-6 md:p-8 lg:p-10 border border-gray-100 dark:border-starlight/20 transition-colors duration-500 h-full flex flex-col">
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 animate-fade-in pb-2">
-        
-        <div className="lg:col-span-5 flex flex-col gap-4">
-          
-          <div className="flex flex-col gap-3">
-            <StatBox label={t('statTotal')} value={stats.total} colorClass="border-blue-100 dark:border-blue-900/50 text-blue-600 dark:text-blue-400" />
-            <StatBox label={t('statInterview')} value={stats.interview} colorClass="border-orange-100 dark:border-orange-900/50 text-orange-500 dark:text-orange-400" />
-            <StatBox label={t('statAssessment')} value={stats.assessment} colorClass="border-purple-100 dark:border-purple-900/50 text-purple-600 dark:text-purple-400" />
-            <StatBox label={t('statVideo')} value={stats.video} colorClass="border-pink-100 dark:border-pink-900/50 text-pink-500 dark:text-pink-400" />
-            <StatBox label={t('statOffer')} value={stats.offer} colorClass="border-emerald-100 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400" />
+    <div className="pebble-dashboard space-y-6 md:space-y-8 pb-6">
+      <section className="dash-welcome relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-9 lg:p-10">
+        <div className="dash-welcome-orb dash-orb-one" />
+        <div className="dash-welcome-orb dash-orb-two" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="max-w-2xl">
+            <div className="dash-eyebrow"><Sparkles size={15} /> {isTr ? 'KÜÇÜK ADIMLAR, BÜYÜK HEDEFLER' : 'SMALL STEPS, BIG GOALS'}</div>
+            <h1 className="mt-4 text-3xl md:text-5xl font-semibold leading-tight">
+              {isTr ? <>Merhaba, <span>hayallerinin</span><br className="hidden md:block" /> peşinden git. ✨</> : <>Hello, keep chasing<br className="hidden md:block" /> <span>what’s next.</span> ✨</>}
+            </h1>
+            <p className="mt-3 max-w-lg text-sm md:text-base leading-7 dash-welcome-copy">
+              {isTr ? 'Kariyer yolculuğunu adım adım takip et. Bugün kendin için küçük bir şey yapman yeterli.' : 'Keep your career journey moving, one small step at a time. Something small today is still progress.'}
+            </p>
           </div>
-          
-          <div className="mt-auto relative bg-gradient-to-br from-cherry to-[#FF9A9E] p-6 rounded-[2rem] flex flex-col items-center justify-center text-white shadow-[0_15px_40px_-10px_rgba(233,172,187,0.6)] overflow-hidden group hover:scale-[1.02] transition-all duration-300 shrink-0">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/30 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-            <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-peach/40 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
-
-            <span className="relative z-10 text-[10px] font-black tracking-[0.2em] uppercase opacity-90 mb-1">
-              {t('dashStreak')}
-            </span>
-            
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              <span className="text-5xl font-black drop-shadow-md">{streak}</span>
-              <span className="text-4xl drop-shadow-lg animate-[bounce_2s_infinite]">🔥</span>
-            </div>
-
-            <span className="relative z-10 text-[9px] font-bold opacity-80 mt-2 text-center px-2">
-              {t('dashStreakMsg')}
-            </span>
-          </div>
+          <button onClick={() => navigate('/tracker')} className="dash-primary-action shrink-0">
+            <BriefcaseBusiness size={17} /> {isTr ? 'Başvurularımı gör' : 'View applications'} <ArrowUpRight size={17} />
+          </button>
         </div>
-
-        <div className="lg:col-span-7 flex flex-col gap-6 h-full">
-          
-          <div 
-            onClick={() => navigate('/takvim')}
-            className="bg-columbia/10 dark:bg-columbia/5 border-2 border-columbia/20 dark:border-starlight/30 p-5 md:p-6 rounded-[2.5rem] flex-1 flex flex-col cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
-          >
-            <div className="absolute top-5 right-6 text-[9px] font-black text-columbia dark:text-columbia/70 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-              {language === 'tr' ? 'Takvime Git' : 'Go to Calendar'} <span>➔</span>
-            </div>
-
-            <span className="text-xl font-black tracking-widest uppercase text-columbia dark:text-columbia/80 mb-4">
-              {monthNames[currentMonth]} {currentYear}
-            </span>
-            
-            <div className="grid grid-cols-7 gap-1 md:gap-1.5 flex-1 content-center">
-              {dayNames.map(d => (
-                <div key={d} className="text-center text-[9px] font-black text-columbia/60 dark:text-columbia/40 uppercase tracking-widest mb-2">{d}</div>
-              ))}
-              
-              {Array.from({ length: startDayIndex }).map((_, i) => (
-                <div key={`empty-${i}`} />
-              ))}
-              
-              {Array.from({ length: daysInMonth }).map((_, i) => {
-                const day = i + 1;
-                const isToday = day === today.getDate();
-                const evt = hasEvent(day);
-                
-                return (
-                  <div 
-                    key={day} 
-                    className={`relative flex flex-col items-center justify-center py-2 rounded-[1rem] text-xs font-bold transition-all ${
-                      isToday 
-                        ? 'bg-white dark:bg-twilight text-columbia shadow-sm border border-columbia/20 dark:border-columbia/10' 
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-twilight/50'
-                    }`}
-                  >
-                    {day}
-                    {evt && <span className="absolute bottom-1 w-1 h-1 rounded-full bg-cherry"></span>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          <div className="bg-[#D4B996]/80 dark:bg-[#8A6F4E]/80 border-2 border-[#D4B996]/30 dark:border-starlight/20 p-5 md:p-6 rounded-[2.5rem] flex flex-col justify-center min-h-[120px] shrink-0 shadow-lg relative overflow-hidden transition-colors duration-500">
-            <div className="absolute right-[-10px] bottom-[-30px] text-8xl opacity-10">🔔</div>
-            
-            <h3 className="text-base font-black text-white/90 uppercase tracking-[0.2em] mb-4 relative z-10">
-              {t('reminderTitle')}
-            </h3>
-            
-            <div className="space-y-2 relative z-10 max-h-[80px] overflow-y-auto custom-scrollbar pr-2">
-              {todaysEvents.length > 0 ? (
-                todaysEvents.map(evt => (
-                  <div key={evt.id} className="flex items-center gap-3 bg-white/20 dark:bg-black/20 p-3 rounded-xl backdrop-blur-sm">
-                    <span className="bg-white dark:bg-twilight text-[#D4B996] dark:text-[#8A6F4E] px-2 py-0.5 rounded-lg text-[10px] font-black shrink-0 shadow-sm">
-                      {evt.time}
-                    </span>
-                    <span className="text-white text-sm font-bold truncate">{evt.title}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-white/90 text-sm font-bold italic">
-                  {t('dashNoEvent')}
-                </p>
-              )}
-            </div>
-          </div>
+        <div className="dash-welcome-decoration" aria-hidden="true">
+          <div className="dash-sun"><span /></div>
+          <div className="dash-plant"><Leaf size={48} /><Leaf size={34} /><Leaf size={26} /></div>
+          <span className="dash-spark dash-spark-a">✳</span><span className="dash-spark dash-spark-b">✦</span>
         </div>
+      </section>
 
+      <section>
+        <div className="dash-section-heading">
+          <div><p className="dash-kicker">{isTr ? 'YOLCULUĞUN' : 'YOUR JOURNEY'}</p><h2>{isTr ? 'İlerleme panon' : 'Your progress at a glance'}</h2></div>
+          <button onClick={() => navigate('/tracker')} className="dash-text-link">{isTr ? 'Tümünü görüntüle' : 'View all'} <ArrowUpRight size={15} /></button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 md:gap-4 mt-4">
+          {statCards.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <button key={item.label} onClick={() => navigate('/tracker')} className={`dash-stat-card dash-tone-${item.tone} text-left`} style={{ animationDelay: `${index * 65}ms` }}>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="dash-stat-icon"><Icon size={19} strokeWidth={1.8} /></span>
+                  <ArrowUpRight size={16} className="dash-stat-arrow" />
+                </div>
+                <span className="dash-stat-value">{item.value}</span>
+                <span className="dash-stat-label">{item.label}</span>
+                <span className="dash-stat-note">{item.note}</span>
+                <span className="dash-stat-squiggle" aria-hidden="true" />
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 md:gap-6">
+        <section className="xl:col-span-5 dash-streak-card relative overflow-hidden">
+          <div className="dash-streak-pattern" aria-hidden="true">✳</div>
+          <div className="relative z-10 flex items-start justify-between gap-4">
+            <div>
+              <p className="dash-kicker dash-kicker-light">{isTr ? 'DEVAMLILIK KAZANIR' : 'CONSISTENCY IS MAGIC'}</p>
+              <h2 className="mt-2 text-2xl md:text-3xl">{t('dashStreak')}</h2>
+              <p className="mt-2 text-sm dash-streak-copy">{t('dashStreakMsg')}</p>
+            </div>
+            <span className="dash-flame-badge"><Flame size={25} fill="currentColor" /></span>
+          </div>
+          <div className="relative z-10 flex items-end gap-3 mt-7">
+            <span className="dash-streak-number">{streak}</span>
+            <span className="dash-streak-unit">{isTr ? 'günlük seri' : 'day streak'}</span>
+          </div>
+          <div className="dash-streak-progress" aria-label={isTr ? `${Math.min(streak, 7)} / 7 gün` : `${Math.min(streak, 7)} of 7 days`}>
+            {Array.from({ length: 7 }).map((_, index) => <span key={index} className={index < streak % 8 || streak >= 7 ? 'is-filled' : ''} />)}
+          </div>
+          <p className="dash-streak-footnote">{isTr ? 'Her gün küçük bir adım at. Kendine yatırım yapıyorsun.' : 'One small step a day is an investment in yourself.'}</p>
+          <div className="dash-streak-sun" aria-hidden="true" />
+        </section>
+
+        <section className="xl:col-span-7 dash-calendar-card">
+          <div className="flex items-start justify-between gap-3">
+            <div><p className="dash-kicker">{isTr ? 'PLANLARIN' : 'ON YOUR RADAR'}</p><h2 className="mt-1 text-2xl">{monthNames[currentMonth]} <span className="dash-calendar-year">{currentYear}</span></h2></div>
+            <button onClick={() => navigate('/takvim')} className="dash-round-link" aria-label={isTr ? 'Takvimi aç' : 'Open calendar'}><ArrowUpRight size={19} /></button>
+          </div>
+          <div className="grid grid-cols-7 gap-1.5 mt-5">
+            {dayNames.map(day => <div key={day} className="dash-day-name">{day}</div>)}
+            {Array.from({ length: startDayIndex }).map((_, index) => <div key={`empty-${index}`} />)}
+            {Array.from({ length: daysInMonth }).map((_, index) => {
+              const day = index + 1;
+              const isToday = day === today.getDate();
+              const eventDay = hasEvent(day);
+              return (
+                <div key={day} className={`dash-calendar-day ${isToday ? 'is-today' : ''} ${eventDay ? 'has-event' : ''}`}>
+                  <span>{day}</span>{eventDay && <i />}
+                </div>
+              );
+            })}
+          </div>
+          <button onClick={() => navigate('/takvim')} className="dash-calendar-footer"><CalendarDays size={15} /> {isTr ? 'Tüm takvimi aç' : 'Open full calendar'} <ArrowUpRight size={15} /></button>
+        </section>
       </div>
+
+      <section className="dash-reminders-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="dash-reminder-icon"><Bell size={19} /></span>
+            <div><p className="dash-kicker">{isTr ? 'BUGÜNÜN AKIŞI' : 'TODAY AT A GLANCE'}</p><h2 className="text-2xl mt-1">{t('reminderTitle')}</h2></div>
+          </div>
+          <span className="dash-reminder-count">{todaysEvents.length} {isTr ? 'etkinlik' : 'events'}</span>
+        </div>
+        {todaysEvents.length > 0 ? (
+          <div className="dash-event-list mt-5">
+            {todaysEvents.map((event, index) => (
+              <div key={event.id} className="dash-event-row">
+                <div className="dash-event-time">{event.time}</div>
+                <div className="dash-event-timeline"><span /></div>
+                <div className="min-w-0 flex-1"><p className="dash-event-title">{event.title}</p></div>
+                <span className="dash-event-index">{String(index + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="dash-empty-state mt-5">
+            <span className="dash-empty-illustration"><CalendarDays size={24} /></span>
+            <div><p className="font-semibold">{t('dashNoEvent')}</p><p className="text-sm mt-1">{isTr ? 'Bugün için bir plan ekleyerek başlayabilirsin.' : 'Add a little plan to give your day some shape.'}</p></div>
+            <button onClick={() => navigate('/takvim')} className="dash-empty-action">{isTr ? 'Plan ekle' : 'Add a plan'} <ArrowUpRight size={15} /></button>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

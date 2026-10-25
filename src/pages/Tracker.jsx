@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Search, Plus, BriefcaseBusiness, CalendarDays, TrendingUp, CircleCheck, MapPin, Trash2, Eye, X, SlidersHorizontal } from 'lucide-react';
 import ApplicationDetailsModal from '../components/ApplicationDetailsModal';
 import ApplicationFormModal from '../components/ApplicationFormModal';
 import StatusUpdateModal from '../components/StatusUpdateModal';
@@ -12,10 +12,12 @@ export default function Tracker() {
   const [errorMsg, setErrorMsg] = useState(null); 
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
-  const [pendingUpdate, setPendingUpdate] = useState(null); 
+  const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL'); 
 
-  const { t } = useLanguage(); 
-  const navigate = useNavigate();
+  const { t, language } = useLanguage();
+  const isTr = language === 'tr'; 
 
   useEffect(() => {
     fetchApplications();
@@ -111,110 +113,83 @@ export default function Tracker() {
     }
   };
 
-  // YENİ: Dashboard ile uyumlu, Dengeli Kontrast Rozet Renkleri
-  const getStatusBadge = (status) => {
-    const safeStatus = status ? status.toUpperCase() : 'APPLIED';
-    const styles = {
-      'APPLIED': 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50',
-      'INTERVIEW': 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/50',
-      'ASSESSMENT': 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50',
-      'VIDEO_INTERVIEW': 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50',
-      'OFFER': 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50',
-      'REJECTED': 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50'
-    };
-    return styles[safeStatus] || 'bg-gray-100 dark:bg-starlight/50 text-gray-500 dark:text-gray-300';
+  const statusOptions = [
+    { value: 'APPLIED', label: t('statusApplied') },
+    { value: 'ASSESSMENT', label: t('statusAssessment') },
+    { value: 'VIDEO_INTERVIEW', label: t('statusVideo') },
+    { value: 'INTERVIEW', label: t('statusInterview') },
+    { value: 'OFFER', label: t('statusOffer') },
+    { value: 'REJECTED', label: t('statusRejected') },
+  ];
+  const normalizedQuery = searchTerm.trim().toLocaleLowerCase(isTr ? 'tr-TR' : 'en-US');
+  const filteredApplications = useMemo(() => applications.filter((app) => {
+    const company = app.companyName || app.company_name || '';
+    const position = app.position || '';
+    const location = app.location || '';
+    const platform = app.platform || '';
+    const matchesQuery = `${company} ${position} ${location} ${platform}`.toLocaleLowerCase().includes(normalizedQuery);
+    return matchesQuery && (statusFilter === 'ALL' || (app.status || 'APPLIED').toUpperCase() === statusFilter);
+  }), [applications, normalizedQuery, statusFilter]);
+  const getStatusLabel = (status) => statusOptions.find((item) => item.value === (status || 'APPLIED').toUpperCase())?.label || status || t('statusApplied');
+  const countByStatus = (status) => applications.filter((app) => (app.status || 'APPLIED').toUpperCase() === status).length;
+  const formatApplicationDate = (app) => {
+    const raw = app.applicationDate || app.application_date || app.createdAt || app.created_at;
+    if (!raw) return '';
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   return (
     <>
-      <div className="bg-white dark:bg-twilight rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-none overflow-hidden border border-cambridge/20 dark:border-starlight/30 transition-colors duration-500">
-        
-        <div className="p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h2 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">{t('dashTitle')}</h2>
-            <p className="text-gray-400 dark:text-gray-400 font-medium mt-2">{t('dashSubtitle')}</p>
-          </div>
-          <button onClick={() => setShowAddModal(true)} className="shrink-0 px-8 py-4 bg-cherry text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-cherry/20 dark:shadow-none uppercase tracking-widest text-xs">
-            {t('addNew')}
+      <main className="tracker-page">
+        <header className="tracker-hero tracker-hero-compact">
+          <button type="button" className="tracker-primary-button" onClick={() => setShowAddModal(true)}><Plus size={17} />{t('addNew')}</button>
+        </header>
+
+        <section className="tracker-summary-grid" aria-label="Application overview">
+          <button type="button" className={`tracker-summary-card ${statusFilter === 'ALL' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('ALL')}>
+            <span className="tracker-summary-icon"><BriefcaseBusiness size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'TOPLAM BAŞVURU' : 'TOTAL APPLICATIONS'}</small><strong>{applications.length}</strong><em>{t('dashSubtitle')}</em></span><span className="tracker-summary-number">01</span>
           </button>
-        </div>
+          <button type="button" className={`tracker-summary-card ${statusFilter === 'INTERVIEW' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('INTERVIEW')}>
+            <span className="tracker-summary-icon interview"><CalendarDays size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'MÜLAKATLAR' : 'INTERVIEWS'}</small><strong>{countByStatus('INTERVIEW') + countByStatus('VIDEO_INTERVIEW')}</strong><em>{t('statusVideo')}</em></span><span className="tracker-summary-number">02</span>
+          </button>
+          <button type="button" className={`tracker-summary-card ${statusFilter === 'OFFER' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('OFFER')}>
+            <span className="tracker-summary-icon offer"><CircleCheck size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'TEKLİFLER' : 'OFFERS'}</small><strong>{countByStatus('OFFER')}</strong><em>{t('statusOffer')}</em></span><span className="tracker-summary-number">03</span>
+          </button>
+          <button type="button" className={`tracker-summary-card ${statusFilter === 'APPLIED' ? 'is-selected' : ''}`} onClick={() => setStatusFilter('APPLIED')}>
+            <span className="tracker-summary-icon activity"><TrendingUp size={19}/></span><span className="tracker-summary-copy"><small>{isTr ? 'BAŞVURULDU' : 'APPLIED'}</small><strong>{countByStatus('APPLIED')}</strong><em>{t('statusApplied')}</em></span><span className="tracker-summary-number">04</span>
+          </button>
+        </section>
 
-        <div>
-          {loading ? (
-            <div className="p-20 text-center text-columbia font-black animate-pulse tracking-widest uppercase">{t('loading')}</div>
-          ) : errorMsg ? (
-            <div className="p-20 text-center text-cherry font-bold italic border-t border-cherry/10 bg-cherry/5">
-              ⚠️ {errorMsg}
-            </div>
-          ) : applications.length === 0 ? (
-            <div className="p-20 text-center text-gray-300 dark:text-gray-500 font-medium italic">{t('emptyList')}</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-columbia/5 dark:bg-night/50 border-y border-columbia/10 dark:border-starlight/30">
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colCompany')}</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colPosition')}</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colLocMode')}</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colSalary')}</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em]">{t('colStage')}</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-cherry uppercase tracking-[0.2em] text-center">{t('colAction')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-columbia/10 dark:divide-starlight/30">
-                  {applications.map((app) => {
-                    const appId = app.id || app.job_application_id;
-                    const compName = app.companyName || app.company_name || 'Bilinmeyen Kurum';
-                    const pos = app.position || 'Bilinmeyen Pozisyon';
-                    const loc = app.location || t('unspecified');
-                    const mode = app.workMode || app.work_mode || '-';
-                    const sal = app.salary && app.salary !== 'Bilinmiyor' ? app.salary : null;
-                    const stat = app.status || 'APPLIED';
+        <section className="tracker-list-panel">
+          <div className="tracker-list-heading tracker-list-heading-compact"><span className="tracker-result-count">{filteredApplications.length} <small>{t('colCompany')}</small></span></div>
+          <div className="tracker-toolbar">
+            <label className="tracker-search"><Search size={17}/><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder={t('colCompany') + ', ' + t('colPosition') + '...'} />{searchTerm && <button type="button" onClick={() => setSearchTerm('')} aria-label={isTr ? "Aramayı temizle" : "Clear search"}><X size={14}/></button>}</label>
+            <label className="tracker-status-filter"><SlidersHorizontal size={15}/><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">{t('colStage')} · {applications.length}</option>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label} · {countByStatus(option.value)}</option>)}</select></label>
+          </div>
 
-                    return (
-                      <tr key={appId} className="hover:bg-columbia/5 dark:hover:bg-night/40 transition-all group">
-                        <td className="px-8 py-6 font-bold text-gray-700 dark:text-gray-200">{compName}</td>
-                        <td className="px-8 py-6 text-gray-500 dark:text-gray-400 font-medium">{pos}</td>
-                        <td className="px-8 py-6">
-                          <span className="block text-sm font-bold text-gray-600 dark:text-gray-300">{loc}</span>
-                          <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{mode}</span>
-                        </td>
-                        <td className="px-8 py-6 text-sm font-bold text-gray-600 dark:text-gray-300">
-                          {sal ? sal : <span className="text-gray-300 dark:text-gray-600 font-medium">-</span>}
-                        </td>
-                        <td className="px-8 py-6">
-                          <select 
-                            value={stat}
-                            onChange={(e) => onStatusDropdownChange(app, e.target.value)}
-                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm dark:shadow-none outline-none cursor-pointer transition-all ${getStatusBadge(stat)}`}
-                          >
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="APPLIED">{t('statusApplied')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="ASSESSMENT">{t('statusAssessment')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="VIDEO_INTERVIEW">{t('statusVideo')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="INTERVIEW">{t('statusInterview')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="OFFER">{t('statusOffer')}</option>
-                            <option className="bg-white dark:bg-twilight text-gray-800 dark:text-gray-200 font-medium" value="REJECTED">{t('statusRejected')}</option>
-                          </select>
-                        </td>
-                        <td className="px-8 py-6 flex items-center justify-center gap-4">
-                          <button 
-                            onClick={() => setSelectedApp(app)} 
-                            className="px-5 py-2 text-[11px] font-black uppercase tracking-widest text-cambridge bg-cambridge/10 dark:bg-cambridge/20 border border-cambridge/20 dark:border-cambridge/30 rounded-xl hover:bg-cambridge hover:text-white transition-all"
-                          >
-                            {t('btnView')}
-                          </button>
-                          <button onClick={() => handleDelete(appId)} className="text-gray-300 dark:text-gray-500 hover:text-cherry transition-all font-bold text-xl hover:scale-110 active:scale-95">×</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-
+          {loading ? <div className="tracker-state"><span className="tracker-state-spinner"/><strong>{t('loading')}</strong></div>
+          : errorMsg ? <div className="tracker-state tracker-error"><strong>⚠ {errorMsg}</strong><button type="button" onClick={fetchApplications}>{t('loading')}</button></div>
+          : filteredApplications.length === 0 ? <div className="tracker-state"><span className="tracker-state-icon"><BriefcaseBusiness size={26}/></span><strong>{applications.length ? (searchTerm ? 'Aramana uygun başvuru bulunamadı' : 'Bu aşamada başvuru yok') : t('emptyList')}</strong><p>{applications.length ? (isTr ? 'Arama veya filtreyi değiştirmeyi deneyebilirsin.' : 'Try changing your search or filter.') : t('dashSubtitle')}</p>{!applications.length && <button type="button" className="tracker-primary-button" onClick={() => setShowAddModal(true)}><Plus size={16}/>{t('addNew')}</button>}</div>
+          : <div className="tracker-application-list">
+            {filteredApplications.map((app) => {
+              const appId = app.id || app.job_application_id;
+              const company = app.companyName || app.company_name || 'Bilinmeyen kurum';
+              const position = app.position || 'Bilinmeyen pozisyon';
+              const location = app.location || t('unspecified');
+              const mode = app.workMode || app.work_mode || '';
+              const salary = app.salary && app.salary !== 'Bilinmiyor' ? app.salary : '';
+              const status = (app.status || 'APPLIED').toUpperCase();
+              const date = formatApplicationDate(app);
+              return <article key={appId} className="tracker-application-card">
+                <div className="tracker-company-mark">{company.trim().charAt(0).toLocaleUpperCase()}</div>
+                <div className="tracker-application-main"><div className="tracker-application-title"><h3>{company}</h3><span className={`tracker-status-pill tracker-status-${status.toLowerCase()}`}>{getStatusLabel(status)}</span></div><p>{position}</p><div className="tracker-application-meta">{location && <span><MapPin size={13}/>{location}</span>}{mode && <span>{mode}</span>}{date && <span><CalendarDays size={13}/>{date}</span>}{salary && <span className="tracker-salary">{salary}</span>}</div></div>
+                <div className="tracker-application-actions"><label className="tracker-card-status"><span>{t('colStage')}</span><select value={status} onChange={(event) => onStatusDropdownChange(app, event.target.value)} aria-label={t('colStage')}>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label><button type="button" className="tracker-view-button" onClick={() => setSelectedApp(app)}><Eye size={15}/>{t('btnView')}</button><button type="button" className="tracker-delete-button" onClick={() => handleDelete(appId)} aria-label={t('confirmDelete')}><Trash2 size={16}/></button></div>
+              </article>;
+            })}
+          </div>}
+        </section>
+      </main>
       <ApplicationFormModal show={showAddModal} onClose={() => setShowAddModal(false)} onSubmit={handleAddSubmit} />
       <ApplicationDetailsModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdate={fetchApplications} />
       <StatusUpdateModal show={!!pendingUpdate} newStatus={pendingUpdate?.newStatus} onClose={() => setPendingUpdate(null)} onConfirm={handleFinalStatusUpdate} />
