@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Logo from '../components/Logo';
 import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -60,7 +61,7 @@ export default function ResetPassword() {
       {/* Cam Efektli (Glassmorphism) Kart */}
       <div className="auth-reset-card bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white z-10 relative">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-black tracking-widest text-cherry mb-4">PEBBLE</h1>
+          <div className="flex justify-center mb-4"><Logo className="h-12 w-12" /></div><h1 className="text-2xl font-black tracking-widest text-cherry mb-4">Pebble</h1>
           <h2 className="text-2xl font-bold text-gray-800">Yeni Şifre Belirle 🔒</h2>
           <p className="text-sm text-gray-500 mt-2">Lütfen hesabın için güçlü bir şifre oluştur.</p>
         </div>
