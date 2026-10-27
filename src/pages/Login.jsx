@@ -117,7 +117,7 @@ export default function Login() {
   };
 
   const startGoogleLogin = () => {
-    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\\/+$/, '');
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
     window.location.assign(`${apiBase}/oauth2/authorization/google`);
   };
 
