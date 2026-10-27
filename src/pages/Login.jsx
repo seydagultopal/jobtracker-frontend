@@ -6,7 +6,8 @@ import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 
 export default function Login() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isTr = language === 'tr';
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -66,6 +67,9 @@ export default function Login() {
         password: formData.password
       };
 
+      // Clear any previous account session before authenticating the credentials entered here.
+      // This is especially important when switching away from an account pending deletion.
+      await api.post('/api/auth/logout');
       const response = await api.post('/api/auth/login', payload);
       if (response.data?.accountPendingDeletion) {
         navigate('/account-reactivation', { replace: true });
@@ -75,7 +79,11 @@ export default function Login() {
       setTimeout(() => { navigate('/dashboard'); }, 1500);
       
     } catch (error) {
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      if (error.config?.url?.includes('/api/auth/logout')) {
+        showToastMessage('errorGeneral', isTr
+          ? 'Önceki oturum güvenli şekilde kapatılamadı. Lütfen tekrar dene.'
+          : 'The previous session could not be safely closed. Please try again.');
+      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         showToastMessage('errorGeneral', 'Hatalı e-posta veya şifre!');
       } else {
         showToastMessage('errorGeneral', t('msgLoginFailed'));
