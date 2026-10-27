@@ -75,6 +75,11 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const startGoogleLogin = () => {
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
+    window.location.assign(`${apiBase}/oauth2/authorization/google`);
+  };
+
   const getToastStyle = (type) => {
     switch (type) {
       case 'success': return 'bg-cambridge text-white shadow-cambridge/40'; 
@@ -165,6 +170,22 @@ export default function Register() {
               {loading ? '...' : t('regBtn')}
             </button>
           </form>
+
+          <div className="flex items-center gap-4 my-5">
+            <div className="flex-1 h-px bg-columbia/10 dark:bg-starlight/30"></div>
+            <span className="text-[10px] font-black text-gray-400 tracking-widest">{t('loginOr')}</span>
+            <div className="flex-1 h-px bg-columbia/10 dark:bg-starlight/30"></div>
+          </div>
+
+          <button type="button" onClick={startGoogleLogin} className="w-full flex items-center justify-center gap-3 py-3.5 bg-white dark:bg-twilight text-gray-600 dark:text-gray-200 text-sm font-bold rounded-2xl border border-columbia/20 dark:border-starlight/40 hover:bg-gray-50 dark:hover:bg-night shadow-sm transition-all hover:scale-[1.02] active:scale-95">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.87h5.38a4.6 4.6 0 0 1-2 3.02v2.52h3.24c1.9-1.75 2.98-4.33 2.98-7.36Z"/>
+              <path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.52c-.9.6-2.04.96-3.38.96-2.6 0-4.8-1.76-5.59-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/>
+              <path fill="#FBBC05" d="M6.41 13.91a6 6 0 0 1 0-3.82v-2.6H3.06a10 10 0 0 0 0 9.02l3.35-2.6Z"/>
+              <path fill="#EA4335" d="M12 5.97c1.47 0 2.79.5 3.82 1.5l2.86-2.86A9.57 9.57 0 0 0 12 2a10 10 0 0 0-8.94 5.49l3.35 2.6C7.2 7.73 9.4 5.97 12 5.97Z"/>
+            </svg>
+            {t('loginGoogle')}
+          </button>
 
           {/* Giriş Yap Yönlendirmesi */}
           <div className="mt-6 text-center">

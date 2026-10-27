@@ -35,6 +35,22 @@ export default function Login() {
     setToast({ show: true, type, msg });
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get('oauthError');
+    if (!oauthError) return;
+
+    const messages = {
+      account_exists: 'Bu e-posta ile zaten bir Pebble hesabı var. Lütfen e-posta ve şifrenle giriş yap.',
+      unverified_email: 'Google e-posta adresini doğrulayamadı. Başka bir hesap dene.',
+      failed: 'Google ile giriş tamamlanamadı. Lütfen tekrar dene.'
+    };
+    setToast({ show: true, type: 'errorGeneral', msg: messages[oauthError] || messages.failed });
+    params.delete('oauthError');
+    const query = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -100,8 +116,9 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleComingSoon = () => {
-    alert(t('comingSoon'));
+  const startGoogleLogin = () => {
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
+    window.location.assign(`${apiBase}/oauth2/authorization/google`);
   };
 
   const getToastStyle = (type) => {
@@ -177,7 +194,7 @@ export default function Login() {
             <div className="flex-1 h-[1px] bg-columbia/10 dark:bg-starlight/30"></div>
           </div>
 
-          <button type="button" onClick={handleComingSoon} className="w-full flex items-center justify-center gap-3 py-3.5 bg-white dark:bg-twilight text-gray-600 dark:text-gray-200 text-sm font-bold rounded-2xl border border-columbia/20 dark:border-starlight/40 hover:bg-gray-50 dark:hover:bg-night shadow-sm transition-all hover:scale-[1.02] active:scale-95">
+          <button type="button" onClick={startGoogleLogin} className="w-full flex items-center justify-center gap-3 py-3.5 bg-white dark:bg-twilight text-gray-600 dark:text-gray-200 text-sm font-bold rounded-2xl border border-columbia/20 dark:border-starlight/40 hover:bg-gray-50 dark:hover:bg-night shadow-sm transition-all hover:scale-[1.02] active:scale-95">
             <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
               <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
                 <path fill="#4285F4" d="M -3.264,51.509 C -3.264,50.719 -3.334,49.969 -3.454,49.239 L -14.754,49.239 L -14.754,53.749 L -8.284,53.749 C -8.574,55.229 -9.424,56.479 -10.684,57.329 L -10.684,60.329 L -6.824,60.329 C -4.564,58.239 -3.264,55.159 -3.264,51.509 Z"/>
