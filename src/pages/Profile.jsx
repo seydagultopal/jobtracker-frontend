@@ -1,6 +1,7 @@
 import { AlertCircle, Briefcase, Camera, CheckCircle2, Eye, EyeOff, FileText, Github, GraduationCap, Image as ImageIcon, Key, Linkedin, Lock, Mail, MapPin, Phone, Plus, Save, Shield, Sparkles, Trash2, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import AccountDeletionPanel from '../components/AccountDeletionPanel';
 import api from '../services/api';
 
 const COVER_OPTIONS = [
@@ -404,6 +405,7 @@ const handleCoverUpload = (e) => {
                 <button type="submit" disabled={saving} className="profile-save-button mt-5"><Shield size={16} />{saving ? '…' : (isTr ? 'Şifreyi güncelle' : 'Update password')}</button>
               </form>
               <div className="profile-security-note"><Lock size={16} /><p>{isTr ? 'Güvenliğin için şifreni kimseyle paylaşma ve farklı sitelerde aynı şifreyi kullanmamaya çalış.' : 'For your security, never share your password or reuse it across websites.'}</p></div>
+              <AccountDeletionPanel />
             </div>
           )}
         </section>

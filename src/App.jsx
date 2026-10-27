@@ -1,6 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AccountReactivation from './pages/AccountReactivation';
 import Agenda from './pages/Agenda';
 import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
@@ -23,6 +24,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/account-reactivation" element={<AccountReactivation />} />
           <Route
             path="/onboarding"
             element={<ProtectedRoute><Onboarding /></ProtectedRoute>}

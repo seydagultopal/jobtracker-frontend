@@ -38,6 +38,11 @@ export default function Login() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const oauthError = params.get('oauthError');
+    if (params.get('accountDeletionScheduled') === 'true') {
+      setToast({ show: true, type: 'warning', msg: 'Hesap silme talebin alındı. 30 gün içinde giriş yaparak talebini iptal edebilirsin.' });
+      params.delete('accountDeletionScheduled');
+      window.history.replaceState({}, '', window.location.pathname + (params.toString() ? `?${params.toString()}` : '') + window.location.hash);
+    }
     if (!oauthError) return;
 
     const messages = {
@@ -61,13 +66,13 @@ export default function Login() {
         password: formData.password
       };
 
-      await api.post('/api/auth/login', payload);
-      
+      const response = await api.post('/api/auth/login', payload);
+      if (response.data?.accountPendingDeletion) {
+        navigate('/account-reactivation', { replace: true });
+        return;
+      }
       showToastMessage('success', t('msgLoginSuccess'));
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
+      setTimeout(() => { navigate('/dashboard'); }, 1500);
       
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
