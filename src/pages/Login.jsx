@@ -38,6 +38,11 @@ export default function Login() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const oauthError = params.get('oauthError');
+    if (params.get('accountDeletionScheduled') === 'true') {
+      setToast({ show: true, type: 'warning', msg: 'Hesap silme talebin alındı. 30 gün içinde giriş yaparak talebini iptal edebilirsin.' });
+      params.delete('accountDeletionScheduled');
+      window.history.replaceState({}, '', window.location.pathname + (params.toString() ? `?${params.toString()}` : '') + window.location.hash);
+    }
     if (!oauthError) return;
 
     const messages = {
