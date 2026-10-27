@@ -45,7 +45,7 @@ export default function Login() {
       unverified_email: 'Google e-posta adresini doğrulayamadı. Başka bir hesap dene.',
       failed: 'Google ile giriş tamamlanamadı. Lütfen tekrar dene.'
     };
-    showToastMessage('errorGeneral', messages[oauthError] || messages.failed);
+    setToast({ show: true, type: 'errorGeneral', msg: messages[oauthError] || messages.failed });
     params.delete('oauthError');
     const query = params.toString();
     window.history.replaceState({}, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
