@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Development from './pages/Development';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
@@ -22,6 +23,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/onboarding"
+            element={<ProtectedRoute><Onboarding /></ProtectedRoute>}
+          />
 
           <Route
             element={

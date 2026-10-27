@@ -38,6 +38,7 @@ export default function Profile() {
     phone: '',
     location: '',
     title: '',
+    careerGoal: '',
     linkedin: '',
     github: '',
     bio: '',
@@ -68,6 +69,7 @@ export default function Profile() {
             phone: response.data.phone || '',
             location: response.data.location || '',
             title: response.data.title || '',
+            careerGoal: response.data.careerGoal || '',
             linkedin: response.data.linkedin || '',
             github: response.data.github || '',
             bio: response.data.bio || '',
@@ -323,6 +325,7 @@ const handleCoverUpload = (e) => {
                 <h3><span>02</span>{isTr ? 'Profesyonel kimlik' : 'Professional identity'}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Mesleki unvan' : 'Professional title'}</label><div className="profile-input-wrap"><Briefcase size={16} /><input className={fieldClass} type="text" value={profileData.title} onChange={e => setProfileData({ ...profileData, title: e.target.value })} placeholder={isTr ? 'Örn. Java Backend Developer' : 'e.g. Java Backend Developer'} /></div></div>
+                  <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Kariyer hedefi' : 'Career goal'}</label><select className={fieldClass} value={profileData.careerGoal} onChange={e => setProfileData({ ...profileData, careerGoal: e.target.value })}><option value="">{isTr ? 'Hedefini seç' : 'Choose your goal'}</option><option value="first-job">{isTr ? 'İlk işimi bulmak' : 'Find my first job'}</option><option value="better-role">{isTr ? 'Daha iyi bir role geçmek' : 'Move into a better role'}</option><option value="career-change">{isTr ? 'Kariyerimi değiştirmek' : 'Change my career path'}</option><option value="internship">{isTr ? 'Staj bulmak' : 'Find an internship'}</option><option value="organize">{isTr ? 'Kariyerimi daha iyi organize etmek' : 'Organize my career journey'}</option></select></div>
                   <div><label className={fieldLabel}>LinkedIn</label><div className="profile-input-wrap"><Linkedin size={16} /><input className={fieldClass} type="text" value={profileData.linkedin} onChange={e => setProfileData({ ...profileData, linkedin: e.target.value })} placeholder="linkedin.com/in/..." /></div></div>
                   <div><label className={fieldLabel}>GitHub</label><div className="profile-input-wrap"><Github size={16} /><input className={fieldClass} type="text" value={profileData.github} onChange={e => setProfileData({ ...profileData, github: e.target.value })} placeholder="github.com/..." /></div></div>
                   <div className="md:col-span-2"><label className={fieldLabel}>{isTr ? 'Hakkımda' : 'About me'}</label><textarea className={`${fieldClass} profile-bio-field`} value={profileData.bio} onChange={e => setProfileData({ ...profileData, bio: e.target.value })} placeholder={isTr ? 'Kendinden, ilgi alanlarından ve kariyer hedeflerinden bahset...' : 'Tell us about yourself, your interests and career goals...'} rows={5} /><small className="profile-field-hint">{isTr ? 'Kısa ve samimi bir özet yeterli. Neyi öğrenmekte olduğunu da anlatabilirsin.' : 'A short, authentic summary is enough. You can mention what you are learning too.'}</small></div>
