@@ -61,13 +61,13 @@ export default function Login() {
         password: formData.password
       };
 
-      await api.post('/api/auth/login', payload);
-      
+      const response = await api.post('/api/auth/login', payload);
+      if (response.data?.accountPendingDeletion) {
+        navigate('/account-reactivation', { replace: true });
+        return;
+      }
       showToastMessage('success', t('msgLoginSuccess'));
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
+      setTimeout(() => { navigate('/dashboard'); }, 1500);
       
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
