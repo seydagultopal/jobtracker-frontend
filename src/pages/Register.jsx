@@ -184,7 +184,7 @@ export default function Register() {
               <path fill="#FBBC05" d="M6.41 13.91a6 6 0 0 1 0-3.82v-2.6H3.06a10 10 0 0 0 0 9.02l3.35-2.6Z"/>
               <path fill="#EA4335" d="M12 5.97c1.47 0 2.79.5 3.82 1.5l2.86-2.86A9.57 9.57 0 0 0 12 2a10 10 0 0 0-8.94 5.49l3.35 2.6C7.2 7.73 9.4 5.97 12 5.97Z"/>
             </svg>
-            Google ile devam et
+            {t('loginGoogle')}
           </button>
 
           {/* Giriş Yap Yönlendirmesi */}
