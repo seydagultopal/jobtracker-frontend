@@ -47,8 +47,17 @@ export default function AccountReactivation() {
 
   const signOut = async () => {
     setWorking(true);
-    try { await api.post('/api/auth/logout'); } catch { /* The cookie may already be expired. */ }
-    window.location.assign('/login');
+    setError('');
+    try {
+      await api.post('/api/auth/logout');
+      // Full navigation ensures the login page is mounted without the old in-memory state.
+      window.location.assign('/login?switchAccount=true');
+    } catch {
+      setError(isTr
+        ? 'Güvenli çıkış tamamlanamadı. Hesap değiştirmeden önce tekrar dene.'
+        : 'Sign-out failed. Please try again before switching accounts.');
+      setWorking(false);
+    }
   };
 
   const date = status?.deletionScheduledAt ? new Date(status.deletionScheduledAt).toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
