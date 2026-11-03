@@ -1,11 +1,11 @@
 export default function Logo({ className = "h-10 w-10" }) {
   return (
-    <div className={`inline-flex shrink-0 items-center justify-center ${className}`} aria-label="Pebble" role="img">
-      <svg viewBox="0 0 48 48" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="48" height="48" rx="15" fill="#D9572B" />
-        <path d="M14 34V14.5H25.5C31.2 14.5 34.5 17.4 34.5 22.1C34.5 26.8 31.2 29.7 25.5 29.7H20.5" stroke="#FFF8F1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="14" cy="34" r="2.5" fill="#F2B99D"/>
+    <span className={`pebble-logo-mark ${className}`} role="img" aria-label="Pebble">
+      <svg viewBox="0 0 40 40" width="100%" height="100%" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="38" height="38" rx="11" fill="#292826"/>
+        <path d="M13 29V11h9.2c4.7 0 7.4 2.4 7.4 6.1s-2.7 6.1-7.4 6.1H18" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="13" cy="29" r="2" fill="#F0A36D"/>
       </svg>
-    </div>
+    </span>
   );
 }
