@@ -7,7 +7,7 @@ export default function Layout() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-cambridge/15 dark:bg-night overflow-hidden transition-colors duration-500 font-sans">
+    <div className="pebble-app-shell flex h-screen overflow-hidden transition-colors duration-300 font-sans">
       <Sidebar isOpen={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar onMenuClick={() => setIsMobileNavOpen((open) => !open)} isMobileNavOpen={isMobileNavOpen} />
