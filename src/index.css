@@ -1834,3 +1834,76 @@ h1,h2,h3,h4 { letter-spacing: -.025em !important; }
 @media (prefers-reduced-motion: reduce) {
   .pebble-sidebar, .pebble-nav-link, .pebble-icon-button { transition:none !important; }
 }
+
+
+/* Page-level visual normalization */
+.dash-welcome,.tracker-hero,.development-hero {
+  border:1px solid var(--pebble-line) !important; border-radius:8px !important;
+  background:var(--pebble-surface-soft) !important; color:var(--pebble-ink) !important;
+  box-shadow:none !important;
+}
+.dash-welcome h1,.dash-welcome h2,.tracker-hero h1,.tracker-hero h2,.development-hero h1,.development-hero h2 { color:var(--pebble-ink) !important; font-family:inherit !important; font-weight:650 !important; }
+.dash-welcome-copy,.tracker-hero p,.development-hero p { color:var(--pebble-muted) !important; }
+.dash-welcome-orb,.dash-welcome-decoration,.tracker-hero-art,.development-hero-mark { opacity:.12 !important; }
+.dash-primary-action,.tracker-primary-button,.development-add-button,.calendar-add-button,.calendar-confirm-button {
+  border:1px solid var(--pebble-accent) !important; border-radius:5px !important;
+  background:var(--pebble-accent) !important; color:#fff !important; box-shadow:none !important;
+}
+.dash-primary-action:hover,.tracker-primary-button:hover,.development-add-button:hover,.calendar-add-button:hover,.calendar-confirm-button:hover { filter:brightness(.96); }
+.dash-stat-card,.dash-calendar-card,.dash-reminders-card,.dash-streak-card,
+.tracker-summary-card,.tracker-list-panel,.calendar-overview,.calendar-month-panel,
+.calendar-day-panel,.development-stat-card,.development-collection,.development-activity-panel,
+.resume-panel,.profile-side-card,.profile-main-card,.agenda-journal-paper,.agenda-tasks-panel {
+  border:1px solid var(--pebble-line) !important; border-radius:7px !important;
+  background:var(--pebble-surface) !important; color:var(--pebble-ink) !important;
+  box-shadow:none !important;
+}
+.dash-stat-card { min-height:150px !important; padding:17px !important; }
+.dash-tone-sage,.dash-tone-peach,.dash-tone-lilac,.dash-tone-rose,.dash-tone-gold {
+  background:var(--pebble-surface) !important; color:var(--pebble-ink) !important;
+}
+.dash-stat-icon,.tracker-summary-icon,.development-stat-icon,.development-collection-icon,
+.profile-card-icon,.resume-panel-heading-icon {
+  background:var(--pebble-surface-soft) !important; color:var(--pebble-accent) !important;
+}
+.dash-streak-card { min-height:220px !important; background:var(--pebble-surface-soft) !important; color:var(--pebble-ink) !important; }
+.dash-streak-card h2,.dash-streak-number,.dash-streak-unit,.dash-streak-copy,.dash-kicker-light,.dash-streak-footnote { color:var(--pebble-ink) !important; }
+.dash-flame-badge { background:var(--pebble-accent-soft) !important; color:var(--pebble-accent) !important; box-shadow:none !important; }
+.dash-streak-progress span { background:var(--pebble-line) !important; }
+.dash-streak-progress span.is-filled { background:var(--pebble-accent) !important; box-shadow:none !important; }
+.tracker-summary-card,.development-stat-card { border-radius:7px !important; }
+.tracker-list-heading,.development-collection-head { background:var(--pebble-surface) !important; }
+.tracker-search,.tracker-status-filter,.development-search { border-radius:5px !important; background:var(--pebble-surface) !important; }
+.tracker-company-mark,.development-item-symbol { border-radius:6px !important; background:var(--pebble-surface-soft) !important; color:var(--pebble-accent) !important; }
+.tracker-application-card,.development-item,.development-skill-item { border-color:var(--pebble-line) !important; }
+.tracker-status-pill,.development-status { border-radius:4px !important; background:var(--pebble-surface-soft) !important; color:var(--pebble-muted) !important; border-color:var(--pebble-line) !important; }
+.agenda-editorial { --journal-paper:var(--pebble-surface); --journal-paper-alt:var(--pebble-surface-soft); --journal-ink:var(--pebble-ink); --journal-muted:var(--pebble-muted); --journal-line:var(--pebble-line); --journal-accent:var(--pebble-accent); color:var(--pebble-ink) !important; }
+.agenda-editorial-header { border-color:var(--pebble-line) !important; }
+.agenda-date-number { font-family:inherit !important; font-weight:650 !important; }
+.agenda-date-copy span:first-child,.agenda-writing-label,.agenda-mood-layout h2,.agenda-task-heading h2 { font-family:inherit !important; }
+.agenda-journal-paper { box-shadow:none !important; }
+.agenda-weekly-note { background:var(--pebble-surface-soft) !important; color:var(--pebble-ink) !important; border:1px solid var(--pebble-line) !important; border-radius:7px !important; }
+.agenda-mood-choice { border-radius:5px !important; }
+.agenda-mood-choice.is-selected { border-color:var(--pebble-accent) !important; background:var(--pebble-accent-soft) !important; color:var(--pebble-accent) !important; }
+.calendar-overview-stat,.calendar-month-panel,.calendar-day-panel { box-shadow:none !important; }
+.calendar-month-toolbar,.calendar-day-panel-head { background:var(--pebble-surface) !important; }
+.calendar-day-number { border-radius:5px !important; }
+.calendar-selected-event,.calendar-empty-day { border-radius:5px !important; }
+.calendar-modal { border-radius:8px !important; box-shadow:0 10px 35px rgba(0,0,0,.14) !important; }
+.profile-cover { border-radius:8px !important; box-shadow:none !important; background:var(--pebble-surface-soft) !important; }
+.profile-cover-art,.profile-cover-orbit,.profile-cover-leaf { opacity:.12 !important; }
+.profile-avatar { border-radius:8px !important; }
+.profile-tabs { border-color:var(--pebble-line) !important; }
+.profile-tab-indicator { background:var(--pebble-accent) !important; }
+.profile-side-card,.profile-main-card { border-radius:7px !important; }
+.profile-tip-decoration,.profile-panel-illustration { opacity:.12 !important; }
+.profile-save-button,.profile-add-button { border-radius:5px !important; }
+.resume-page { --resume-panel:var(--pebble-surface); --resume-line:var(--pebble-line); --resume-ink:var(--pebble-ink); --resume-muted:var(--pebble-muted); }
+.resume-panel { border-radius:7px !important; box-shadow:none !important; }
+.resume-option-row { border-radius:5px !important; }
+.resume-paper-wrap { border-radius:7px !important; }
+.resume-paper { font-family:Inter,Arial,sans-serif !important; }
+@media (max-width: 700px) {
+  .agenda-editorial-grid,.development-content-grid { grid-template-columns:1fr !important; }
+  .tracker-summary-grid,.development-stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+}
