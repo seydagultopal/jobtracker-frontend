@@ -1907,3 +1907,6 @@ h1,h2,h3,h4 { letter-spacing: -.025em !important; }
   .agenda-editorial-grid,.development-content-grid { grid-template-columns:1fr !important; }
   .tracker-summary-grid,.development-stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
+
+.pebble-app-shell { background:var(--pebble-canvas) !important; color:var(--pebble-ink) !important; }
+.pebble-app-shell > .pebble-sidebar { height:100%; }
