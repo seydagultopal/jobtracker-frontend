@@ -1,25 +1,33 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext();
+const ThemeContext = createContext(null);
+const THEME_KEY = 'app_theme';
+
+function readInitialTheme() {
+  try {
+    return window.localStorage.getItem(THEME_KEY) === 'dark';
+  } catch {
+    return false;
+  }
+}
 
 export function ThemeProvider({ children }) {
-  // Kullanıcının tercihini hatırla (varsayılan: aydınlık)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('app_theme') === 'dark';
-  });
+  const [isDarkMode, setIsDarkMode] = useState(readInitialTheme);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('app_theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('app_theme', 'light');
+    const root = document.documentElement;
+    root.classList.toggle('dark', isDarkMode);
+    root.dataset.theme = isDarkMode ? 'dark' : 'light';
+    root.style.colorScheme = isDarkMode ? 'dark' : 'light';
+
+    try {
+      window.localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+    } catch {
+      // The theme still works for this session when storage is unavailable.
     }
   }, [isDarkMode]);
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  const toggleTheme = () => setIsDarkMode(current => !current);
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
