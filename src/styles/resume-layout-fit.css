@@ -85,3 +85,32 @@
     padding: 0 !important;
   }
 }
+
+/* The global app content frame adds p-6/md:p-10 and a 1400px max-width.
+   Remove that extra frame only on the resume route. */
+.pebble-main:has(.resume-page) {
+  padding: 8px 12px !important;
+}
+
+.pebble-main:has(.resume-page) > div {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  min-height: 100% !important;
+}
+
+.resume-page {
+  padding: 0 2px 8px !important;
+}
+
+@media (max-width: 850px) {
+  .pebble-main:has(.resume-page) {
+    padding: 8px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pebble-main:has(.resume-page) {
+    padding: 4px !important;
+  }
+}
