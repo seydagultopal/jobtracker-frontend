@@ -3,8 +3,7 @@ name: Frontend CI
 on:
   push:
     branches:
-      - main
-      - fix/auth-flow-review
+      - '**'
   pull_request:
     branches:
       - main
