@@ -71,6 +71,8 @@ export default function Login() {
       // This is especially important when switching away from an account pending deletion.
       await api.post('/api/auth/logout');
       const response = await api.post('/api/auth/login', payload);
+      // A successful fresh login is the only password-flow action that clears the logout marker.
+      sessionStorage.removeItem('pebble_logged_out');
       if (response.data?.accountPendingDeletion) {
         navigate('/account-reactivation', { replace: true });
         return;
@@ -130,6 +132,8 @@ export default function Login() {
   };
 
   const startGoogleLogin = () => {
+    // The user explicitly starts a new authentication flow.
+    sessionStorage.removeItem('pebble_logged_out');
     const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
     window.location.assign(`${apiBase}/oauth2/authorization/google`);
   };
