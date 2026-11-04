@@ -228,13 +228,21 @@ export default function Login() {
         </div>
 
         <div className="auth-brand-panel w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-8 bg-peach/20 dark:bg-peach/10 rounded-[2.5rem] border border-peach/30 dark:border-peach/20">
-          <div className="auth-brand-card bg-white dark:bg-twilight w-full max-w-[320px] aspect-square flex flex-col items-center justify-center text-center p-8 rounded-[2rem] shadow-xl shadow-peach/20 dark:shadow-none border border-white/80 dark:border-starlight/30 transition-transform duration-500 hover:scale-[1.02]">
-            <Logo className="w-24 h-24 md:w-28 md:h-28 shadow-sm rounded-[2rem] mb-6 rotate-[-2deg] hover:rotate-0 transition-transform duration-500" />
-            <h1 className="text-4xl font-black text-cherry tracking-tighter mb-4">Pebble</h1>
-            <p className="text-base md:text-lg font-bold text-gray-500 dark:text-gray-400 leading-relaxed">
-              {t('heroTitlePart1')} <br />
-              <span className="text-cherry">{t('heroTitleHighlight')}</span>
-            </p>
+          <div className="auth-brand-card bg-white dark:bg-twilight w-full max-w-[320px] aspect-square flex flex-col items-center justify-center text-center p-8 rounded-[2rem] shadow-xl shadow-peach/20 dark:shadow-none border border-white/80 dark:border-starlight/30 transition-transform duration-500">
+            <div className="auth-brand-heading">
+              <Logo className="auth-brand-logo w-24 h-24 md:w-28 md:h-28 shadow-sm rounded-[2rem] mb-6" />
+              <span className="auth-brand-kicker">{isTr ? 'KENDİ ALANIN, KENDİ RİTMİN' : 'YOUR SPACE, YOUR PACE'}</span>
+              <h1 className="text-4xl font-black text-cherry tracking-tighter mb-4">Pebble</h1>
+              <p className="text-base md:text-lg font-bold text-gray-500 dark:text-gray-400 leading-relaxed">
+                {t('heroTitlePart1')} <br />
+                <span className="text-cherry">{t('heroTitleHighlight')}</span>
+              </p>
+            </div>
+            <div className="auth-brand-footer">
+              <span><CheckCircle2 size={15} />{isTr ? 'Başvuruların tek yerde' : 'Applications, organized'}</span>
+              <span><CheckCircle2 size={15} />{isTr ? 'Günlük planın net' : 'A clearer daily plan'}</span>
+              <span><CheckCircle2 size={15} />{isTr ? 'İlerlemen görünür' : 'Progress you can see'}</span>
+            </div>
           </div>
         </div>
 
