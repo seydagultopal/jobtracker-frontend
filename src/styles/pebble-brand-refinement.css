@@ -574,3 +574,45 @@ aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble
   .landing-hero { padding-top: 112px; padding-bottom: 75px; }
   .landing-section { padding-top: 68px; padding-bottom: 68px; }
 }
+
+
+/* A restrained rose accent: warmth and personality without turning pink into the primary brand. */
+:root {
+  --pebble-rose: #B98592;
+  --pebble-rose-strong: #956674;
+  --pebble-rose-soft: #F3E8EB;
+  --pebble-rose-line: #EAD9DE;
+}
+:root.dark {
+  --pebble-rose: #C99EAA;
+  --pebble-rose-strong: #E0BBC4;
+  --pebble-rose-soft: #3B2D33;
+  --pebble-rose-line: #514047;
+}
+
+/* Rose appears only in secondary accents and a few expressive moments. */
+.dash-tone-peach,
+.profile-icon-peach,
+.profile-illustration-peach {
+  color: var(--pebble-rose-strong) !important;
+  background: var(--pebble-rose-soft) !important;
+}
+.profile-cover-swatch-1 {
+  background: linear-gradient(135deg, #B98592, #E8CDD4) !important;
+}
+:root.dark .profile-cover-swatch-1 {
+  background: linear-gradient(135deg, #805B68, #B78B98) !important;
+}
+.agenda-mood-choice.is-selected {
+  border-color: var(--pebble-rose-line) !important;
+  background: color-mix(in srgb, var(--pebble-rose-soft) 72%, var(--pebble-surface)) !important;
+  color: var(--pebble-rose-strong) !important;
+}
+:root.dark .agenda-mood-choice.is-selected {
+  border-color: var(--pebble-rose-line) !important;
+  background: var(--pebble-rose-soft) !important;
+  color: var(--pebble-rose-strong) !important;
+}
+.agenda-journal-paper {
+  border-top-color: color-mix(in srgb, var(--pebble-rose) 35%, var(--pebble-line)) !important;
+}
