@@ -45,6 +45,8 @@ export default function Topbar({ onMenuClick = () => {}, isMobileNavOpen = false
   const handleLogout = async () => {
     try {
       await api.post('/api/auth/logout');
+      // Keep a tab-scoped logout marker so browser history cannot revive a cached workspace.
+      sessionStorage.setItem('pebble_logged_out', 'true');
       setUserData({ name: '', email: '', photo: null });
       setIsProfileMenuOpen(false);
       navigate('/', { replace: true });
