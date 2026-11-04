@@ -616,3 +616,13 @@ aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble
 .agenda-journal-paper {
   border-top-color: color-mix(in srgb, var(--pebble-rose) 35%, var(--pebble-line)) !important;
 }
+
+
+/* Keep the workspace mark neutral; remove the legacy orange tile treatment. */
+.pebble-sidebar-logo {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.pebble-sidebar-brand:hover .pebble-sidebar-logo {
+  box-shadow: none !important;
+}
