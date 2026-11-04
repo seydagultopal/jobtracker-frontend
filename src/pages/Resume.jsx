@@ -45,7 +45,8 @@ export default function Resume() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
-  const edgeScrollRef = useRef({ frame: 0, viewport: null, pointerX: 0 });
+  const pointerDragRef = useRef(null);
+  const [draggingSection, setDraggingSection] = useState(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
   const photoInputRef = useRef(null);
@@ -298,61 +299,99 @@ export default function Resume() {
     if (sectionId) moveSection(sectionId, targetPage);
   };
 
-  const stopEdgeScroll = () => {
-    const state = edgeScrollRef.current;
-    if (state.frame) cancelAnimationFrame(state.frame);
-    edgeScrollRef.current = { frame: 0, viewport: null, pointerX: 0 };
-  };
-
-  // Track the pointer from both the source drag and the drop target.
-  // This keeps auto-scroll alive even when the browser throttles dragover events.
-  const handlePreviewDragMove = (event) => {
+  const beginSectionPointerDrag = (event, sectionId) => {
+    if (event.button !== 0) return;
     event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    event.stopPropagation();
 
     const viewport = previewRef.current?.closest('.resume-preview-column')?.querySelector('.resume-paper-wrap');
     if (!viewport) return;
 
-    const state = edgeScrollRef.current;
-    state.viewport = viewport;
-    state.pointerX = event.clientX;
+    const drag = {
+      sectionId,
+      viewport,
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      frame: 0
+    };
+    pointerDragRef.current = drag;
+    setDraggingSection(sectionId);
 
-    if (state.frame) return;
+    const stop = (pointerEvent, shouldDrop) => {
+      const current = pointerDragRef.current;
+      if (!current) return;
+      if (current.frame) cancelAnimationFrame(current.frame);
 
-    const tick = () => {
-      const current = edgeScrollRef.current;
-      const activeViewport = current.viewport;
-      if (!activeViewport) {
-        current.frame = 0;
-        return;
+      if (shouldDrop && current.moved) {
+        const target = document.elementFromPoint(pointerEvent.clientX, pointerEvent.clientY);
+        const targetPage = target?.closest('.cv-page');
+        if (targetPage && current.viewport.contains(targetPage)) {
+          const targetPageIndex = Number(targetPage.dataset.page) - 1;
+          if (Number.isInteger(targetPageIndex) && targetPageIndex >= 0) {
+            moveSection(current.sectionId, targetPageIndex);
+          }
+        }
       }
 
-      const bounds = activeViewport.getBoundingClientRect();
-      const edge = Math.min(150, Math.max(90, bounds.width * 0.18));
-      const pointerX = current.pointerX - bounds.left;
-      const maxScroll = Math.max(0, activeViewport.scrollWidth - activeViewport.clientWidth);
-      let direction = 0;
-      let intensity = 0;
+      pointerDragRef.current = null;
+      setDraggingSection(null);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', cancel);
+    };
 
-      if (pointerX > bounds.width - edge && activeViewport.scrollLeft < maxScroll - 1) {
-        direction = 1;
-        intensity = Math.min(1, (pointerX - (bounds.width - edge)) / edge);
-      } else if (pointerX < edge && activeViewport.scrollLeft > 1) {
-        direction = -1;
-        intensity = Math.min(1, (edge - pointerX) / edge);
+    const move = (pointerEvent) => {
+      const current = pointerDragRef.current;
+      if (!current || pointerEvent.pointerId !== event.pointerId) return;
+      current.pointerX = pointerEvent.clientX;
+      current.pointerY = pointerEvent.clientY;
+      if (Math.hypot(current.pointerX - current.startX, current.pointerY - current.startY) > 4) {
+        current.moved = true;
       }
+      if (!current.moved || current.frame) return;
 
-      if (!direction) {
-        current.frame = 0;
-        return;
-      }
+      const tick = () => {
+        const active = pointerDragRef.current;
+        if (!active) return;
+        const bounds = active.viewport.getBoundingClientRect();
+        const edge = Math.min(150, Math.max(90, bounds.width * 0.18));
+        const relativeX = active.pointerX - bounds.left;
+        const maxScroll = Math.max(0, active.viewport.scrollWidth - active.viewport.clientWidth);
+        let direction = 0;
+        let intensity = 0;
 
-      const speed = 7 + intensity * 25;
-      activeViewport.scrollLeft = Math.max(0, Math.min(maxScroll, activeViewport.scrollLeft + direction * speed));
+        if (relativeX > bounds.width - edge && active.viewport.scrollLeft < maxScroll - 1) {
+          direction = 1;
+          intensity = Math.min(1, (relativeX - (bounds.width - edge)) / edge);
+        } else if (relativeX < edge && active.viewport.scrollLeft > 1) {
+          direction = -1;
+          intensity = Math.min(1, (edge - relativeX) / edge);
+        }
+
+        if (!direction) {
+          active.frame = 0;
+          return;
+        }
+
+        const speed = 6 + intensity * 26;
+        active.viewport.scrollLeft = Math.max(0, Math.min(
+          maxScroll,
+          active.viewport.scrollLeft + direction * speed
+        ));
+        active.frame = requestAnimationFrame(tick);
+      };
+
       current.frame = requestAnimationFrame(tick);
     };
 
-    state.frame = requestAnimationFrame(tick);
+    const finish = (pointerEvent) => stop(pointerEvent, true);
+    const cancel = (pointerEvent) => stop(pointerEvent, false);
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerup', finish, { once: true });
+    window.addEventListener('pointercancel', cancel, { once: true });
   };
 
   const sectionToggle = (key, title, count) => {
@@ -446,12 +485,7 @@ export default function Resume() {
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
-          <div
-            className="resume-paper-wrap"
-            onDragEnter={handlePreviewDragMove}
-            onDragOver={handlePreviewDragMove}
-            onDrop={stopEdgeScroll}
-          >
+          <div className="resume-paper-wrap">
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
                 <article
@@ -485,17 +519,16 @@ export default function Resume() {
                       if (!section) return null;
                       return (
                         <div
-                          className="cv-draggable-section"
+                          className={`cv-draggable-section${draggingSection === section.id ? ' is-dragging' : ''}`}
                           key={section.id}
-                          draggable
-                          onDragStart={event => {
-                            event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData('text/plain', section.id);
-                          }}
-                          onDrag={handlePreviewDragMove}
-                          onDragEnd={stopEdgeScroll}
                         >
-                          <div className="cv-section-drag-handle" aria-hidden="true"><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
+                          <div
+                            className="cv-section-drag-handle"
+                            role="button"
+                            tabIndex={0}
+                            aria-label={isTr ? 'Bölümü taşımak için sürükle' : 'Drag to move section'}
+                            onPointerDown={event => beginSectionPointerDrag(event, section.id)}
+                          ><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
                           {section.content}
                         </div>
                       );
