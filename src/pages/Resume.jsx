@@ -3,6 +3,7 @@ import { BookOpen, BriefcaseBusiness, Code2, Download, Github, Globe, Graduation
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
+import './ResumePhoto.css';
 
 const safeJSONParse = (data) => {
   if (!data) return [];
@@ -258,7 +259,7 @@ export default function Resume() {
               </label>
               {showPhoto && (
                 <div className="resume-photo-actions">
-                  {personalInfo.photo ? <img src={personalInfo.photo} alt="" className="resume-photo-thumb" /> : <span className="resume-photo-placeholder"><UserRound size={19} /></span>}
+                  {personalInfo.photo ? <img src={personalInfo.photo} alt="" className="resume-photo-thumb resume-photo-thumb-contain" /> : <span className="resume-photo-placeholder"><UserRound size={19} /></span>}
                   <div className="resume-photo-buttons">
                     <button type="button" onClick={() => photoInputRef.current?.click()}><Upload size={14} />{personalInfo.photo ? labels.changePhoto : labels.addPhoto}</button>
                     {personalInfo.photo && <button type="button" className="resume-photo-remove" onClick={() => setPersonalInfo(prev => ({ ...prev, photo: null }))}><X size={14} />{labels.removePhoto}</button>}
@@ -306,7 +307,7 @@ export default function Resume() {
                         {personalInfo.website && <span><Globe size={11} />{personalInfo.website}</span>}
                       </div>
                     </div>
-                    {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo" />}
+                    {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo cv-paper-photo-contain" />}
                   </header>
 
                   {personalInfo.summary && <section className="cv-paper-section cv-section">
