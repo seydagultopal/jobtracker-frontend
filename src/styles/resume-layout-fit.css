@@ -209,3 +209,17 @@
   max-width: 794px !important;
   margin: 0 !important;
 }
+
+/* A single explicit page-break-before is inserted for each subsequent sheet by html2pdf.
+   Disable CSS break-after here to prevent a second break and blank pages. */
+.resume-pages.is-pdf-export .resume-paper.cv-page,
+.resume-pages.is-pdf-export .resume-paper.cv-page:last-child {
+  break-after: auto !important;
+  page-break-after: auto !important;
+}
+.resume-paper-wrap {
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  cursor: default;
+}
+.resume-paper.cv-page { scroll-snap-align: start; }
