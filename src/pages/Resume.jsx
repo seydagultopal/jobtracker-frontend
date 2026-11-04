@@ -43,6 +43,7 @@ export default function Resume() {
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [pageCount, setPageCount] = useState(1);
+  const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
@@ -105,21 +106,6 @@ export default function Resume() {
     return () => { active = false; };
   }, []);
 
-  useEffect(() => {
-    const element = previewRef.current;
-    if (!element) return undefined;
-    const updatePageCount = () => {
-      const a4PageHeight = 1123;
-      const nextPageCount = Math.max(1, Math.ceil(element.scrollHeight / a4PageHeight));
-      setPageCount(current => current === nextPageCount ? current : nextPageCount);
-    };
-    updatePageCount();
-    const observer = new ResizeObserver(updatePageCount);
-    observer.observe(element);
-    document.fonts?.ready?.then(updatePageCount);
-    return () => observer.disconnect();
-  }, [personalInfo, experience, education, selectedDevItems, options, cvLang, showPhoto, devData]);
-
   const toggleDevItem = (category, id) => {
     setSelectedDevItems(prev => ({
       ...prev,
@@ -154,7 +140,7 @@ export default function Resume() {
   };
 
   const downloadPDF = async () => {
-    const element = document.getElementById('cv-preview');
+    const element = previewRef.current;
     if (!element || isDownloading) return;
     setIsDownloading(true);
     try {
@@ -175,7 +161,7 @@ export default function Resume() {
           scrollY: 0
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['.cv-entry', '.cv-section-heading'] },
+        pagebreak: { mode: ['css', 'legacy'], before: ['.cv-page + .cv-page'], avoid: ['.cv-entry', '.cv-section-heading'] },
         enableLinks: true
       };
       await html2pdf().set(opt).from(element).save();
@@ -201,7 +187,7 @@ export default function Resume() {
       profileNote: 'Kişisel bilgiler, eğitim ve deneyim Profil sayfandan alınır.',
       projects: 'Projeler', courses: 'Sertifikalar ve eğitimler', skills: 'Teknik yetkinlikler',
       download: 'PDF olarak indir', downloading: 'PDF hazırlanıyor…', language: 'CV dili',
-      preview: 'Belge önizlemesi', previewHint: 'Sade, tek sütunlu ve ATS dostu A4 düzeni. Sayfa sayısı içeriğe göre otomatik hesaplanır.',
+      preview: 'Belge önizlemesi', previewHint: 'Bölümleri sürükleyerek sayfalar arasında taşı. Her sayfa A4 ölçüsündedir.',
       loading: 'CV hazırlanıyor…', empty: 'CV bilgilerin henüz hazır değil',
       emptyHint: 'Önce Profil sayfasından kişisel bilgilerini, eğitimini ve deneyimini ekle.',
       photo: 'CV’de fotoğraf kullan', addPhoto: 'Fotoğraf ekle', changePhoto: 'Fotoğrafı değiştir',
@@ -213,7 +199,7 @@ export default function Resume() {
       profileNote: 'Personal details, education and experience come from your Profile page.',
       projects: 'Projects', courses: 'Certifications & courses', skills: 'Technical skills',
       download: 'Download PDF', downloading: 'Preparing PDF…', language: 'Resume language',
-      preview: 'Document preview', previewHint: 'A clean, single-column, ATS-friendly A4 layout. Page count is estimated automatically from your content.',
+      preview: 'Document preview', previewHint: 'Drag sections between pages. Each page uses the A4 document dimensions.',
       loading: 'Preparing your resume…', empty: 'Your resume is not ready yet',
       emptyHint: 'Add your personal details, education and experience on the Profile page first.',
       photo: 'Include a photo', addPhoto: 'Add photo', changePhoto: 'Change photo',
@@ -230,6 +216,49 @@ export default function Resume() {
   );
   const selectedProjects = devData.projects.filter(project => selectedDevItems.projects.includes(project.id));
   const selectedSkills = devData.skills.filter(skill => selectedDevItems.skills.includes(skill.id));
+
+  const sectionBlocks = [
+    personalInfo.summary ? { id: 'summary', estimate: 75 + Math.ceil(personalInfo.summary.length / 105) * 17, content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('summary')}</h3><p className="cv-paper-summary">{personalInfo.summary}</p></section> } : null,
+    education.length ? { id: 'education', estimate: 65 + education.length * 58, content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('edu')}</h3>{education.map((edu, index) => <div className="cv-paper-entry cv-entry" key={edu.id || index}><div className="cv-entry-heading"><strong>{edu.degree}</strong><small>{edu.startDate} – {edu.endDate || cvT('present')}</small></div><span>{edu.school}{edu.gpa ? ` · ${cvT('gpa')}: ${edu.gpa}` : ''}</span></div>)}</section> } : null,
+    experience.length ? { id: 'experience', estimate: 65 + experience.reduce((sum, exp) => sum + 58 + Math.ceil(String(exp.description || '').length / 100) * 15, 0), content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('exp')}</h3>{experience.map((exp, index) => <div className="cv-paper-entry cv-entry" key={exp.id || index}><div className="cv-entry-heading"><strong>{exp.role}</strong><small>{exp.startDate} – {exp.endDate || cvT('present')}</small></div><span className="cv-entry-company">{exp.company}</span>{exp.description && <p>{exp.description}</p>}</div>)}</section> } : null,
+    options.showProjects && selectedProjects.length ? { id: 'projects', estimate: 65 + selectedProjects.length * 65, content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('pro')}</h3>{selectedProjects.map((project, index) => <div className="cv-paper-entry cv-entry" key={project.id || index}><div className="cv-entry-heading"><strong>{project.title}</strong>{project.status && <small>{project.status}</small>}</div>{project.tech && <span>{project.tech}</span>}</div>)}</section> } : null,
+    options.showSkills && selectedSkills.length ? { id: 'skills', estimate: 65 + Math.ceil(selectedSkills.map(skill => skill.name).join(' · ').length / 95) * 17, content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('skills')}</h3><p className="cv-paper-summary">{selectedSkills.map(skill => skill.name).join(' · ')}</p></section> } : null,
+    options.showCourses && completedCourses.length ? { id: 'certifications', estimate: 65 + completedCourses.length * 52, content: <section className="cv-paper-section cv-section"><h3 className="cv-section-heading">{cvT('cert')}</h3>{completedCourses.map((course, index) => <div className="cv-paper-entry cv-entry" key={course.id || index}><strong>{course.title}</strong>{course.platform && <span>{course.platform}</span>}</div>)}</section> } : null
+  ].filter(Boolean);
+
+  const headerExists = Boolean(personalInfo.firstName || personalInfo.lastName || personalInfo.title || personalInfo.email);
+  const autoPages = (() => {
+    const result = [[]];
+    let used = headerExists ? 245 : 90;
+    sectionBlocks.forEach(section => {
+      if (used + section.estimate > 900 && result[result.length - 1].length) {
+        result.push([]);
+        used = 90;
+      }
+      result[result.length - 1].push(section.id);
+      used += section.estimate;
+    });
+    return result;
+  })();
+  const pages = (pageLayout || autoPages).map(ids => ids.filter(id => sectionBlocks.some(section => section.id === id))).filter((ids, index, all) => ids.length || index === 0 || index < all.length - 1);
+  const currentPageCount = Math.max(1, pages.length);
+  const sectionById = Object.fromEntries(sectionBlocks.map(section => [section.id, section]));
+
+  const moveSection = (sectionId, targetPage) => {
+    setPageLayout(current => {
+      const base = current || autoPages;
+      const next = base.map(page => page.filter(id => id !== sectionId));
+      while (next.length <= targetPage) next.push([]);
+      next[targetPage] = [...next[targetPage], sectionId];
+      return next.filter((page, index) => page.length || index === 0);
+    });
+  };
+
+  const handleSectionDrop = (event, targetPage) => {
+    event.preventDefault();
+    const sectionId = event.dataTransfer.getData('text/plain');
+    if (sectionId) moveSection(sectionId, targetPage);
+  };
 
   const sectionToggle = (key, title, count) => {
     const optionKey = key === 'projects' ? 'showProjects' : key === 'courses' ? 'showCourses' : 'showSkills';
@@ -320,75 +349,60 @@ export default function Resume() {
         </aside>
 
         <section className="resume-preview-column">
-          <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {pageCount} {isTr ? "sayfa" : pageCount === 1 ? "page" : "pages"}</span></div>
+          <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <p className="resume-preview-hint">{labels.previewHint}</p>
           <div className="resume-paper-wrap">
-            <article ref={previewRef} id="cv-preview" data-page-count={pageCount} className={`resume-paper${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}>
-              {(personalInfo.firstName || personalInfo.lastName || personalInfo.title || personalInfo.email) ? (
-                <>
-                  <header className="cv-paper-header">
-                    <div className="cv-paper-identity">
-                      <h1>{personalInfo.firstName} {personalInfo.lastName}</h1>
-                      {personalInfo.title && <h2>{personalInfo.title}</h2>}
-                      <div className="cv-paper-contact">
-                        {personalInfo.email && <span><Mail size={11} />{personalInfo.email}</span>}
-                        {personalInfo.phone && <span><Phone size={11} />{personalInfo.phone}</span>}
-                        {personalInfo.location && <span><MapPin size={11} />{personalInfo.location}</span>}
-                        {personalInfo.linkedin && getExternalUrl(personalInfo.linkedin) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin size={11} /><span>LinkedIn</span></a>}
-                        {personalInfo.github && getExternalUrl(personalInfo.github) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github size={11} /><span>GitHub</span></a>}
-                        {personalInfo.website && getExternalUrl(personalInfo.website) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" aria-label="Portfolio website"><Globe size={11} /><span>Portfolio</span></a>}
+            <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
+              {pages.map((pageSectionIds, pageIndex) => (
+                <article
+                  className={`resume-paper cv-page${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}
+                  data-page={pageIndex + 1}
+                  key={pageIndex}
+                  onDragOver={event => event.preventDefault()}
+                  onDrop={event => handleSectionDrop(event, pageIndex)}
+                >
+                  {pageIndex === 0 && headerExists && (
+                    <header className="cv-paper-header">
+                      <div className="cv-paper-identity">
+                        <h1>{personalInfo.firstName} {personalInfo.lastName}</h1>
+                        {personalInfo.title && <h2>{personalInfo.title}</h2>}
+                        <div className="cv-paper-contact">
+                          {personalInfo.email && <span><Mail size={11} />{personalInfo.email}</span>}
+                          {personalInfo.phone && <span><Phone size={11} />{personalInfo.phone}</span>}
+                          {personalInfo.location && <span><MapPin size={11} />{personalInfo.location}</span>}
+                          {personalInfo.linkedin && getExternalUrl(personalInfo.linkedin) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin size={11} /><span>LinkedIn</span></a>}
+                          {personalInfo.github && getExternalUrl(personalInfo.github) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github size={11} /><span>GitHub</span></a>}
+                          {personalInfo.website && getExternalUrl(personalInfo.website) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" aria-label="Portfolio website"><Globe size={11} /><span>Portfolio</span></a>}
+                        </div>
                       </div>
-                    </div>
-                    {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo cv-paper-photo-contain" />}
-                  </header>
-
-                  {personalInfo.summary && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('summary')}</h3>
-                    <p className="cv-paper-summary">{personalInfo.summary}</p>
-                  </section>}
-
-                  {education.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('edu')}</h3>
-                    {education.map((edu, index) => <div className="cv-paper-entry cv-entry" key={edu.id || index}>
-                      <div className="cv-entry-heading"><strong>{edu.degree}</strong><small>{edu.startDate} – {edu.endDate || cvT('present')}</small></div>
-                      <span>{edu.school}{edu.gpa ? ` · ${cvT('gpa')}: ${edu.gpa}` : ''}</span>
-                    </div>)}
-                  </section>}
-
-
-                  {experience.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('exp')}</h3>
-                    {experience.map((exp, index) => <div className="cv-paper-entry cv-entry" key={exp.id || index}>
-                      <div className="cv-entry-heading"><strong>{exp.role}</strong><small>{exp.startDate} – {exp.endDate || cvT('present')}</small></div>
-                      <span className="cv-entry-company">{exp.company}</span>
-                      {exp.description && <p>{exp.description}</p>}
-                    </div>)}
-                  </section>}
-
-                  {options.showProjects && selectedProjects.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('pro')}</h3>
-                    {selectedProjects.map((project, index) => <div className="cv-paper-entry cv-entry" key={project.id || index}>
-                      <div className="cv-entry-heading"><strong>{project.title}</strong>{project.status && <small>{project.status}</small>}</div>
-                      {project.tech && <span>{project.tech}</span>}
-                    </div>)}
-                  </section>}
-
-                  {options.showSkills && selectedSkills.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('skills')}</h3>
-                    <p className="cv-paper-summary">{selectedSkills.map(skill => skill.name).join(' · ')}</p>
-                  </section>}
-
-                  {options.showCourses && completedCourses.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('cert')}</h3>
-                    {completedCourses.map((course, index) => <div className="cv-paper-entry cv-entry" key={course.id || index}>
-                      <strong>{course.title}</strong>{course.platform && <span>{course.platform}</span>}
-                    </div>)}
-                  </section>}
-                </>
-              ) : (
-                <div className="cv-paper-empty"><span><Sparkles size={24} /></span><h2>{labels.empty}</h2><p>{labels.emptyHint}</p></div>
-              )}
-            </article>
+                      {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo cv-paper-photo-contain" />}
+                    </header>
+                  )}
+                  {!headerExists && pageIndex === 0 && <div className="cv-paper-empty"><span><Sparkles size={24} /></span><h2>{labels.empty}</h2><p>{labels.emptyHint}</p></div>}
+                  <div className="cv-page-content">
+                    {pageSectionIds.map(sectionId => {
+                      const section = sectionById[sectionId];
+                      if (!section) return null;
+                      return (
+                        <div
+                          className="cv-draggable-section"
+                          key={section.id}
+                          draggable
+                          onDragStart={event => {
+                            event.dataTransfer.effectAllowed = 'move';
+                            event.dataTransfer.setData('text/plain', section.id);
+                          }}
+                        >
+                          <div className="cv-section-drag-handle" aria-hidden="true"><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
+                          {section.content}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <footer className="cv-page-footer"><span>PEBBLE</span><span>{pageIndex + 1} / {currentPageCount}</span></footer>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
       </div>
