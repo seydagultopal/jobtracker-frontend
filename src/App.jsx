@@ -21,7 +21,12 @@ function App() {
     // A browser may restore a protected page from the back-forward cache without
     // remounting React. Force a fresh server-side session check before showing it.
     const handlePageShow = (event) => {
-      if (event.persisted) window.location.reload();
+      if (!event.persisted) return;
+      if (sessionStorage.getItem('pebble_logged_out') === 'true') {
+        window.location.replace('/');
+        return;
+      }
+      window.location.reload();
     };
     window.addEventListener('pageshow', handlePageShow);
     return () => window.removeEventListener('pageshow', handlePageShow);
