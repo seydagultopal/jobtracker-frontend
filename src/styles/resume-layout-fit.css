@@ -146,3 +146,24 @@
   margin-top: 0 !important;
   line-height: 1.45 !important;
 }
+
+
+/* Keep each section title attached to the content that follows it when paginating. */
+.cv-paper-section > .cv-section-heading {
+  break-after: avoid-page !important;
+  page-break-after: avoid !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+/* Keep individual records together while allowing long sections to flow across pages. */
+.cv-paper-entry,
+.cv-paper-section > .cv-paper-summary {
+  break-inside: avoid-page !important;
+  page-break-inside: avoid !important;
+}
+
+.resume-a4-tag {
+  white-space: nowrap !important;
+  font-variant-numeric: tabular-nums !important;
+}
