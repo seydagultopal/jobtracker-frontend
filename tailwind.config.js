@@ -10,9 +10,9 @@ export default {
       colors: {
         alabaster: '#F8F4ED',
         columbia: '#B7A0F6',
-        cherry: '#FF806B',
+        cherry: '#718A78',
         cambridge: '#9CAF91',
-        peach: '#FFB39A',
+        peach: '#C8C9B8',
         night: '#15101F',
         twilight: '#21182F',
         starlight: '#40304F'
