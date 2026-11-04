@@ -527,7 +527,7 @@ aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble
 .auth-form-panel .bg-cherry, .auth-form-panel .bg-cambridge, .auth-form-panel .bg-columbia {
   background: var(--pebble-accent) !important;
 }
-.auth-form-panel .hover\\:text-columbia:hover { color: var(--pebble-accent-strong) !important; }
+.auth-form-panel .hover\:text-columbia:hover { color: var(--pebble-accent-strong) !important; }
 .auth-page .fixed.top-10 { max-width: min(560px, calc(100vw - 32px)); font-size: 13px; }
 @media (max-width: 767px) {
   .auth-page { padding: 12px !important; align-items: flex-start !important; }
