@@ -81,7 +81,7 @@ const translations = {
     msgLoginSuccess: 'Giriş Başarılı! Yönlendiriliyorsun...',
     
     // Şifremi Unuttum Modalı
-    forgotPassTitle: 'Şifreni mi Unuttun? 🥺',
+    forgotPassTitle: 'Şifreni mi Unuttun?',
     forgotPassDesc: 'Merak etme, yeni şifreni belirleyip eski verilerine kavuşabilirsin.',
     forgotNewPass: 'Yeni Şifre',
     forgotConfirmPass: 'Yeni Şifre (Tekrar)',
