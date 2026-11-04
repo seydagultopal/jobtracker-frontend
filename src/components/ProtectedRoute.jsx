@@ -4,11 +4,19 @@ import api from '../services/api';
 
 export default function ProtectedRoute({ children }) {
   const location = useLocation();
-  const [status, setStatus] = useState('checking');
+  const [status, setStatus] = useState(() =>
+    sessionStorage.getItem('pebble_logged_out') === 'true' ? 'unauthenticated' : 'checking'
+  );
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     let active = true;
+
+    // A confirmed logout wins over any stale page or still-mounted client state.
+    if (sessionStorage.getItem('pebble_logged_out') === 'true') {
+      setStatus('unauthenticated');
+      return () => { active = false; };
+    }
 
     const verify = async () => {
       setStatus('checking');
@@ -43,7 +51,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (status === 'unauthenticated') {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 
   if (status === 'error') {

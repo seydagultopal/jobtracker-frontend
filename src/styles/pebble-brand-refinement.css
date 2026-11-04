@@ -1,0 +1,885 @@
+/* Pebble visual system — one coherent palette for both themes. */
+:root {
+  color-scheme: light;
+  --pebble-canvas: #f6f6f2;
+  --pebble-surface: #ffffff;
+  --pebble-surface-soft: #eff1eb;
+  --pebble-ink: #262b27;
+  --pebble-muted: #747c74;
+  --pebble-line: #e3e7df;
+  --pebble-accent: #718575;
+  --pebble-accent-strong: #536b59;
+  --pebble-accent-soft: #e7eee6;
+  --pebble-lavender: #a9a4c2;
+  --pebble-peach: #d8b5a1;
+  --pebble-shadow: 0 2px 8px rgba(31, 39, 32, .025), 0 14px 36px rgba(31, 39, 32, .045);
+  --pebble-logo-tile: #e9eee8;
+  --pebble-logo-ink: #536b59;
+  --pebble-logo-spark: #a58fba;
+  accent-color: var(--pebble-accent);
+}
+:root.dark {
+  color-scheme: dark;
+  --pebble-canvas: #191d1a;
+  --pebble-surface: #222823;
+  --pebble-surface-soft: #2b332d;
+  --pebble-ink: #e8ede7;
+  --pebble-muted: #a3ada4;
+  --pebble-line: #39443c;
+  --pebble-accent: #a5bba7;
+  --pebble-accent-strong: #c3d4c4;
+  --pebble-accent-soft: #303d33;
+  --pebble-lavender: #b9afd4;
+  --pebble-peach: #c99e87;
+  --pebble-shadow: 0 2px 10px rgba(0, 0, 0, .16), 0 16px 38px rgba(0, 0, 0, .13);
+  --pebble-logo-tile: #303d33;
+  --pebble-logo-ink: #c3d4c4;
+  --pebble-logo-spark: #c2b5e0;
+}
+html, body, #root { min-height: 100%; background: var(--pebble-canvas) !important; color: var(--pebble-ink); }
+body, button, input, textarea, select { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important; }
+body { transition: background-color .2s ease, color .2s ease; }
+:root.dark body { background: var(--pebble-canvas) !important; }
+h1, h2, h3, h4 { font-family: inherit !important; letter-spacing: -.035em; }
+::selection { background: color-mix(in srgb, var(--pebble-accent) 24%, transparent); color: var(--pebble-ink); }
+
+/* Brand mark adapts automatically; no hard-coded light or dark logo asset. */
+.pebble-logo-mark { display: inline-flex; flex: 0 0 auto; color: var(--pebble-logo-ink) !important; }
+.pebble-logo-mark svg { display: block; overflow: visible; }
+.pebble-logo-tile { fill: var(--pebble-logo-tile); stroke: var(--pebble-line); stroke-width: .8; }
+.pebble-logo-stone { fill: var(--pebble-logo-ink); }
+.pebble-logo-detail { stroke: var(--pebble-logo-tile); stroke-width: 1.35; stroke-linecap: round; }
+.pebble-logo-spark { fill: var(--pebble-logo-spark); }
+
+/* Integrated workspace shell. */
+.pebble-app-shell { background: var(--pebble-canvas) !important; color: var(--pebble-ink) !important; }
+.pebble-sidebar {
+  background: var(--pebble-canvas) !important;
+  border-right: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+}
+.pebble-sidebar-brand { border-bottom-color: var(--pebble-line) !important; color: var(--pebble-ink) !important; }
+.pebble-sidebar-wordmark { color: var(--pebble-ink) !important; letter-spacing: -.055em; }
+.pebble-workspace-switcher { background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important; color: var(--pebble-ink) !important; }
+.pebble-workspace-avatar { background: var(--pebble-accent) !important; color: #fff !important; }
+.pebble-nav-group-label, .pebble-sidebar-section-label { color: var(--pebble-muted) !important; }
+.pebble-nav-link { color: var(--pebble-muted) !important; border-radius: 8px !important; }
+.pebble-nav-link:hover { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+.pebble-nav-link[aria-current="page"], .pebble-nav-link.is-active {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-accent-soft) !important;
+  box-shadow: inset 2px 0 0 var(--pebble-accent) !important;
+}
+.pebble-nav-link[aria-current="page"] svg, .pebble-nav-link.is-active svg { color: var(--pebble-accent-strong) !important; }
+.pebble-sidebar-bottom { color: var(--pebble-muted) !important; border-color: var(--pebble-line) !important; }
+.pebble-sidebar-bottom-icon { color: var(--pebble-accent) !important; }
+
+.pebble-topbar {
+  background: color-mix(in srgb, var(--pebble-canvas) 94%, transparent) !important;
+  border-bottom: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(14px);
+}
+.pebble-topbar-title, .pebble-account-name { color: var(--pebble-ink) !important; }
+.pebble-breadcrumb-muted, .pebble-breadcrumb-divider { color: var(--pebble-muted) !important; }
+.pebble-icon-button, .pebble-account-trigger, .pebble-mobile-menu-button {
+  color: var(--pebble-muted) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+}
+.pebble-icon-button:hover, .pebble-account-trigger:hover, .pebble-mobile-menu-button:hover {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-surface-soft) !important;
+  border-color: var(--pebble-line) !important;
+}
+.pebble-icon-button svg { color: var(--pebble-accent-strong) !important; }
+.pebble-theme-button { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; }
+.pebble-account-avatar { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-account-dropdown, .pebble-account-details {
+  background: var(--pebble-surface) !important; color: var(--pebble-ink) !important; border-color: var(--pebble-line) !important;
+}
+.pebble-account-dropdown button { color: var(--pebble-ink) !important; }
+.pebble-account-dropdown button:hover { background: var(--pebble-surface-soft) !important; }
+.pebble-account-dropdown button.is-danger { color: #c56e6e !important; }
+
+/* Keep legacy Tailwind-based pages aligned without overriding semantic status colors. */
+.pebble-main { background: transparent !important; color: var(--pebble-ink) !important; }
+.pebble-main [class~="bg-white"], .pebble-main [class~="bg-gray-50"], .pebble-main [class~="bg-gray-100"] {
+  background-color: var(--pebble-surface) !important;
+}
+:root.dark .pebble-main [class~="bg-white"], :root.dark .pebble-main [class~="bg-gray-50"],
+:root.dark .pebble-main [class~="bg-gray-100"] { background-color: var(--pebble-surface) !important; }
+.pebble-main [class*="text-gray-900"], .pebble-main [class*="text-gray-800"], .pebble-main [class*="text-gray-700"] { color: var(--pebble-ink) !important; }
+.pebble-main [class*="text-gray-600"], .pebble-main [class*="text-gray-500"], .pebble-main [class*="text-gray-400"] { color: var(--pebble-muted) !important; }
+:root.dark .pebble-main [class*="dark:bg-gray-800"], :root.dark .pebble-main [class*="dark:bg-gray-900"] { background-color: var(--pebble-surface) !important; }
+:root.dark .pebble-main [class*="dark:text-gray-300"], :root.dark .pebble-main [class*="dark:text-gray-400"] { color: var(--pebble-muted) !important; }
+.pebble-main [class*="border-gray-"], .pebble-main [class*="border-slate-"] { border-color: var(--pebble-line) !important; }
+.pebble-main input, .pebble-main textarea, .pebble-main select {
+  background: var(--pebble-surface) !important; color: var(--pebble-ink) !important; border-color: var(--pebble-line) !important;
+}
+.pebble-main input::placeholder, .pebble-main textarea::placeholder { color: var(--pebble-muted) !important; }
+.pebble-main [class*="rounded-"][class*="border"] { border-color: var(--pebble-line) !important; }
+.pebble-main [class*="shadow-"] { box-shadow: var(--pebble-shadow) !important; }
+:root.dark .pebble-main [class*="bg-columbia/"], :root.dark .pebble-main [class*="bg-blue-50"] { background: var(--pebble-surface-soft) !important; }
+
+/* Consistent quiet surfaces; retain color coding for status badges and charts. */
+.dash-stat-card, .dash-calendar-card, .dash-reminders-card, .tracker-summary-card,
+.tracker-list-panel, .calendar-overview, .calendar-month-panel, .calendar-day-panel,
+.development-stat-card, .development-collection, .development-activity-panel,
+.resume-panel, .profile-side-card, .profile-main-card, .agenda-journal-paper, .agenda-tasks-panel {
+  border-color: var(--pebble-line) !important;
+  background-color: var(--pebble-surface) !important;
+  color: var(--pebble-ink) !important;
+  box-shadow: var(--pebble-shadow) !important;
+}
+:root.dark .dash-stat-card, :root.dark .dash-calendar-card, :root.dark .dash-reminders-card,
+:root.dark .tracker-summary-card, :root.dark .tracker-list-panel, :root.dark .calendar-overview,
+:root.dark .calendar-month-panel, :root.dark .calendar-day-panel, :root.dark .development-stat-card,
+:root.dark .development-collection, :root.dark .development-activity-panel, :root.dark .resume-panel,
+:root.dark .profile-side-card, :root.dark .profile-main-card, :root.dark .agenda-journal-paper,
+:root.dark .agenda-tasks-panel {
+  background-color: var(--pebble-surface) !important; color: var(--pebble-ink) !important;
+}
+.dash-stat-icon, .tracker-summary-icon, .development-stat-icon, .profile-card-icon {
+  background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important;
+}
+.dash-welcome, .tracker-hero, .development-hero {
+  background: var(--pebble-surface-soft) !important; color: var(--pebble-ink) !important;
+  border-color: var(--pebble-line) !important; box-shadow: none !important;
+}
+.dash-welcome h1, .tracker-hero h1, .development-hero h1 { color: var(--pebble-ink) !important; }
+.dash-welcome h1 span, .dash-text-link, .tracker-hero h1 > span { color: var(--pebble-accent-strong) !important; }
+.dash-welcome-copy { color: var(--pebble-muted) !important; }
+.dash-primary-action, .tracker-primary-button, .development-add-button, .calendar-add-button, .calendar-confirm-button {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important;
+  box-shadow: none !important; border-radius: 8px !important;
+}
+:root.dark .dash-primary-action, :root.dark .tracker-primary-button, :root.dark .development-add-button,
+:root.dark .calendar-add-button, :root.dark .calendar-confirm-button {
+  background: var(--pebble-accent) !important; color: #172019 !important;
+}
+.dash-streak-card { background: var(--pebble-accent-soft) !important; color: var(--pebble-ink) !important; box-shadow: none !important; }
+.dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light { color: var(--pebble-ink) !important; }
+:root.dark .dash-streak-card { background: var(--pebble-accent-soft) !important; }
+:root.dark .dash-streak-card h2, :root.dark .dash-streak-copy, :root.dark .dash-streak-unit { color: var(--pebble-ink) !important; }
+
+/* Focus and motion are consistent in both appearances. */
+:root.dark input, :root.dark textarea, :root.dark select { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--pebble-accent) !important; outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+
+/* Pebble identity: sage + forest. No orange accent remains in the product UI. */
+:root {
+  --pebble-canvas: #F5F7F3;
+  --pebble-surface: #FFFFFF;
+  --pebble-surface-soft: #EDF2EC;
+  --pebble-ink: #27332B;
+  --pebble-muted: #758177;
+  --pebble-line: #E0E8DF;
+  --pebble-accent: #718A78;
+  --pebble-accent-strong: #4F6D56;
+  --pebble-accent-soft: #E7EFE7;
+  --pebble-sage: #718A78;
+  --pebble-lavender: #B7B0CC;
+  --pebble-peach: #C8C9B8;
+  --pebble-coral: #718A78;
+  --pebble-neon-orange: #718A78;
+  --pebble-shadow: 0 2px 8px rgba(35, 52, 39, .025), 0 14px 36px rgba(35, 52, 39, .045);
+  --journal-paper: #FFFFFF;
+  --journal-paper-alt: #EDF2EC;
+  --journal-ink: #27332B;
+  --journal-muted: #758177;
+  --journal-line: #E0E8DF;
+  --journal-accent: #718A78;
+}
+:root.dark {
+  --pebble-canvas: #171E19;
+  --pebble-surface: #202922;
+  --pebble-surface-soft: #29352D;
+  --pebble-ink: #E8EEE8;
+  --pebble-muted: #A5B1A6;
+  --pebble-line: #39473D;
+  --pebble-accent: #A5BBA8;
+  --pebble-accent-strong: #C5D6C6;
+  --pebble-accent-soft: #2D3C32;
+  --pebble-sage: #A5BBA8;
+  --pebble-lavender: #BDB5D3;
+  --pebble-peach: #A8B3A5;
+  --pebble-coral: #A5BBA8;
+  --pebble-neon-orange: #A5BBA8;
+  --pebble-shadow: 0 2px 10px rgba(0, 0, 0, .16), 0 16px 38px rgba(0, 0, 0, .13);
+  --journal-paper: #202922;
+  --journal-paper-alt: #29352D;
+  --journal-ink: #E8EEE8;
+  --journal-muted: #A5B1A6;
+  --journal-line: #39473D;
+  --journal-accent: #A5BBA8;
+}
+html, body, #root { background: var(--pebble-canvas) !important; color: var(--pebble-ink) !important; }
+:root.dark body {
+  background:
+    radial-gradient(ellipse at 88% 0%, rgba(113, 138, 120, .10), transparent 30rem),
+    radial-gradient(ellipse at 8% 90%, rgba(183, 176, 204, .055), transparent 28rem),
+    var(--pebble-canvas) !important;
+}
+::selection { background: color-mix(in srgb, var(--pebble-accent) 24%, transparent) !important; color: var(--pebble-ink) !important; }
+input:focus, textarea:focus, select:focus { outline-color: color-mix(in srgb, var(--pebble-accent) 45%, transparent) !important; }
+* { scrollbar-color: var(--pebble-accent) transparent !important; }
+::-webkit-scrollbar-thumb { background: var(--pebble-accent) !important; }
+
+/* Navigation and shared actions */
+aside, .pebble-sidebar { background: var(--pebble-canvas) !important; border-color: var(--pebble-line) !important; box-shadow: none !important; }
+aside > div:first-child { border-color: var(--pebble-line) !important; }
+aside nav a, .pebble-nav-link { color: var(--pebble-muted) !important; }
+aside nav a:hover, .pebble-nav-link:hover { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble-nav-link.is-active {
+  color: var(--pebble-accent-strong) !important;
+  background: var(--pebble-accent-soft) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-accent) !important;
+}
+.pebble-nav-icon, .pebble-topbar-control svg, .pebble-topbar-page-icon svg,
+.pebble-sidebar-period, .pebble-topbar-page-icon { color: var(--pebble-accent-strong) !important; }
+.pebble-topbar-page-icon { background: var(--pebble-accent-soft) !important; }
+.pebble-workspace-avatar, .pebble-account-avatar { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-nav-link[aria-current="page"] .pebble-nav-index { color: var(--pebble-accent-strong) !important; }
+.pebble-sidebar-note { background: var(--pebble-surface) !important; border-color: var(--pebble-line) !important; }
+.pebble-sidebar-note-icon { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-topbar-control:hover, .pebble-topbar-profile:hover { border-color: var(--pebble-line) !important; }
+
+/* Dashboard: remove the former orange hero and peach accents. */
+.dash-welcome, :root.dark .dash-welcome {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(120deg, #E8EFE8 0%, #F2F5F0 58%, #E7ECE8 100%) !important;
+  border: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+}
+:root.dark .dash-welcome { background: linear-gradient(120deg, #26352B, #202B24 62%, #29342D) !important; }
+.dash-welcome h1, .dash-welcome h1 span, .dash-eyebrow, .dash-kicker,
+.dash-welcome-copy, .dash-text-link, .dash-calendar-footer, .dash-event-time,
+.dash-empty-action, :root.dark .dash-welcome h1 span, :root.dark .dash-eyebrow,
+:root.dark .dash-kicker, :root.dark .dash-welcome-copy, :root.dark .dash-text-link,
+:root.dark .dash-calendar-footer, :root.dark .dash-event-time, :root.dark .dash-empty-action {
+  color: var(--pebble-accent-strong) !important;
+}
+.dash-primary-action, .dash-round-link:hover, .dash-calendar-day.is-today,
+:root.dark .dash-primary-action, :root.dark .dash-round-link:hover, :root.dark .dash-calendar-day.is-today {
+  color: #fff !important; background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important;
+}
+.dash-tone-peach { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.dash-reminder-icon, .dash-empty-illustration, .dash-flame-badge {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important;
+}
+.dash-event-timeline span, .dash-calendar-day.has-event:after { background: var(--pebble-accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--pebble-accent) 15%, transparent) !important; }
+.dash-streak-card, :root.dark .dash-streak-card {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(135deg, #DCE8DD 0%, #C8D9CC 55%, #E5EADF 100%) !important;
+  box-shadow: none !important;
+}
+:root.dark .dash-streak-card { background: linear-gradient(135deg, #2D4033, #34483A 55%, #29382F) !important; }
+.dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light,
+:root.dark .dash-streak-card h2, :root.dark .dash-streak-copy, :root.dark .dash-streak-unit {
+  color: var(--pebble-ink) !important;
+}
+.dash-streak-progress span.is-filled { background: var(--pebble-accent-strong) !important; box-shadow: none !important; }
+
+/* Profile, agenda, calendar, development and resume accents */
+.profile-cover, :root.dark .profile-cover {
+  background: linear-gradient(112deg, #DCE8DD 0%, #E9EDE7 55%, #D4E1D6 100%) !important;
+  border-color: var(--pebble-line) !important;
+}
+:root.dark .profile-cover { background: linear-gradient(112deg, #2A3B30, #26342B 55%, #304034) !important; }
+.profile-identity, .profile-identity > p, .profile-location, .profile-identity-eyebrow,
+.profile-eyebrow, .profile-tip-card h3, .profile-tip-card > p:last-of-type,
+.profile-tip-card .profile-card-eyebrow { color: var(--pebble-ink) !important; }
+.profile-tip-card, :root.dark .profile-tip-card { background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important; }
+.profile-icon-peach, .profile-illustration-peach, .profile-tab.is-active .profile-tab-icon,
+.profile-form-section > h3 > span, .profile-section-title-row h3 > span,
+.profile-entry-number, .profile-empty-state > span, .profile-add-button,
+:root.dark .profile-icon-peach, :root.dark .profile-illustration-peach,
+:root.dark .profile-tab.is-active .profile-tab-icon, :root.dark .profile-form-section > h3 > span,
+:root.dark .profile-section-title-row h3 > span, :root.dark .profile-entry-number,
+:root.dark .profile-empty-state > span, :root.dark .profile-add-button {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important;
+}
+.profile-tab.is-active, :root.dark .profile-tab.is-active,
+.profile-form-footer > span svg { color: var(--pebble-accent-strong) !important; }
+.profile-tab-indicator { background: var(--pebble-accent) !important; }
+.profile-field:focus, :root.dark .profile-field:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 16%, transparent) !important; }
+.profile-save-button, .profile-media-save, :root.dark .profile-save-button, :root.dark .profile-media-save {
+  background: var(--pebble-accent) !important; color: #fff !important; box-shadow: none !important;
+}
+.profile-add-button:hover { background: var(--pebble-accent-soft) !important; }
+.profile-empty-state, .profile-empty-sage, :root.dark .profile-empty-state, :root.dark .profile-empty-sage {
+  background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important;
+}
+.agenda-editorial { --journal-accent: var(--pebble-accent) !important; }
+.agenda-date-controls button:hover, .agenda-mood-choice:hover { border-color: var(--pebble-accent) !important; }
+.agenda-mood-choice.is-selected, :root.dark .agenda-mood-choice.is-selected {
+  border-color: var(--pebble-accent) !important; background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important;
+}
+.agenda-save-bar button, .calendar-add-button, .calendar-confirm-button, .calendar-day-cell.is-today .calendar-day-number,
+:root.dark .calendar-add-button, :root.dark .calendar-confirm-button {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important;
+}
+.calendar-page { --cal-accent: var(--pebble-accent) !important; }
+.development-hero, .tracker-hero {
+  background: linear-gradient(125deg, var(--pebble-surface), var(--pebble-surface-soft)) !important;
+}
+.development-hero-mark, .development-stat-icon.activity, .development-collection-icon.activity,
+.development-status.in-progress, .tracker-summary-icon.activity, .tracker-company-mark,
+.tracker-status-interview {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important; border-color: var(--pebble-line) !important;
+}
+.development-progress-track > span, .development-chart-track > span { background: var(--pebble-accent) !important; }
+.resume-page-heading h1 > span, .resume-panel-heading-icon, .resume-loading-mark { color: var(--pebble-accent-strong) !important; }
+.resume-download-button, .resume-language-control button.active {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important; box-shadow: none !important;
+}
+.resume-option-row:hover { border-color: var(--pebble-accent) !important; }
+.resume-option-row input, .resume-item-choice input { accent-color: var(--pebble-accent) !important; }
+.cv-paper-identity h1 span, .cv-paper-contact svg, .cv-paper-section h3 svg, .cv-paper-empty > span {
+  color: var(--pebble-accent-strong) !important;
+}
+.auth-form-panel input:focus, .auth-reset-card input:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 13%, transparent) !important; }
+.auth-form-panel button[type="submit"], .auth-reset-card button[type="submit"] {
+  background: var(--pebble-accent) !important; color: #fff !important;
+}
+.auth-form-panel button:not([type="submit"]):hover { color: var(--pebble-accent-strong) !important; }
+
+/* Final cleanup for legacy page-level accent literals and selectable cover swatches. */
+.profile-cover-swatch-0 { background: linear-gradient(135deg, #718A78, #C8D9CC) !important; }
+.profile-cover-swatch-1 { background: linear-gradient(135deg, #8FAFC0, #B7B0CC) !important; }
+.profile-cover-swatch-2 { background: linear-gradient(135deg, #718A78, #C8D9CC) !important; }
+.profile-cover-swatch-3 { background: linear-gradient(135deg, #AFA5C9, #D7D0E7) !important; }
+.calendar-type-interview { --event-color: #607C68 !important; --event-bg: #E7EFE7 !important; }
+:root.dark .calendar-type-interview { --event-color: #B6CDB9 !important; --event-bg: #304236 !important; }
+
+
+/* Auth experience — editorial split layout, calmer hierarchy, clearer form focus. */
+.auth-page {
+  min-height: 100svh !important;
+  padding: clamp(20px, 4vw, 56px) !important;
+  background:
+    radial-gradient(ellipse at 12% 8%, color-mix(in srgb, var(--pebble-accent) 11%, transparent), transparent 34rem),
+    radial-gradient(ellipse at 92% 90%, color-mix(in srgb, var(--pebble-lavender) 10%, transparent), transparent 30rem),
+    var(--pebble-canvas) !important;
+}
+:root.dark .auth-page {
+  background:
+    radial-gradient(ellipse at 12% 8%, color-mix(in srgb, var(--pebble-accent) 12%, transparent), transparent 34rem),
+    radial-gradient(ellipse at 92% 90%, color-mix(in srgb, var(--pebble-lavender) 9%, transparent), transparent 30rem),
+    var(--pebble-canvas) !important;
+}
+.auth-card {
+  width: min(1060px, 100%) !important;
+  max-width: 1060px !important;
+  min-height: 650px;
+  padding: 13px !important;
+  gap: 12px !important;
+  border-radius: 26px !important;
+  background: var(--pebble-surface) !important;
+  border: 1px solid var(--pebble-line) !important;
+  box-shadow: 0 30px 90px rgba(35, 52, 39, .09) !important;
+  backdrop-filter: blur(18px);
+}
+:root.dark .auth-card { box-shadow: 0 30px 90px rgba(0,0,0,.32) !important; }
+.auth-form-panel {
+  width: 51% !important;
+  padding: clamp(24px, 4vw, 58px) !important;
+}
+.auth-form-panel h2 {
+  margin-bottom: 10px !important;
+  font-size: clamp(30px, 3vw, 38px) !important;
+}
+.auth-form-panel h2::after {
+  content: "";
+  display: block;
+  width: 38px;
+  height: 3px;
+  margin-top: 17px;
+  border-radius: 10px;
+  background: var(--pebble-accent);
+}
+.auth-form-panel form { gap: 13px; }
+.auth-form-panel input {
+  min-height: 52px;
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+.auth-form-panel input:focus {
+  border-color: var(--pebble-accent) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--pebble-accent) 12%, transparent) !important;
+}
+.auth-form-panel button[type="submit"] {
+  min-height: 52px;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: .01em !important;
+  text-transform: none !important;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--pebble-accent) 18%, transparent) !important;
+}
+.auth-form-panel button[type="button"]:not([class*="absolute"]) {
+  font-weight: 600;
+}
+.auth-form-panel .flex.items-center.gap-4 span {
+  font-weight: 600 !important;
+  letter-spacing: .08em !important;
+}
+.auth-brand-panel {
+  width: 49% !important;
+  min-height: 620px;
+  padding: clamp(26px, 4vw, 54px) !important;
+  border-radius: 18px !important;
+  border: 1px solid color-mix(in srgb, var(--pebble-accent) 15%, var(--pebble-line)) !important;
+  background:
+    radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--pebble-lavender) 19%, transparent), transparent 15rem),
+    linear-gradient(145deg, var(--pebble-accent-soft), var(--pebble-surface-soft) 58%, var(--pebble-canvas)) !important;
+  position: relative;
+  overflow: hidden;
+}
+:root.dark .auth-brand-panel {
+  background:
+    radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--pebble-lavender) 13%, transparent), transparent 15rem),
+    linear-gradient(145deg, #26362c, #202a23 58%, #222c25) !important;
+}
+.auth-brand-panel::before, .auth-brand-panel::after {
+  content: "";
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--pebble-accent) 18%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.auth-brand-panel::before { width: 390px; height: 390px; right: -190px; top: -190px; }
+.auth-brand-panel::after { width: 260px; height: 260px; left: -150px; bottom: -150px; }
+.auth-brand-card {
+  position: relative;
+  z-index: 1;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 500px;
+  aspect-ratio: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+.auth-brand-heading { max-width: 390px; }
+.auth-brand-logo {
+  display: block;
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 0 58px !important;
+  border-radius: 19px !important;
+  box-shadow: 0 10px 24px rgba(35,52,39,.12) !important;
+}
+.auth-brand-kicker {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--pebble-accent-strong);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+.auth-brand-card h1 {
+  margin: 0 0 15px !important;
+  color: var(--pebble-ink) !important;
+  font-size: clamp(42px, 4.5vw, 58px) !important;
+  line-height: 1 !important;
+  letter-spacing: -.075em !important;
+}
+.auth-brand-card p {
+  max-width: 330px;
+  color: var(--pebble-muted) !important;
+  font-size: clamp(16px, 1.7vw, 20px) !important;
+  font-weight: 500 !important;
+  line-height: 1.65 !important;
+}
+.auth-brand-card p span { color: var(--pebble-accent-strong) !important; }
+.auth-brand-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, var(--pebble-accent) 18%, transparent);
+}
+.auth-brand-footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--pebble-muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+.auth-brand-footer svg { color: var(--pebble-accent-strong); }
+.auth-form-panel .text-cherry { color: var(--pebble-accent-strong) !important; }
+.auth-form-panel .bg-cherry, .auth-form-panel .bg-cambridge, .auth-form-panel .bg-columbia {
+  background: var(--pebble-accent) !important;
+}
+.auth-form-panel .hover\:text-columbia:hover { color: var(--pebble-accent-strong) !important; }
+.auth-page .fixed.top-10 { max-width: min(560px, calc(100vw - 32px)); font-size: 13px; }
+@media (max-width: 767px) {
+  .auth-page { padding: 12px !important; align-items: flex-start !important; }
+  .auth-card { min-height: 0; padding: 9px !important; gap: 0 !important; border-radius: 20px !important; }
+  .auth-form-panel { width: 100% !important; padding: 26px 18px 22px !important; }
+  .auth-brand-panel { width: 100% !important; min-height: 0; padding: 22px !important; border-radius: 14px !important; }
+  .auth-brand-card { min-height: 0; gap: 22px; }
+  .auth-brand-logo { width: 44px !important; height: 44px !important; margin-bottom: 24px !important; border-radius: 14px !important; }
+  .auth-brand-kicker { margin-bottom: 9px; font-size: 8px; }
+  .auth-brand-card h1 { font-size: 34px !important; margin-bottom: 8px !important; }
+  .auth-brand-card p { font-size: 13px !important; line-height: 1.5 !important; }
+  .auth-brand-footer { gap: 8px 12px; padding-top: 14px; }
+  .auth-brand-footer span { font-size: 9px; }
+  .auth-form-panel h2 { font-size: 29px !important; }
+  .auth-register .auth-brand-panel { order: -1; }
+}
+@media (max-width: 420px) {
+  .auth-brand-footer { display: grid; grid-template-columns: 1fr; }
+  .auth-form-panel { padding-inline: 13px !important; }
+}
+
+/* Landing page: slightly more editorial, less decorative, stronger hierarchy. */
+.landing-header.is-scrolled {
+  background: color-mix(in srgb, var(--pebble-canvas) 90%, transparent) !important;
+  border-bottom-color: var(--pebble-line) !important;
+  box-shadow: 0 8px 30px rgba(35,52,39,.045) !important;
+}
+.landing-brand { letter-spacing: -.06em; }
+.landing-hero { padding-top: 148px; padding-bottom: 118px; }
+.landing-hero h1 { max-width: 660px; font-size: clamp(48px, 5.5vw, 70px); line-height: 1.04; }
+.landing-hero-description { max-width: 530px; font-size: 15px; line-height: 1.85; }
+.landing-primary-cta {
+  min-height: 48px;
+  border-radius: 11px !important;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--pebble-accent) 17%, transparent) !important;
+  font-weight: 700 !important;
+}
+.landing-secondary-cta { font-weight: 650; }
+.landing-preview-card { border-radius: 18px !important; transform: rotate(.4deg) !important; }
+.landing-feature-card { border-radius: 15px !important; }
+.landing-section { padding-top: 96px; padding-bottom: 96px; }
+.landing-final-cta { border-radius: 18px !important; }
+@media (max-width: 767px) {
+  .landing-hero { padding-top: 112px; padding-bottom: 75px; }
+  .landing-section { padding-top: 68px; padding-bottom: 68px; }
+}
+
+
+/* A restrained rose accent: warmth and personality without turning pink into the primary brand. */
+:root {
+  --pebble-rose: #B98592;
+  --pebble-rose-strong: #956674;
+  --pebble-rose-soft: #F3E8EB;
+  --pebble-rose-line: #EAD9DE;
+}
+:root.dark {
+  --pebble-rose: #C99EAA;
+  --pebble-rose-strong: #E0BBC4;
+  --pebble-rose-soft: #3B2D33;
+  --pebble-rose-line: #514047;
+}
+
+/* Rose appears only in secondary accents and a few expressive moments. */
+.dash-tone-peach,
+.profile-icon-peach,
+.profile-illustration-peach {
+  color: var(--pebble-rose-strong) !important;
+  background: var(--pebble-rose-soft) !important;
+}
+.profile-cover-swatch-1 {
+  background: linear-gradient(135deg, #B98592, #E8CDD4) !important;
+}
+:root.dark .profile-cover-swatch-1 {
+  background: linear-gradient(135deg, #805B68, #B78B98) !important;
+}
+.agenda-mood-choice.is-selected {
+  border-color: var(--pebble-rose-line) !important;
+  background: color-mix(in srgb, var(--pebble-rose-soft) 72%, var(--pebble-surface)) !important;
+  color: var(--pebble-rose-strong) !important;
+}
+:root.dark .agenda-mood-choice.is-selected {
+  border-color: var(--pebble-rose-line) !important;
+  background: var(--pebble-rose-soft) !important;
+  color: var(--pebble-rose-strong) !important;
+}
+.agenda-journal-paper {
+  border-top-color: color-mix(in srgb, var(--pebble-rose) 35%, var(--pebble-line)) !important;
+}
+
+
+/* Keep the workspace mark neutral; remove the legacy orange tile treatment. */
+.pebble-sidebar-logo {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.pebble-sidebar-brand:hover .pebble-sidebar-logo {
+  box-shadow: none !important;
+}
+
+
+/* Resume studio — restrained Harvard-inspired document and stable A4 export. */
+.resume-page {
+  --resume-paper: #ffffff;
+  --resume-panel: var(--pebble-surface);
+  --resume-ink: var(--pebble-ink);
+  --resume-muted: var(--pebble-muted);
+  --resume-line: var(--pebble-line);
+  padding: clamp(18px, 2.2vw, 32px) !important;
+}
+.resume-page-heading-compact { margin-bottom: 18px !important; }
+.resume-workspace { grid-template-columns: minmax(270px, 320px) minmax(0, 1fr) !important; gap: 22px !important; }
+.resume-panel {
+  border: 1px solid var(--pebble-line) !important;
+  border-radius: 16px !important;
+  background: var(--pebble-surface) !important;
+  box-shadow: 0 5px 20px rgba(35, 52, 39, .035) !important;
+}
+.resume-panel-heading h2, .resume-preview-heading h2 { color: var(--pebble-ink) !important; }
+.resume-panel-kicker { color: var(--pebble-muted) !important; }
+.resume-panel-heading-icon { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.resume-panel-description, .resume-preview-hint { color: var(--pebble-muted) !important; }
+.resume-language-control { border-color: var(--pebble-line) !important; }
+.resume-language-control > div { background: var(--pebble-surface-soft) !important; }
+.resume-language-control button { color: var(--pebble-muted) !important; }
+.resume-language-control button.active { color: #fff !important; }
+.resume-option-row { border-color: var(--pebble-line) !important; }
+.resume-option-icon { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.resume-item-list { border-left-color: var(--pebble-accent) !important; }
+.resume-profile-note { background: var(--pebble-surface-soft) !important; color: var(--pebble-muted) !important; }
+.resume-profile-note svg { color: var(--pebble-accent-strong) !important; }
+.resume-count-row { border-color: var(--pebble-line) !important; color: var(--pebble-muted) !important; }
+.resume-count-row strong { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.resume-a4-tag { border-color: var(--pebble-line) !important; color: var(--pebble-muted) !important; }
+.resume-paper-wrap {
+  padding: clamp(12px, 2vw, 24px) !important;
+  overflow: auto !important;
+  border: 1px solid var(--pebble-line) !important;
+  border-radius: 16px !important;
+  background: var(--pebble-surface-soft) !important;
+}
+.resume-paper {
+  box-sizing: border-box !important;
+  width: 794px !important;
+  max-width: 794px !important;
+  min-height: 1123px !important;
+  margin: 0 auto !important;
+  padding: 66px 72px !important;
+  color: #171717 !important;
+  background: #fff !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.10) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 10.5pt !important;
+  line-height: 1.42 !important;
+  text-align: left !important;
+  overflow-wrap: anywhere !important;
+}
+.cv-paper-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding: 0 0 18px !important;
+  margin: 0 0 18px !important;
+  border-bottom: 0 !important;
+}
+.cv-paper-identity { min-width: 0 !important; flex: 1 !important; }
+.cv-paper-identity h1 {
+  margin: 0 0 5px !important;
+  color: #111 !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+  font-size: 27pt !important;
+  font-weight: 700 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.08 !important;
+  text-transform: none !important;
+  overflow-wrap: anywhere !important;
+}
+.cv-paper-identity h1 span { color: #111 !important; }
+.cv-paper-identity h2 {
+  margin: 0 0 10px !important;
+  color: #333 !important;
+  font-size: 10.5pt !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em !important;
+  text-transform: none !important;
+}
+.cv-paper-contact {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px 12px !important;
+  color: #444 !important;
+  font-size: 8.5pt !important;
+  line-height: 1.45 !important;
+}
+.cv-paper-contact span { display: inline !important; overflow-wrap: anywhere !important; }
+.cv-paper-contact svg { display: none !important; }
+.cv-paper-photo {
+  width: 92px !important;
+  height: 112px !important;
+  flex: 0 0 92px !important;
+  border: 0 !important;
+  border-radius: 2px !important;
+  object-fit: cover !important;
+}
+.cv-paper-section {
+  display: block !important;
+  min-width: 0 !important;
+  margin: 0 0 17px !important;
+  padding: 0 !important;
+  break-inside: auto;
+  page-break-inside: auto;
+}
+.cv-paper-section h3 {
+  display: block !important;
+  margin: 0 0 9px !important;
+  padding: 0 0 4px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #777 !important;
+  color: #111 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 10pt !important;
+  font-weight: 800 !important;
+  letter-spacing: .075em !important;
+  line-height: 1.35 !important;
+  text-transform: uppercase !important;
+}
+.cv-paper-section h3 svg { display: none !important; }
+.cv-paper-summary, .cv-paper-entry p {
+  margin: 0 !important;
+  color: #292929 !important;
+  font-size: 9.5pt !important;
+  line-height: 1.48 !important;
+  white-space: pre-line !important;
+  overflow-wrap: anywhere !important;
+}
+.cv-paper-entry {
+  display: block !important;
+  margin: 0 0 10px !important;
+  color: #222 !important;
+  overflow-wrap: anywhere !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+.cv-paper-entry:last-child { margin-bottom: 0 !important; }
+.cv-paper-entry strong {
+  display: inline !important;
+  color: #111 !important;
+  font-size: 9.7pt !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+}
+.cv-paper-entry > span, .cv-entry-company {
+  display: block !important;
+  margin-top: 1px !important;
+  color: #333 !important;
+  font-size: 9.2pt !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+.cv-entry-company { color: #333 !important; }
+.cv-paper-entry > small {
+  color: #333 !important;
+  font-size: 8.8pt !important;
+  font-weight: 400 !important;
+}
+.cv-entry-heading {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+}
+.cv-entry-heading strong { min-width: 0 !important; }
+.cv-entry-heading small {
+  flex: 0 0 auto !important;
+  color: #444 !important;
+  font-size: 8.5pt !important;
+  text-align: right !important;
+  white-space: nowrap !important;
+}
+.cv-paper-skills { display: block !important; }
+.cv-paper-skills span {
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #222 !important;
+  font-size: 9.5pt !important;
+  font-weight: 400 !important;
+}
+.cv-paper-skills span:not(:last-child)::after { content: ' · '; }
+.cv-paper-empty { min-height: 900px !important; }
+.cv-paper-empty > span { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.cv-paper-empty h2 { color: #222 !important; }
+.cv-paper-empty p { color: #555 !important; }
+
+.resume-photo-settings {
+  display: grid;
+  gap: 11px;
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid var(--pebble-line);
+  border-radius: 12px;
+  background: var(--pebble-surface-soft);
+}
+.resume-photo-setting-copy { display: grid; gap: 4px; }
+.resume-photo-setting-copy strong { color: var(--pebble-ink); font-size: 12px; }
+.resume-photo-setting-copy small { color: var(--pebble-muted); font-size: 10px; line-height: 1.5; }
+.resume-photo-switch { display: inline-flex; width: 38px; height: 22px; cursor: pointer; }
+.resume-photo-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.resume-photo-switch span {
+  position: relative; width: 38px; height: 22px; border-radius: 99px;
+  background: var(--pebble-line); transition: background .18s ease;
+}
+.resume-photo-switch span::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.18); transition: transform .18s ease;
+}
+.resume-photo-switch input:checked + span { background: var(--pebble-accent); }
+.resume-photo-switch input:checked + span::after { transform: translateX(16px); }
+.resume-photo-switch input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--pebble-accent) 30%, transparent); outline-offset: 2px; }
+.resume-photo-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.resume-photo-thumb, .resume-photo-placeholder {
+  display: grid; place-items: center; width: 42px; height: 48px; flex: 0 0 42px;
+  border-radius: 5px; object-fit: cover; background: var(--pebble-surface); color: var(--pebble-muted);
+}
+.resume-photo-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.resume-photo-buttons button {
+  display: inline-flex; align-items: center; gap: 5px; padding: 7px 9px;
+  border: 1px solid var(--pebble-line); border-radius: 8px; background: var(--pebble-surface);
+  color: var(--pebble-ink); font-size: 10px; font-weight: 650; cursor: pointer;
+}
+.resume-photo-buttons button:hover { border-color: var(--pebble-accent); }
+.resume-photo-buttons .resume-photo-remove { color: #9b5963; }
+.resume-photo-error { margin: 0; color: #a33b48; font-size: 10px; line-height: 1.45; }
+.resume-download-button:disabled { opacity: .7; cursor: wait; transform: none !important; }
+
+:root.dark .resume-paper-wrap { background: var(--pebble-surface-soft) !important; }
+:root.dark .resume-paper { color: #171717 !important; background: #fff !important; }
+@media (max-width: 850px) {
+  .resume-workspace { grid-template-columns: 1fr !important; }
+  .resume-sidebar { grid-template-columns: minmax(0, 1.3fr) minmax(220px, .7fr) !important; }
+}
+@media (max-width: 600px) {
+  .resume-page { padding: 14px 10px !important; }
+  .resume-sidebar { grid-template-columns: 1fr !important; }
+  .resume-paper-wrap { padding: 10px !important; overflow-x: auto !important; }
+  .resume-paper { width: 794px !important; max-width: 794px !important; min-height: 1123px !important; padding: 66px 72px !important; }
+}
+@media print {
+  .resume-page { padding: 0 !important; }
+  .resume-sidebar, .resume-page-heading, .resume-preview-heading, .resume-preview-hint { display: none !important; }
+  .resume-workspace, .resume-preview-column, .resume-paper-wrap { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border: 0 !important; overflow: visible !important; background: #fff !important; }
+  .resume-paper { width: 210mm !important; max-width: none !important; min-height: 297mm !important; margin: 0 !important; box-shadow: none !important; }
+}

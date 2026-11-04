@@ -37,8 +37,8 @@ export default function ResetPassword() {
 
   // Geçersiz veya eksik token durumu için özel ekran
   if (!token) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="text-center p-10 bg-white rounded-[2rem] shadow-xl border border-red-50 max-w-sm w-full">
+    <div className="auth-page auth-reset min-h-screen flex items-center justify-center p-4">
+        <div className="auth-reset-card text-center p-10 rounded-[2rem] shadow-xl max-w-sm w-full">
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle size={32} />
             </div>
@@ -52,17 +52,16 @@ export default function ResetPassword() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E9ACBB]/10 via-gray-50 to-[#7B92B3]/10 p-4 relative overflow-hidden">
+    <div className="auth-page auth-reset min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       
-      {/* Arka plan süsleri (Bulanık renkli toplar) */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#E9ACBB] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#7B92B3] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      {/* Subtle background accents are supplied by the shared auth theme. */}
+
 
       {/* Cam Efektli (Glassmorphism) Kart */}
-      <div className="auth-reset-card bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white z-10 relative">
+      <div className="auth-reset-card p-10 rounded-[2rem] w-full max-w-md z-10 relative">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4"><Logo className="h-12 w-12" /></div><h1 className="text-2xl font-black tracking-widest text-cherry mb-4">Pebble</h1>
-          <h2 className="text-2xl font-bold text-gray-800">Yeni Şifre Belirle 🔒</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Yeni şifre belirle</h2>
           <p className="text-sm text-gray-500 mt-2">Lütfen hesabın için güçlü bir şifre oluştur.</p>
         </div>
         

@@ -1,59 +1,55 @@
-import { BookOpen, Calendar, FileText, LayoutDashboard, ListTodo, Sparkles, TrendingUp } from 'lucide-react';
+import { BookOpen, CalendarDays, FileText, LayoutDashboard, ListTodo, TrendingUp } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import Logo from './Logo';
 
 export default function Sidebar({ isOpen = false, onClose = () => {} }) {
   const { t, language } = useLanguage();
-
-  const menuItems = [
-    { path: '/dashboard', name: t('menuDashboard'), icon: LayoutDashboard },
-    { path: '/tracker', name: t('menuTracker'), icon: ListTodo },
-    { path: '/ajanda', name: t('menuAgenda'), icon: BookOpen },
-    { path: '/takvim', name: t('menuCalendar'), icon: Calendar },
-    { path: '/gelisim', name: t('menuDev'), icon: TrendingUp },
-    { path: '/resume', name: t('menuResume'), icon: FileText },
+  const groups = [
+    { label: language === 'tr' ? 'ÇALIŞMA ALANI' : 'WORKSPACE', items: [
+      { path: '/dashboard', name: t('menuDashboard'), icon: LayoutDashboard },
+      { path: '/tracker', name: t('menuTracker'), icon: ListTodo },
+      { path: '/ajanda', name: t('menuAgenda'), icon: BookOpen },
+      { path: '/takvim', name: t('menuCalendar'), icon: CalendarDays },
+    ]},
+    { label: language === 'tr' ? 'KİŞİSEL' : 'PERSONAL', items: [
+      { path: '/gelisim', name: t('menuDev'), icon: TrendingUp },
+      { path: '/resume', name: t('menuResume'), icon: FileText },
+    ]},
   ];
 
   return (
     <>
       {isOpen && <button type="button" className="pebble-sidebar-backdrop" aria-label={language === 'tr' ? 'Menüyü kapat' : 'Close navigation'} onClick={onClose} />}
-      <aside id="pebble-primary-navigation" className={`pebble-sidebar w-64 flex-shrink-0 bg-white dark:bg-twilight border-r border-gray-100 dark:border-starlight/20 flex flex-col transition-colors duration-500 z-50 ${isOpen ? 'is-mobile-open' : ''}`}>
-      <div className="pebble-sidebar-brand h-20 flex items-center gap-3 px-6 border-b border-gray-100 dark:border-starlight/20 shrink-0">
-        <div className="pebble-sidebar-logo"><Logo className="w-auto h-8" /></div>
-        <div className="min-w-0">
-          <span className="pebble-sidebar-wordmark">Pebble<span className="pebble-sidebar-period">.</span></span>
-          <span className="pebble-sidebar-tagline">MAKE IT HAPPEN</span>
+      <aside id="pebble-primary-navigation" className={`pebble-sidebar ${isOpen ? 'is-mobile-open' : ''}`}>
+        <NavLink to="/dashboard" onClick={onClose} className="pebble-sidebar-brand" aria-label="Pebble home">
+          <Logo className="pebble-sidebar-logo" />
+          <span className="pebble-sidebar-wordmark">pebble</span>
+          <span className="pebble-sidebar-brand-mark">⌄</span>
+        </NavLink>
+        <div className="pebble-workspace-switcher">
+          <span className="pebble-workspace-avatar">P</span>
+          <span className="pebble-workspace-name">{language === 'tr' ? 'Kişisel alanım' : 'My workspace'}</span>
+          <span className="pebble-workspace-chevron">⌄</span>
         </div>
-      </div>
-
-      <div className="pebble-sidebar-section-label"><span>{language === 'tr' ? 'ÇALIŞMA ALANI' : 'WORKSPACE'}</span></div>
-      <nav className="pebble-sidebar-nav flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar" aria-label="Main navigation">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            onClick={onClose}
-            className={({ isActive }) => `pebble-nav-link flex items-center gap-3.5 px-4 py-3 rounded-[1.1rem] font-bold transition-all duration-300 ${isActive ? 'is-active' : ''}`}
-          >
-            {({ isActive }) => (
-              <>
-                <span className="pebble-nav-icon"><item.icon size={18} strokeWidth={isActive ? 2.4 : 2} /></span>
-                <span className="pebble-nav-name text-[13px] tracking-wide">{item.name}</span>
-                {isActive && <span className="pebble-nav-active-mark" aria-hidden="true" />}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="pebble-sidebar-footer">
-        <div className="pebble-sidebar-note">
-          <span className="pebble-sidebar-note-icon"><Sparkles size={15} /></span>
-          <div><p>{language === 'tr' ? 'Küçük adımlar.' : 'Small steps.'}</p><p>{language === 'tr' ? 'Gerçek ilerleme.' : 'Real progress.'}</p></div>
-          <span className="pebble-sidebar-note-spark" aria-hidden="true">✳</span>
+        <nav className="pebble-sidebar-nav" aria-label="Main navigation">
+          {groups.map(group => (
+            <section className="pebble-nav-group" key={group.label}>
+              <p className="pebble-nav-group-label">{group.label}</p>
+              {group.items.map(item => (
+                <NavLink key={item.path} to={item.path} onClick={onClose}
+                  className={({ isActive }) => `pebble-nav-link ${isActive ? 'is-active' : ''}`}>
+                  <item.icon size={17} strokeWidth={1.8} />
+                  <span>{item.name}</span>
+                </NavLink>
+              ))}
+            </section>
+          ))}
+        </nav>
+        <div className="pebble-sidebar-bottom">
+          <span className="pebble-sidebar-bottom-icon">✳</span>
+          <span>{language === 'tr' ? 'Küçük adımlar, gerçek ilerleme.' : 'Small steps, real progress.'}</span>
         </div>
-      </div>
       </aside>
     </>
   );

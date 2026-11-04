@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,6 +17,21 @@ import Resume from './pages/Resume';
 import Tracker from './pages/Tracker';
 
 function App() {
+  useEffect(() => {
+    // A browser may restore a protected page from the back-forward cache without
+    // remounting React. Force a fresh server-side session check before showing it.
+    const handlePageShow = (event) => {
+      if (!event.persisted) return;
+      if (sessionStorage.getItem('pebble_logged_out') === 'true') {
+        window.location.replace('/');
+        return;
+      }
+      window.location.reload();
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
+
   return (
     <Router>
       <div className="min-h-screen text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500">
