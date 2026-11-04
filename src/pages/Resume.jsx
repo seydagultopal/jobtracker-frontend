@@ -314,20 +314,21 @@ export default function Resume() {
                     <p className="cv-paper-summary">{personalInfo.summary}</p>
                   </section>}
 
+                  {education.length > 0 && <section className="cv-paper-section cv-section">
+                    <h3 className="cv-section-heading">{cvT('edu')}</h3>
+                    {education.map((edu, index) => <div className="cv-paper-entry cv-entry" key={edu.id || index}>
+                      <div className="cv-entry-heading"><strong>{edu.degree}</strong><small>{edu.startDate} – {edu.endDate || cvT('present')}</small></div>
+                      <span>{edu.school}{edu.gpa ? ` · ${cvT('gpa')}: ${edu.gpa}` : ''}</span>
+                    </div>)}
+                  </section>}
+
+
                   {experience.length > 0 && <section className="cv-paper-section cv-section">
                     <h3 className="cv-section-heading">{cvT('exp')}</h3>
                     {experience.map((exp, index) => <div className="cv-paper-entry cv-entry" key={exp.id || index}>
                       <div className="cv-entry-heading"><strong>{exp.role}</strong><small>{exp.startDate} – {exp.endDate || cvT('present')}</small></div>
                       <span className="cv-entry-company">{exp.company}</span>
                       {exp.description && <p>{exp.description}</p>}
-                    </div>)}
-                  </section>}
-
-                  {education.length > 0 && <section className="cv-paper-section cv-section">
-                    <h3 className="cv-section-heading">{cvT('edu')}</h3>
-                    {education.map((edu, index) => <div className="cv-paper-entry cv-entry" key={edu.id || index}>
-                      <div className="cv-entry-heading"><strong>{edu.degree}</strong><small>{edu.startDate} – {edu.endDate || cvT('present')}</small></div>
-                      <span>{edu.school}{edu.gpa ? ` · ${cvT('gpa')}: ${edu.gpa}` : ''}</span>
                     </div>)}
                   </section>}
 
