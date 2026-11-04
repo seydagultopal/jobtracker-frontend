@@ -218,11 +218,14 @@
   page-break-after: auto !important;
 }
 .resume-paper-wrap {
-  scroll-snap-type: x proximity;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
   overscroll-behavior-x: contain;
+  scroll-behavior: auto !important;
   cursor: default;
 }
-.resume-paper.cv-page { scroll-snap-align: start; }
+.resume-paper.cv-page { scroll-snap-align: none !important; }
 
 .cv-section-drag-handle:active{cursor:grabbing}
 .cv-draggable-section.is-dragging{z-index:5;border-color:var(--pebble-accent)!important;background:var(--pebble-surface-soft)!important;box-shadow:0 8px 22px rgba(0,0,0,.12)}
