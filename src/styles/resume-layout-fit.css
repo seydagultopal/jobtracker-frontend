@@ -177,7 +177,7 @@
 .resume-pages{display:flex;align-items:flex-start;gap:18px;width:max-content;min-width:100%;margin:0 auto}
 .resume-paper.cv-page{position:relative;display:flex;flex:0 0 794px;flex-direction:column;width:794px!important;max-width:794px!important;min-width:794px;min-height:1123px!important;height:auto;margin:0!important;padding:54px 58px 48px!important;overflow:visible!important;box-sizing:border-box!important;break-after:page;page-break-after:always}
 .resume-paper.cv-page:last-child{break-after:auto;page-break-after:auto}
-.cv-page-content{flex:1 0 auto;min-height:850px}
+.cv-page-content{flex:1 0 auto;min-height:0}
 .cv-page-footer{display:flex;justify-content:space-between;margin-top:22px;padding-top:8px;border-top:1px solid #e5e5e5;color:#888;font-size:7pt;letter-spacing:.08em}
 .cv-draggable-section{position:relative;padding:5px 8px 1px;margin:0 -8px 8px;border:1px solid transparent;border-radius:5px;cursor:grab;transition:background .15s ease,border-color .15s ease}
 .cv-draggable-section:hover{border-color:#d9e1da;background:#fbfcfb}
@@ -192,4 +192,20 @@
 .resume-paper-wrap{overflow:visible!important}
 .resume-pages{display:block!important;width:210mm!important}
 .resume-paper.cv-page{width:210mm!important;min-width:210mm!important;max-width:210mm!important;min-height:297mm!important;height:297mm!important;padding:18mm!important;margin:0!important;box-shadow:none!important}
+}
+
+/* Export the same page sequence vertically; the on-screen side-by-side canvas must not be scaled to one sheet. */
+.resume-pages.is-pdf-export {
+  display: block !important;
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  margin: 0 !important;
+}
+.resume-pages.is-pdf-export .resume-paper.cv-page {
+  display: flex !important;
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  margin: 0 !important;
 }
