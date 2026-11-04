@@ -167,3 +167,29 @@
   white-space: nowrap !important;
   font-variant-numeric: tabular-nums !important;
 }
+
+/* Resume page studio: real A4 sheets, visible together, with section-level drag and drop. */
+.resume-preview-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+.resume-preview-tools .resume-preview-hint{margin:0!important}
+.resume-add-page{flex:0 0 auto;padding:7px 10px;border:1px solid var(--pebble-line);border-radius:8px;background:var(--pebble-surface);color:var(--pebble-ink);font-size:11px;font-weight:650;cursor:pointer}
+.resume-add-page:hover{border-color:var(--pebble-accent);color:var(--pebble-accent-strong)}
+.resume-paper-wrap{overflow:auto!important;padding:18px!important}
+.resume-pages{display:flex;align-items:flex-start;gap:18px;width:max-content;min-width:100%;margin:0 auto}
+.resume-paper.cv-page{position:relative;display:flex;flex:0 0 794px;flex-direction:column;width:794px!important;max-width:794px!important;min-width:794px;min-height:1123px!important;height:auto;margin:0!important;padding:54px 58px 48px!important;overflow:visible!important;box-sizing:border-box!important;break-after:page;page-break-after:always}
+.resume-paper.cv-page:last-child{break-after:auto;page-break-after:auto}
+.cv-page-content{flex:1 0 auto;min-height:850px}
+.cv-page-footer{display:flex;justify-content:space-between;margin-top:22px;padding-top:8px;border-top:1px solid #e5e5e5;color:#888;font-size:7pt;letter-spacing:.08em}
+.cv-draggable-section{position:relative;padding:5px 8px 1px;margin:0 -8px 8px;border:1px solid transparent;border-radius:5px;cursor:grab;transition:background .15s ease,border-color .15s ease}
+.cv-draggable-section:hover{border-color:#d9e1da;background:#fbfcfb}
+.cv-draggable-section:active{cursor:grabbing}
+.cv-section-drag-handle{display:flex;align-items:center;gap:6px;height:16px;margin:-2px 0 2px;color:#929892;opacity:.45;font-family:Arial,Helvetica,sans-serif}
+.cv-draggable-section:hover .cv-section-drag-handle{opacity:1}
+.cv-section-drag-handle span{font-size:15px;line-height:1}
+.cv-section-drag-handle small{font-size:7px;letter-spacing:.02em}
+@media(max-width:600px){.resume-paper-wrap{padding:10px!important}.resume-pages{gap:12px}}
+@media print{
+.resume-preview-tools{display:none!important}
+.resume-paper-wrap{overflow:visible!important}
+.resume-pages{display:block!important;width:210mm!important}
+.resume-paper.cv-page{width:210mm!important;min-width:210mm!important;max-width:210mm!important;min-height:297mm!important;height:297mm!important;padding:18mm!important;margin:0!important;box-shadow:none!important}
+}
