@@ -16,6 +16,18 @@ const safeJSONParse = (data) => {
   }
 };
 
+const getExternalUrl = (value) => {
+  const trimmed = String(value || '').trim();
+  if (!trimmed) return null;
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const url = new URL(candidate);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+  } catch {
+    return null;
+  }
+};
+
 const readImage = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onload = () => resolve(reader.result);
@@ -75,7 +87,8 @@ export default function Resume() {
             summary: profile.bio || '',
             photo: profile.photo || null,
             linkedin: profile.linkedin || '',
-            github: profile.github || ''
+            github: profile.github || '',
+            website: profile.website || profile.portfolio || ''
           }));
           setExperience(safeJSONParse(profile.experiences));
           setEducation(safeJSONParse(profile.educations));
@@ -145,7 +158,8 @@ export default function Resume() {
           scrollY: 0
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['.cv-entry', '.cv-section-heading'] }
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.cv-entry', '.cv-section-heading'] },
+        enableLinks: true
       };
       await html2pdf().set(opt).from(element).save();
     } catch (error) {
@@ -303,9 +317,9 @@ export default function Resume() {
                         {personalInfo.email && <span><Mail size={11} />{personalInfo.email}</span>}
                         {personalInfo.phone && <span><Phone size={11} />{personalInfo.phone}</span>}
                         {personalInfo.location && <span><MapPin size={11} />{personalInfo.location}</span>}
-                        {personalInfo.linkedin && <span><Linkedin size={11} />{personalInfo.linkedin}</span>}
-                        {personalInfo.github && <span><Github size={11} />{personalInfo.github}</span>}
-                        {personalInfo.website && <span><Globe size={11} />{personalInfo.website}</span>}
+                        {personalInfo.linkedin && getExternalUrl(personalInfo.linkedin) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin size={11} /><span>LinkedIn</span></a>}
+                        {personalInfo.github && getExternalUrl(personalInfo.github) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github size={11} /><span>GitHub</span></a>}
+                        {personalInfo.website && getExternalUrl(personalInfo.website) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" aria-label="Portfolio website"><Globe size={11} /><span>Portfolio</span></a>}
                       </div>
                     </div>
                     {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo cv-paper-photo-contain" />}
