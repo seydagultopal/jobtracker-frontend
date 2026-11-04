@@ -9,11 +9,11 @@
   --pebble-line: #E5DCD0;
   --pebble-sage: #71866A;
   --pebble-lavender: #B9A7D8;
-  --pebble-neon-orange: #D9572B;
+  --pebble-accent: #D9572B;
   --pebble-peach: #F2B99D;
-  --pebble-coral: #D9572B;
+  --pebble-accent: #D9572B;
   --pebble-shadow: 0 12px 34px rgba(64, 43, 29, .055);
-  accent-color: var(--pebble-neon-orange);
+  accent-color: var(--pebble-accent);
 }
 :root.dark {
   color-scheme: dark;
@@ -25,9 +25,9 @@
   --pebble-line: #493B4A;
   --pebble-sage: #A0B79A;
   --pebble-lavender: #C7B1E8;
-  --pebble-neon-orange: #FF865E;
+  --pebble-accent: #FF865E;
   --pebble-peach: #FFB49A;
-  --pebble-coral: #FF865E;
+  --pebble-accent: #FF865E;
   --pebble-shadow: 0 16px 38px rgba(0, 0, 0, .20);
 }
 html, body { background-color: var(--pebble-canvas); }
@@ -37,43 +37,43 @@ html, body { background-color: var(--pebble-canvas); }
     radial-gradient(ellipse at 8% 90%, rgba(199, 177, 232, .055), transparent 28rem),
     var(--pebble-canvas);
 }
-::selection { background: color-mix(in srgb, var(--pebble-neon-orange) 24%, transparent); color: var(--pebble-ink); }
+::selection { background: color-mix(in srgb, var(--pebble-accent) 24%, transparent); color: var(--pebble-ink); }
 input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--pebble-neon-orange) 78%, white);
+  outline: 2px solid color-mix(in srgb, var(--pebble-accent) 78%, white);
   outline-offset: 3px;
 }
 :root.dark input:focus-visible, :root.dark textarea:focus-visible, :root.dark select:focus-visible,
 :root.dark button:focus-visible, :root.dark a:focus-visible {
-  outline-color: var(--pebble-neon-orange);
+  outline-color: var(--pebble-accent);
 }
 /* One restrained brand accent; status colors retain their semantic meaning. */
 .pebble-sidebar { background: transparent !important; border-right-color: color-mix(in srgb, var(--pebble-line) 70%, transparent) !important; }
 .pebble-sidebar-brand { border-bottom-color: color-mix(in srgb, var(--pebble-line) 70%, transparent) !important; }
 .pebble-sidebar-section-label { color: var(--pebble-muted); font-weight: 700; }
 .pebble-nav-link { color: var(--pebble-muted) !important; }
-.pebble-nav-link:hover { color: var(--pebble-ink) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 7%, transparent) !important; }
+.pebble-nav-link:hover { color: var(--pebble-ink) !important; background: color-mix(in srgb, var(--pebble-accent) 7%, transparent) !important; }
 .pebble-nav-link[aria-current="page"] {
   color: var(--pebble-ink) !important;
-  background: color-mix(in srgb, var(--pebble-neon-orange) 10%, var(--pebble-surface)) !important;
-  box-shadow: inset 3px 0 0 var(--pebble-neon-orange) !important;
+  background: color-mix(in srgb, var(--pebble-accent) 10%, var(--pebble-surface)) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-accent) !important;
 }
-.pebble-nav-link[aria-current="page"] .pebble-nav-icon { color: var(--pebble-neon-orange) !important; }
+.pebble-nav-link[aria-current="page"] .pebble-nav-icon { color: var(--pebble-accent) !important; }
 :root.dark .pebble-nav-link[aria-current="page"] {
   color: var(--pebble-ink) !important;
-  background: color-mix(in srgb, var(--pebble-neon-orange) 13%, var(--pebble-surface)) !important;
-  box-shadow: inset 3px 0 0 var(--pebble-neon-orange) !important;
+  background: color-mix(in srgb, var(--pebble-accent) 13%, var(--pebble-surface)) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-accent) !important;
 }
 .pebble-sidebar-note { background: color-mix(in srgb, var(--pebble-surface) 72%, transparent) !important; border-color: var(--pebble-line) !important; }
 .pebble-topbar { background: color-mix(in srgb, var(--pebble-canvas) 84%, transparent) !important; border-bottom-color: color-mix(in srgb, var(--pebble-line) 72%, transparent) !important; }
-.pebble-topbar-page-icon { color: var(--pebble-neon-orange) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 9%, transparent) !important; }
+.pebble-topbar-page-icon { color: var(--pebble-accent) !important; background: color-mix(in srgb, var(--pebble-accent) 9%, transparent) !important; }
 .pebble-topbar-title { color: var(--pebble-ink) !important; }
 .pebble-topbar-control, .pebble-topbar-profile, .pebble-theme-toggle {
   color: var(--pebble-ink) !important;
   background: color-mix(in srgb, var(--pebble-surface) 86%, transparent) !important;
   border-color: var(--pebble-line) !important;
 }
-.pebble-topbar-control:hover, .pebble-topbar-profile:hover { border-color: color-mix(in srgb, var(--pebble-neon-orange) 48%, var(--pebble-line)) !important; }
-.pebble-topbar-control svg, .pebble-topbar-page-icon svg { color: var(--pebble-neon-orange) !important; }
+.pebble-topbar-control:hover, .pebble-topbar-profile:hover { border-color: color-mix(in srgb, var(--pebble-accent) 48%, var(--pebble-line)) !important; }
+.pebble-topbar-control svg, .pebble-topbar-page-icon svg { color: var(--pebble-accent) !important; }
 :root.dark .pebble-topbar-control, :root.dark .pebble-topbar-profile, :root.dark .pebble-theme-toggle {
   background: color-mix(in srgb, var(--pebble-surface) 90%, transparent) !important;
   border-color: var(--pebble-line) !important;
@@ -174,15 +174,15 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   box-shadow: var(--pebble-shadow) !important;
 }
 .dash-welcome h1 { color: var(--pebble-ink) !important; }
-.dash-welcome h1 span { color: var(--pebble-neon-orange) !important; }
+.dash-welcome h1 span { color: var(--pebble-accent) !important; }
 .dash-welcome-copy { color: var(--pebble-muted) !important; }
-.dash-eyebrow { color: var(--pebble-neon-orange) !important; }
+.dash-eyebrow { color: var(--pebble-accent) !important; }
 .dash-primary-action {
-  background: var(--pebble-neon-orange) !important;
+  background: var(--pebble-accent) !important;
   color: #fffaf6 !important;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--pebble-neon-orange) 16%, transparent) !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--pebble-accent) 16%, transparent) !important;
 }
-.dash-primary-action:hover { box-shadow: 0 10px 22px color-mix(in srgb, var(--pebble-neon-orange) 22%, transparent) !important; }
+.dash-primary-action:hover { box-shadow: 0 10px 22px color-mix(in srgb, var(--pebble-accent) 22%, transparent) !important; }
 :root.dark .dash-welcome {
   color: var(--pebble-ink) !important;
   background:
@@ -192,8 +192,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 }
 :root.dark .dash-welcome h1, :root.dark .dash-welcome-copy { color: var(--pebble-ink) !important; }
 :root.dark .dash-welcome-copy { color: var(--pebble-muted) !important; }
-:root.dark .dash-welcome h1 span { color: var(--pebble-neon-orange) !important; }
-:root.dark .dash-primary-action { background: var(--pebble-neon-orange) !important; color: #291b1d !important; }
+:root.dark .dash-welcome h1 span { color: var(--pebble-accent) !important; }
+:root.dark .dash-primary-action { background: var(--pebble-accent) !important; color: #291b1d !important; }
 /* Dashboard metrics share a neutral base; small icon tints preserve scanability without competing. */
 .dash-stat-card,
 .dash-tone-sage, .dash-tone-peach, .dash-tone-lilac, .dash-tone-rose, .dash-tone-gold {
@@ -202,10 +202,10 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   border-color: var(--pebble-line) !important;
   box-shadow: 0 6px 18px rgba(64, 43, 29, .035) !important;
 }
-.dash-stat-card:hover { border-color: color-mix(in srgb, var(--pebble-neon-orange) 32%, var(--pebble-line)) !important; }
-.dash-stat-icon { color: var(--pebble-neon-orange); background: color-mix(in srgb, var(--pebble-neon-orange) 10%, var(--pebble-surface-soft)) !important; }
+.dash-stat-card:hover { border-color: color-mix(in srgb, var(--pebble-accent) 32%, var(--pebble-line)) !important; }
+.dash-stat-icon { color: var(--pebble-accent); background: color-mix(in srgb, var(--pebble-accent) 10%, var(--pebble-surface-soft)) !important; }
 .dash-stat-label, .dash-stat-note { color: var(--pebble-muted) !important; }
-.dash-stat-arrow { color: var(--pebble-neon-orange) !important; }
+.dash-stat-arrow { color: var(--pebble-accent) !important; }
 :root.dark .dash-stat-card, :root.dark .dash-tone-sage, :root.dark .dash-tone-peach,
 :root.dark .dash-tone-lilac, :root.dark .dash-tone-rose, :root.dark .dash-tone-gold {
   color: var(--pebble-ink) !important;
@@ -213,7 +213,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   border-color: var(--pebble-line) !important;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .12) !important;
 }
-:root.dark .dash-stat-icon { color: var(--pebble-neon-orange); background: color-mix(in srgb, var(--pebble-neon-orange) 13%, var(--pebble-surface-soft)) !important; }
+:root.dark .dash-stat-icon { color: var(--pebble-accent); background: color-mix(in srgb, var(--pebble-accent) 13%, var(--pebble-surface-soft)) !important; }
 .dash-streak-card {
   color: var(--pebble-ink) !important;
   background: linear-gradient(135deg, var(--pebble-surface), color-mix(in srgb, var(--pebble-sage) 12%, var(--pebble-surface))) !important;
@@ -221,9 +221,9 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   box-shadow: var(--pebble-shadow) !important;
 }
 .dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light { color: var(--pebble-ink) !important; }
-.dash-flame-badge { color: var(--pebble-neon-orange) !important; background: color-mix(in srgb, var(--pebble-neon-orange) 12%, var(--pebble-surface)) !important; box-shadow: none !important; }
+.dash-flame-badge { color: var(--pebble-accent) !important; background: color-mix(in srgb, var(--pebble-accent) 12%, var(--pebble-surface)) !important; box-shadow: none !important; }
 .dash-streak-progress span { background: var(--pebble-line) !important; }
-.dash-streak-progress span.is-filled { background: var(--pebble-neon-orange) !important; box-shadow: none !important; }
+.dash-streak-progress span.is-filled { background: var(--pebble-accent) !important; box-shadow: none !important; }
 :root.dark .dash-streak-card {
   color: var(--pebble-ink) !important;
   background: linear-gradient(135deg, var(--pebble-surface), color-mix(in srgb, var(--pebble-sage) 9%, var(--pebble-surface))) !important;
@@ -334,32 +334,32 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-brand:hover .landing-logo { transform: rotate(-5deg) translateY(-1px); }
 .landing-nav { display: flex; align-items: center; justify-content: center; gap: 5px; }
 .landing-nav a { padding: 10px 13px; border-radius: 11px; color: var(--pebble-muted); text-decoration: none; font-size: 13px; font-weight: 600; transition: color .18s, background .18s; white-space: nowrap; }
-.landing-nav a:hover, .landing-nav a.is-active { color: var(--pebble-ink); background: color-mix(in srgb, var(--pebble-neon-orange) 8%, transparent); }
+.landing-nav a:hover, .landing-nav a.is-active { color: var(--pebble-ink); background: color-mix(in srgb, var(--pebble-accent) 8%, transparent); }
 .landing-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .landing-icon-button, .landing-language-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 38px; min-width: 38px; padding: 0 10px; border: 1px solid var(--pebble-line); border-radius: 12px; background: color-mix(in srgb, var(--pebble-surface) 80%, transparent); color: var(--pebble-ink); cursor: pointer; transition: border-color .18s, background .18s, transform .18s; }
-.landing-icon-button:hover, .landing-language-button:hover { border-color: color-mix(in srgb, var(--pebble-neon-orange) 45%, var(--pebble-line)); transform: translateY(-1px); }
+.landing-icon-button:hover, .landing-language-button:hover { border-color: color-mix(in srgb, var(--pebble-accent) 45%, var(--pebble-line)); transform: translateY(-1px); }
 .landing-language-button span { font-size: 10px; font-weight: 800; letter-spacing: .06em; }
 .landing-signin, .landing-signup { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; transition: transform .18s, background .18s, border-color .18s; }
 .landing-signin { border: 1px solid transparent; background: transparent; color: var(--pebble-ink); }
 .landing-signin:hover { background: color-mix(in srgb, var(--pebble-surface) 82%, transparent); }
-.landing-signup { border: 1px solid var(--pebble-neon-orange); background: var(--pebble-neon-orange); color: #fffaf6; }
-.landing-signup:hover, .landing-primary-cta:hover { transform: translateY(-2px); box-shadow: 0 9px 22px color-mix(in srgb, var(--pebble-neon-orange) 20%, transparent); }
+.landing-signup { border: 1px solid var(--pebble-accent); background: var(--pebble-accent); color: #fffaf6; }
+.landing-signup:hover, .landing-primary-cta:hover { transform: translateY(-2px); box-shadow: 0 9px 22px color-mix(in srgb, var(--pebble-accent) 20%, transparent); }
 :root.dark .landing-signup, :root.dark .landing-primary-cta { color: #281b1d; }
 .landing-hero { position: relative; z-index: 1; width: min(1160px, calc(100% - 64px)); min-height: 760px; margin: 0 auto; padding: 155px 0 100px; display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); align-items: center; gap: clamp(40px, 6vw, 88px); scroll-margin-top: 100px; }
 .landing-hero-copy { max-width: 600px; }
 .landing-eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid var(--pebble-line); border-radius: 999px; background: color-mix(in srgb, var(--pebble-surface) 78%, transparent); color: var(--pebble-muted); font-size: 11px; font-weight: 700; letter-spacing: .015em; }
-.landing-eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pebble-neon-orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pebble-neon-orange) 12%, transparent); }
+.landing-eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pebble-accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pebble-accent) 12%, transparent); }
 .landing-hero h1 { max-width: 660px; margin: 25px 0 21px; color: var(--pebble-ink); font-size: clamp(44px, 5.1vw, 69px); line-height: 1.04; font-weight: 750; letter-spacing: -.067em; }
-.landing-hero h1 span { color: var(--pebble-neon-orange); }
+.landing-hero h1 span { color: var(--pebble-accent); }
 .landing-hero-description { max-width: 535px; margin: 0; color: var(--pebble-muted); font-size: clamp(15px, 1.35vw, 17px); line-height: 1.85; }
 .landing-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; margin-top: 31px; }
-.landing-primary-cta { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 12px; padding: 0 20px; border: 1px solid var(--pebble-neon-orange); border-radius: 14px; background: var(--pebble-neon-orange); color: #fffaf6; text-decoration: none; font-size: 13px; font-weight: 750; cursor: pointer; transition: transform .18s, box-shadow .18s; }
+.landing-primary-cta { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 12px; padding: 0 20px; border: 1px solid var(--pebble-accent); border-radius: 14px; background: var(--pebble-accent); color: #fffaf6; text-decoration: none; font-size: 13px; font-weight: 750; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .landing-secondary-cta { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border-radius: 13px; color: var(--pebble-ink); text-decoration: none; font-size: 13px; font-weight: 700; transition: background .18s, color .18s; }
-.landing-secondary-cta:hover { background: color-mix(in srgb, var(--pebble-surface) 86%, transparent); color: var(--pebble-neon-orange); }
+.landing-secondary-cta:hover { background: color-mix(in srgb, var(--pebble-surface) 86%, transparent); color: var(--pebble-accent); }
 .landing-trust-note { display: flex; align-items: center; gap: 9px; margin-top: 23px; color: var(--pebble-muted); font-size: 11px; }
 .landing-trust-note > span { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: color-mix(in srgb, var(--pebble-sage) 18%, var(--pebble-surface)); color: var(--pebble-sage); }
 .landing-preview-wrap { position: relative; min-width: 0; padding: 16px 8px 28px 18px; }
-.landing-preview-orbit { position: absolute; inset: 4% 1% 6% 5%; border: 1px solid color-mix(in srgb, var(--pebble-neon-orange) 20%, transparent); border-radius: 35% 65% 57% 43% / 43% 36% 64% 57%; transform: rotate(-7deg); }
+.landing-preview-orbit { position: absolute; inset: 4% 1% 6% 5%; border: 1px solid color-mix(in srgb, var(--pebble-accent) 20%, transparent); border-radius: 35% 65% 57% 43% / 43% 36% 64% 57%; transform: rotate(-7deg); }
 .landing-preview-card { position: relative; z-index: 1; padding: 25px; border: 1px solid var(--pebble-line); border-radius: 25px; background: color-mix(in srgb, var(--pebble-surface) 95%, transparent); box-shadow: 0 28px 70px rgba(48, 37, 31, .10); transform: rotate(1deg); }
 :root.dark .landing-preview-card { box-shadow: 0 28px 70px rgba(0,0,0,.25); }
 .landing-preview-topline, .landing-preview-brand, .landing-preview-stats, .landing-preview-stat, .landing-preview-progress > div, .landing-preview-upnext { display: flex; align-items: center; }
@@ -375,13 +375,13 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-preview-stat > span:nth-child(2) { flex: 1; }
 .landing-preview-stat strong { flex-basis: 100%; color: var(--pebble-ink); font-size: 27px; line-height: 1.1; letter-spacing: -.04em; }
 .landing-preview-stat small { font-size: 9px; }
-.landing-preview-stat-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: color-mix(in srgb, var(--pebble-neon-orange) 12%, var(--pebble-surface)); color: var(--pebble-neon-orange); }
+.landing-preview-stat-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: color-mix(in srgb, var(--pebble-accent) 12%, var(--pebble-surface)); color: var(--pebble-accent); }
 .landing-preview-stat-icon.sage { background: color-mix(in srgb, var(--pebble-sage) 15%, var(--pebble-surface)); color: var(--pebble-sage); }
 .landing-preview-progress { margin-top: 20px; padding: 15px 16px; border: 1px solid var(--pebble-line); border-radius: 14px; }
 .landing-preview-progress > div { justify-content: space-between; gap: 10px; color: var(--pebble-muted); font-size: 11px; }
 .landing-preview-progress strong { color: var(--pebble-ink); font-size: 12px; }
 .landing-progress-track { height: 6px; margin-top: 11px; overflow: hidden; border-radius: 99px; background: var(--pebble-line); }
-.landing-progress-track span { display: block; width: 68%; height: 100%; border-radius: inherit; background: var(--pebble-neon-orange); }
+.landing-progress-track span { display: block; width: 68%; height: 100%; border-radius: inherit; background: var(--pebble-accent); }
 .landing-preview-upnext { gap: 12px; margin-top: 13px; padding: 15px; border-radius: 14px; background: color-mix(in srgb, var(--pebble-sage) 10%, var(--pebble-surface)); }
 .landing-upnext-icon { display: inline-flex; align-items: center; justify-content: center; width: 37px; height: 37px; flex: 0 0 37px; border-radius: 12px; background: var(--pebble-surface); color: var(--pebble-sage); }
 .landing-preview-upnext > div:nth-child(2) { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; }
@@ -392,16 +392,16 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-floating-chip > span { display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 50%; background: color-mix(in srgb, var(--pebble-sage) 18%, var(--pebble-surface)); color: var(--pebble-sage); }
 .landing-scroll-cue { position: absolute; bottom: 28px; left: 0; display: flex; align-items: center; gap: 11px; color: var(--pebble-muted); text-decoration: none; font-size: 10px; font-weight: 700; }
 .landing-scroll-line { display: block; width: 42px; height: 1px; background: var(--pebble-line); transition: width .2s, background .2s; }
-.landing-scroll-cue:hover .landing-scroll-line { width: 60px; background: var(--pebble-neon-orange); }
+.landing-scroll-cue:hover .landing-scroll-line { width: 60px; background: var(--pebble-accent); }
 .landing-section { position: relative; z-index: 1; width: min(1080px, calc(100% - 64px)); margin: 0 auto; padding: 108px 0; scroll-margin-top: 95px; }
 .landing-section-heading { max-width: 670px; margin: 0 auto 42px; text-align: center; }
-.landing-section-heading > span, .landing-workflow-heading > span, .landing-about > div > span { color: var(--pebble-neon-orange); font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.landing-section-heading > span, .landing-workflow-heading > span, .landing-about > div > span { color: var(--pebble-accent); font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
 .landing-section-heading h2, .landing-workflow-heading h2, .landing-about h2 { margin: 14px 0; color: var(--pebble-ink); font-size: clamp(30px, 4vw, 45px); line-height: 1.12; font-weight: 750; letter-spacing: -.055em; }
 .landing-section-heading p, .landing-about p { max-width: 590px; margin: 0 auto; color: var(--pebble-muted); font-size: 14px; line-height: 1.8; }
 .landing-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .landing-feature-card { position: relative; min-height: 230px; padding: 25px; border: 1px solid var(--pebble-line); border-radius: 20px; background: color-mix(in srgb, var(--pebble-surface) 84%, transparent); transition: transform .2s, border-color .2s, box-shadow .2s; }
-.landing-feature-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--pebble-neon-orange) 38%, var(--pebble-line)); box-shadow: var(--pebble-shadow); }
-.landing-feature-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: color-mix(in srgb, var(--pebble-neon-orange) 11%, var(--pebble-surface)); color: var(--pebble-neon-orange); }
+.landing-feature-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--pebble-accent) 38%, var(--pebble-line)); box-shadow: var(--pebble-shadow); }
+.landing-feature-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: color-mix(in srgb, var(--pebble-accent) 11%, var(--pebble-surface)); color: var(--pebble-accent); }
 .landing-feature-icon-2 { background: color-mix(in srgb, var(--pebble-sage) 15%, var(--pebble-surface)); color: var(--pebble-sage); }
 .landing-feature-icon-3 { background: color-mix(in srgb, var(--pebble-lavender) 18%, var(--pebble-surface)); color: color-mix(in srgb, var(--pebble-lavender) 75%, var(--pebble-ink)); }
 .landing-feature-number { position: absolute; top: 29px; right: 25px; color: var(--pebble-muted); opacity: .65; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
@@ -412,16 +412,16 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--pebble-line); border-radius: 22px; overflow: hidden; background: color-mix(in srgb, var(--pebble-surface) 82%, transparent); }
 .landing-step { padding: 27px; }
 .landing-step + .landing-step { border-left: 1px solid var(--pebble-line); }
-.landing-step-top { display: flex; align-items: center; justify-content: space-between; color: var(--pebble-neon-orange); }
+.landing-step-top { display: flex; align-items: center; justify-content: space-between; color: var(--pebble-accent); }
 .landing-step-top span { font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 .landing-step h3 { margin: 27px 0 8px; color: var(--pebble-ink); font-size: 18px; font-weight: 750; }
 .landing-about { position: relative; z-index: 1; display: grid; grid-template-columns: 56px minmax(0, 650px); align-items: start; gap: 23px; width: min(900px, calc(100% - 64px)); margin: 25px auto 110px; padding: 43px; border: 1px solid var(--pebble-line); border-radius: 24px; background: color-mix(in srgb, var(--pebble-surface) 84%, transparent); }
-.landing-about-mark { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 16px; background: color-mix(in srgb, var(--pebble-neon-orange) 11%, var(--pebble-surface)); color: var(--pebble-neon-orange); }
+.landing-about-mark { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 16px; background: color-mix(in srgb, var(--pebble-accent) 11%, var(--pebble-surface)); color: var(--pebble-accent); }
 .landing-about h2 { max-width: 620px; font-size: clamp(27px, 3.2vw, 37px); }
 .landing-about p { margin: 0; }
-.landing-final-cta { position: relative; z-index: 1; width: min(1080px, calc(100% - 64px)); margin: 0 auto 72px; padding: 55px 30px; overflow: hidden; border: 1px solid var(--pebble-line); border-radius: 25px; background: linear-gradient(115deg, color-mix(in srgb, var(--pebble-neon-orange) 8%, var(--pebble-surface)), var(--pebble-surface)); text-align: center; }
+.landing-final-cta { position: relative; z-index: 1; width: min(1080px, calc(100% - 64px)); margin: 0 auto 72px; padding: 55px 30px; overflow: hidden; border: 1px solid var(--pebble-line); border-radius: 25px; background: linear-gradient(115deg, color-mix(in srgb, var(--pebble-accent) 8%, var(--pebble-surface)), var(--pebble-surface)); text-align: center; }
 :root.dark .landing-final-cta { background: linear-gradient(115deg, rgba(255,134,94,.10), var(--pebble-surface)); }
-.landing-final-orb { position: absolute; top: -130px; right: -60px; width: 270px; height: 270px; border: 1px solid color-mix(in srgb, var(--pebble-neon-orange) 22%, transparent); border-radius: 50%; pointer-events: none; }
+.landing-final-orb { position: absolute; top: -130px; right: -60px; width: 270px; height: 270px; border: 1px solid color-mix(in srgb, var(--pebble-accent) 22%, transparent); border-radius: 50%; pointer-events: none; }
 .landing-final-cta > span { position: relative; display: block; color: var(--pebble-ink); font-size: clamp(26px, 3.4vw, 37px); font-weight: 750; letter-spacing: -.05em; }
 .landing-final-cta > p { position: relative; max-width: 540px; margin: 12px auto 23px; color: var(--pebble-muted); font-size: 13px; line-height: 1.8; }
 .landing-final-cta .landing-primary-cta { position: relative; }
@@ -430,7 +430,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-footer-logo { width: 28px; height: 28px; border-radius: 9px; }
 .landing-footer p, .landing-footer > span { margin: 0; color: var(--pebble-muted); font-size: 10px; }
 .landing-footer > span { font-weight: 600; }
-.pebble-landing a:focus-visible, .pebble-landing button:focus-visible { outline: 2px solid var(--pebble-neon-orange); outline-offset: 3px; }
+.pebble-landing a:focus-visible, .pebble-landing button:focus-visible { outline: 2px solid var(--pebble-accent); outline-offset: 3px; }
 @media (max-width: 1000px) {
   .landing-header-inner { width: min(100% - 40px, 900px); gap: 15px; }
   .landing-nav { gap: 0; }
@@ -503,7 +503,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   --auth-line: var(--pebble-line);
   --auth-surface: var(--pebble-surface);
   background:
-    radial-gradient(ellipse at 12% 12%, color-mix(in srgb, var(--pebble-neon-orange) 10%, transparent), transparent 34rem),
+    radial-gradient(ellipse at 12% 12%, color-mix(in srgb, var(--pebble-accent) 10%, transparent), transparent 34rem),
     radial-gradient(ellipse at 88% 86%, color-mix(in srgb, var(--pebble-lavender) 13%, transparent), transparent 30rem),
     var(--pebble-canvas) !important;
   color: var(--auth-ink);
@@ -533,12 +533,12 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
   font-weight: 500 !important;
 }
 .auth-form-panel input::placeholder { color: var(--auth-muted) !important; opacity: .85; }
-.auth-form-panel input:focus { border-color: var(--pebble-neon-orange) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-neon-orange) 13%, transparent) !important; }
+.auth-form-panel input:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 13%, transparent) !important; }
 .auth-form-panel label { color: var(--auth-muted) !important; }
 .auth-form-panel button[type="submit"] {
   min-height: 49px;
   border-radius: 13px !important;
-  background: var(--pebble-neon-orange) !important;
+  background: var(--pebble-accent) !important;
   box-shadow: none !important;
   letter-spacing: .015em !important;
   text-transform: none !important;
@@ -546,17 +546,17 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 }
 .auth-form-panel button[type="submit"]:hover { filter: brightness(.96); transform: translateY(-1px) !important; }
 .auth-form-panel button:not([type="submit"]) { transition: color .18s, background .18s, border-color .18s; }
-.auth-form-panel button:not([type="submit"]):hover { color: var(--pebble-neon-orange) !important; }
+.auth-form-panel button:not([type="submit"]):hover { color: var(--pebble-accent) !important; }
 .auth-form-panel .text-gray-500, .auth-form-panel .text-gray-400 { color: var(--auth-muted) !important; }
 .auth-form-panel .bg-cherry, .auth-form-panel .text-cherry { --tw-bg-opacity: 1; }
-.auth-form-panel .text-cherry { color: var(--pebble-neon-orange) !important; }
+.auth-form-panel .text-cherry { color: var(--pebble-accent) !important; }
 .auth-brand-panel {
   align-self: stretch;
   min-height: 440px;
-  border: 1px solid color-mix(in srgb, var(--pebble-neon-orange) 17%, var(--auth-line)) !important;
+  border: 1px solid color-mix(in srgb, var(--pebble-accent) 17%, var(--auth-line)) !important;
   border-radius: 22px !important;
   background:
-    radial-gradient(ellipse at 78% 18%, color-mix(in srgb, var(--pebble-neon-orange) 16%, transparent), transparent 18rem),
+    radial-gradient(ellipse at 78% 18%, color-mix(in srgb, var(--pebble-accent) 16%, transparent), transparent 18rem),
     linear-gradient(145deg, color-mix(in srgb, var(--pebble-peach) 16%, var(--auth-surface)), color-mix(in srgb, var(--pebble-lavender) 10%, var(--pebble-canvas))) !important;
 }
 .auth-brand-card {
@@ -573,7 +573,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .auth-brand-card > div[role="img"] { width: 72px !important; height: 72px !important; border-radius: 22px !important; margin-bottom: 22px !important; }
 .auth-brand-card h1 { color: var(--auth-ink) !important; font-size: 36px !important; letter-spacing: -.06em !important; }
 .auth-brand-card p { max-width: 250px; font-size: 15px !important; font-weight: 500 !important; }
-.auth-brand-card p span { color: var(--pebble-neon-orange) !important; }
+.auth-brand-card p span { color: var(--pebble-accent) !important; }
 .auth-reset { background: var(--pebble-canvas) !important; color: var(--pebble-ink); }
 .auth-reset > .absolute { display: none; }
 .auth-reset-card {
@@ -585,8 +585,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 }
 .auth-reset-card h1, .auth-reset-card h2 { color: var(--pebble-ink) !important; letter-spacing: -.04em; }
 .auth-reset-card input { min-height: 48px; border-radius: 13px !important; border-color: var(--pebble-line) !important; background: var(--pebble-canvas) !important; color: var(--pebble-ink) !important; }
-.auth-reset-card input:focus { border-color: var(--pebble-neon-orange) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-neon-orange) 13%, transparent) !important; }
-.auth-reset-card button[type="submit"] { background: var(--pebble-neon-orange) !important; border-radius: 13px !important; box-shadow: none !important; }
+.auth-reset-card input:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 13%, transparent) !important; }
+.auth-reset-card button[type="submit"] { background: var(--pebble-accent) !important; border-radius: 13px !important; box-shadow: none !important; }
 @media (max-width: 767px) {
   .auth-page { align-items: flex-start !important; padding: 16px !important; }
   .auth-card { flex-direction: column-reverse !important; padding: 18px !important; gap: 20px !important; border-radius: 22px !important; }
