@@ -172,3 +172,182 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+
+/* Pebble identity: sage + forest. No orange accent remains in the product UI. */
+:root {
+  --pebble-canvas: #F5F7F3;
+  --pebble-surface: #FFFFFF;
+  --pebble-surface-soft: #EDF2EC;
+  --pebble-ink: #27332B;
+  --pebble-muted: #758177;
+  --pebble-line: #E0E8DF;
+  --pebble-accent: #718A78;
+  --pebble-accent-strong: #4F6D56;
+  --pebble-accent-soft: #E7EFE7;
+  --pebble-sage: #718A78;
+  --pebble-lavender: #B7B0CC;
+  --pebble-peach: #C8C9B8;
+  --pebble-coral: #718A78;
+  --pebble-neon-orange: #718A78;
+  --pebble-shadow: 0 2px 8px rgba(35, 52, 39, .025), 0 14px 36px rgba(35, 52, 39, .045);
+  --journal-paper: #FFFFFF;
+  --journal-paper-alt: #EDF2EC;
+  --journal-ink: #27332B;
+  --journal-muted: #758177;
+  --journal-line: #E0E8DF;
+  --journal-accent: #718A78;
+}
+:root.dark {
+  --pebble-canvas: #171E19;
+  --pebble-surface: #202922;
+  --pebble-surface-soft: #29352D;
+  --pebble-ink: #E8EEE8;
+  --pebble-muted: #A5B1A6;
+  --pebble-line: #39473D;
+  --pebble-accent: #A5BBA8;
+  --pebble-accent-strong: #C5D6C6;
+  --pebble-accent-soft: #2D3C32;
+  --pebble-sage: #A5BBA8;
+  --pebble-lavender: #BDB5D3;
+  --pebble-peach: #A8B3A5;
+  --pebble-coral: #A5BBA8;
+  --pebble-neon-orange: #A5BBA8;
+  --pebble-shadow: 0 2px 10px rgba(0, 0, 0, .16), 0 16px 38px rgba(0, 0, 0, .13);
+  --journal-paper: #202922;
+  --journal-paper-alt: #29352D;
+  --journal-ink: #E8EEE8;
+  --journal-muted: #A5B1A6;
+  --journal-line: #39473D;
+  --journal-accent: #A5BBA8;
+}
+html, body, #root { background: var(--pebble-canvas) !important; color: var(--pebble-ink) !important; }
+:root.dark body {
+  background:
+    radial-gradient(ellipse at 88% 0%, rgba(113, 138, 120, .10), transparent 30rem),
+    radial-gradient(ellipse at 8% 90%, rgba(183, 176, 204, .055), transparent 28rem),
+    var(--pebble-canvas) !important;
+}
+::selection { background: color-mix(in srgb, var(--pebble-accent) 24%, transparent) !important; color: var(--pebble-ink) !important; }
+input:focus, textarea:focus, select:focus { outline-color: color-mix(in srgb, var(--pebble-accent) 45%, transparent) !important; }
+* { scrollbar-color: var(--pebble-accent) transparent !important; }
+::-webkit-scrollbar-thumb { background: var(--pebble-accent) !important; }
+
+/* Navigation and shared actions */
+aside, .pebble-sidebar { background: var(--pebble-canvas) !important; border-color: var(--pebble-line) !important; box-shadow: none !important; }
+aside > div:first-child { border-color: var(--pebble-line) !important; }
+aside nav a, .pebble-nav-link { color: var(--pebble-muted) !important; }
+aside nav a:hover, .pebble-nav-link:hover { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble-nav-link.is-active {
+  color: var(--pebble-accent-strong) !important;
+  background: var(--pebble-accent-soft) !important;
+  box-shadow: inset 3px 0 0 var(--pebble-accent) !important;
+}
+.pebble-nav-icon, .pebble-topbar-control svg, .pebble-topbar-page-icon svg,
+.pebble-sidebar-period, .pebble-topbar-page-icon { color: var(--pebble-accent-strong) !important; }
+.pebble-topbar-page-icon { background: var(--pebble-accent-soft) !important; }
+.pebble-workspace-avatar, .pebble-account-avatar { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-nav-link[aria-current="page"] .pebble-nav-index { color: var(--pebble-accent-strong) !important; }
+.pebble-sidebar-note { background: var(--pebble-surface) !important; border-color: var(--pebble-line) !important; }
+.pebble-sidebar-note-icon { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-topbar-control:hover, .pebble-topbar-profile:hover { border-color: var(--pebble-line) !important; }
+
+/* Dashboard: remove the former orange hero and peach accents. */
+.dash-welcome, :root.dark .dash-welcome {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(120deg, #E8EFE8 0%, #F2F5F0 58%, #E7ECE8 100%) !important;
+  border: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+}
+:root.dark .dash-welcome { background: linear-gradient(120deg, #26352B, #202B24 62%, #29342D) !important; }
+.dash-welcome h1, .dash-welcome h1 span, .dash-eyebrow, .dash-kicker,
+.dash-welcome-copy, .dash-text-link, .dash-calendar-footer, .dash-event-time,
+.dash-empty-action, :root.dark .dash-welcome h1 span, :root.dark .dash-eyebrow,
+:root.dark .dash-kicker, :root.dark .dash-welcome-copy, :root.dark .dash-text-link,
+:root.dark .dash-calendar-footer, :root.dark .dash-event-time, :root.dark .dash-empty-action {
+  color: var(--pebble-accent-strong) !important;
+}
+.dash-primary-action, .dash-round-link:hover, .dash-calendar-day.is-today,
+:root.dark .dash-primary-action, :root.dark .dash-round-link:hover, :root.dark .dash-calendar-day.is-today {
+  color: #fff !important; background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important;
+}
+.dash-tone-peach { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.dash-reminder-icon, .dash-empty-illustration, .dash-flame-badge {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important;
+}
+.dash-event-timeline span, .dash-calendar-day.has-event:after { background: var(--pebble-accent) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--pebble-accent) 15%, transparent) !important; }
+.dash-streak-card, :root.dark .dash-streak-card {
+  color: var(--pebble-ink) !important;
+  background: linear-gradient(135deg, #DCE8DD 0%, #C8D9CC 55%, #E5EADF 100%) !important;
+  box-shadow: none !important;
+}
+:root.dark .dash-streak-card { background: linear-gradient(135deg, #2D4033, #34483A 55%, #29382F) !important; }
+.dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light,
+:root.dark .dash-streak-card h2, :root.dark .dash-streak-copy, :root.dark .dash-streak-unit {
+  color: var(--pebble-ink) !important;
+}
+.dash-streak-progress span.is-filled { background: var(--pebble-accent-strong) !important; box-shadow: none !important; }
+
+/* Profile, agenda, calendar, development and resume accents */
+.profile-cover, :root.dark .profile-cover {
+  background: linear-gradient(112deg, #DCE8DD 0%, #E9EDE7 55%, #D4E1D6 100%) !important;
+  border-color: var(--pebble-line) !important;
+}
+:root.dark .profile-cover { background: linear-gradient(112deg, #2A3B30, #26342B 55%, #304034) !important; }
+.profile-identity, .profile-identity > p, .profile-location, .profile-identity-eyebrow,
+.profile-eyebrow, .profile-tip-card h3, .profile-tip-card > p:last-of-type,
+.profile-tip-card .profile-card-eyebrow { color: var(--pebble-ink) !important; }
+.profile-tip-card, :root.dark .profile-tip-card { background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important; }
+.profile-icon-peach, .profile-illustration-peach, .profile-tab.is-active .profile-tab-icon,
+.profile-form-section > h3 > span, .profile-section-title-row h3 > span,
+.profile-entry-number, .profile-empty-state > span, .profile-add-button,
+:root.dark .profile-icon-peach, :root.dark .profile-illustration-peach,
+:root.dark .profile-tab.is-active .profile-tab-icon, :root.dark .profile-form-section > h3 > span,
+:root.dark .profile-section-title-row h3 > span, :root.dark .profile-entry-number,
+:root.dark .profile-empty-state > span, :root.dark .profile-add-button {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important;
+}
+.profile-tab.is-active, :root.dark .profile-tab.is-active,
+.profile-form-footer > span svg { color: var(--pebble-accent-strong) !important; }
+.profile-tab-indicator { background: var(--pebble-accent) !important; }
+.profile-field:focus, :root.dark .profile-field:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 16%, transparent) !important; }
+.profile-save-button, .profile-media-save, :root.dark .profile-save-button, :root.dark .profile-media-save {
+  background: var(--pebble-accent) !important; color: #fff !important; box-shadow: none !important;
+}
+.profile-add-button:hover { background: var(--pebble-accent-soft) !important; }
+.profile-empty-state, .profile-empty-sage, :root.dark .profile-empty-state, :root.dark .profile-empty-sage {
+  background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important;
+}
+.agenda-editorial { --journal-accent: var(--pebble-accent) !important; }
+.agenda-date-controls button:hover, .agenda-mood-choice:hover { border-color: var(--pebble-accent) !important; }
+.agenda-mood-choice.is-selected, :root.dark .agenda-mood-choice.is-selected {
+  border-color: var(--pebble-accent) !important; background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important;
+}
+.agenda-save-bar button, .calendar-add-button, .calendar-confirm-button, .calendar-day-cell.is-today .calendar-day-number,
+:root.dark .calendar-add-button, :root.dark .calendar-confirm-button {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important;
+}
+.calendar-page { --cal-accent: var(--pebble-accent) !important; }
+.development-hero, .tracker-hero {
+  background: linear-gradient(125deg, var(--pebble-surface), var(--pebble-surface-soft)) !important;
+}
+.development-hero-mark, .development-stat-icon.activity, .development-collection-icon.activity,
+.development-status.in-progress, .tracker-summary-icon.activity, .tracker-company-mark,
+.tracker-status-interview {
+  color: var(--pebble-accent-strong) !important; background: var(--pebble-accent-soft) !important; border-color: var(--pebble-line) !important;
+}
+.development-progress-track > span, .development-chart-track > span { background: var(--pebble-accent) !important; }
+.resume-page-heading h1 > span, .resume-panel-heading-icon, .resume-loading-mark { color: var(--pebble-accent-strong) !important; }
+.resume-download-button, .resume-language-control button.active {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important; box-shadow: none !important;
+}
+.resume-option-row:hover { border-color: var(--pebble-accent) !important; }
+.resume-option-row input, .resume-item-choice input { accent-color: var(--pebble-accent) !important; }
+.cv-paper-identity h1 span, .cv-paper-contact svg, .cv-paper-section h3 svg, .cv-paper-empty > span {
+  color: var(--pebble-accent-strong) !important;
+}
+.auth-form-panel input:focus, .auth-reset-card input:focus { border-color: var(--pebble-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pebble-accent) 13%, transparent) !important; }
+.auth-form-panel button[type="submit"], .auth-reset-card button[type="submit"] {
+  background: var(--pebble-accent) !important; color: #fff !important;
+}
+.auth-form-panel button:not([type="submit"]):hover { color: var(--pebble-accent-strong) !important; }
