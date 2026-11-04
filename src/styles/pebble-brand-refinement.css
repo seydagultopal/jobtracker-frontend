@@ -1,0 +1,174 @@
+/* Pebble visual system — one coherent palette for both themes. */
+:root {
+  color-scheme: light;
+  --pebble-canvas: #f6f6f2;
+  --pebble-surface: #ffffff;
+  --pebble-surface-soft: #eff1eb;
+  --pebble-ink: #262b27;
+  --pebble-muted: #747c74;
+  --pebble-line: #e3e7df;
+  --pebble-accent: #718575;
+  --pebble-accent-strong: #536b59;
+  --pebble-accent-soft: #e7eee6;
+  --pebble-lavender: #a9a4c2;
+  --pebble-peach: #d8b5a1;
+  --pebble-shadow: 0 2px 8px rgba(31, 39, 32, .025), 0 14px 36px rgba(31, 39, 32, .045);
+  --pebble-logo-tile: #e9eee8;
+  --pebble-logo-ink: #536b59;
+  --pebble-logo-spark: #a58fba;
+  accent-color: var(--pebble-accent);
+}
+:root.dark {
+  color-scheme: dark;
+  --pebble-canvas: #191d1a;
+  --pebble-surface: #222823;
+  --pebble-surface-soft: #2b332d;
+  --pebble-ink: #e8ede7;
+  --pebble-muted: #a3ada4;
+  --pebble-line: #39443c;
+  --pebble-accent: #a5bba7;
+  --pebble-accent-strong: #c3d4c4;
+  --pebble-accent-soft: #303d33;
+  --pebble-lavender: #b9afd4;
+  --pebble-peach: #c99e87;
+  --pebble-shadow: 0 2px 10px rgba(0, 0, 0, .16), 0 16px 38px rgba(0, 0, 0, .13);
+  --pebble-logo-tile: #303d33;
+  --pebble-logo-ink: #c3d4c4;
+  --pebble-logo-spark: #c2b5e0;
+}
+html, body, #root { min-height: 100%; background: var(--pebble-canvas) !important; color: var(--pebble-ink); }
+body, button, input, textarea, select { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important; }
+body { transition: background-color .2s ease, color .2s ease; }
+:root.dark body { background: var(--pebble-canvas) !important; }
+h1, h2, h3, h4 { font-family: inherit !important; letter-spacing: -.035em; }
+::selection { background: color-mix(in srgb, var(--pebble-accent) 24%, transparent); color: var(--pebble-ink); }
+
+/* Brand mark adapts automatically; no hard-coded light or dark logo asset. */
+.pebble-logo-mark { display: inline-flex; flex: 0 0 auto; color: var(--pebble-logo-ink) !important; }
+.pebble-logo-mark svg { display: block; overflow: visible; }
+.pebble-logo-tile { fill: var(--pebble-logo-tile); stroke: var(--pebble-line); stroke-width: .8; }
+.pebble-logo-stone { fill: var(--pebble-logo-ink); }
+.pebble-logo-detail { stroke: var(--pebble-logo-tile); stroke-width: 1.35; stroke-linecap: round; }
+.pebble-logo-spark { fill: var(--pebble-logo-spark); }
+
+/* Integrated workspace shell. */
+.pebble-app-shell { background: var(--pebble-canvas) !important; color: var(--pebble-ink) !important; }
+.pebble-sidebar {
+  background: var(--pebble-canvas) !important;
+  border-right: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+}
+.pebble-sidebar-brand { border-bottom-color: var(--pebble-line) !important; color: var(--pebble-ink) !important; }
+.pebble-sidebar-wordmark { color: var(--pebble-ink) !important; letter-spacing: -.055em; }
+.pebble-workspace-switcher { background: var(--pebble-surface-soft) !important; border-color: var(--pebble-line) !important; color: var(--pebble-ink) !important; }
+.pebble-workspace-avatar { background: var(--pebble-accent) !important; color: #fff !important; }
+.pebble-nav-group-label, .pebble-sidebar-section-label { color: var(--pebble-muted) !important; }
+.pebble-nav-link { color: var(--pebble-muted) !important; border-radius: 8px !important; }
+.pebble-nav-link:hover { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+.pebble-nav-link[aria-current="page"], .pebble-nav-link.is-active {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-accent-soft) !important;
+  box-shadow: inset 2px 0 0 var(--pebble-accent) !important;
+}
+.pebble-nav-link[aria-current="page"] svg, .pebble-nav-link.is-active svg { color: var(--pebble-accent-strong) !important; }
+.pebble-sidebar-bottom { color: var(--pebble-muted) !important; border-color: var(--pebble-line) !important; }
+.pebble-sidebar-bottom-icon { color: var(--pebble-accent) !important; }
+
+.pebble-topbar {
+  background: color-mix(in srgb, var(--pebble-canvas) 94%, transparent) !important;
+  border-bottom: 1px solid var(--pebble-line) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(14px);
+}
+.pebble-topbar-title, .pebble-account-name { color: var(--pebble-ink) !important; }
+.pebble-breadcrumb-muted, .pebble-breadcrumb-divider { color: var(--pebble-muted) !important; }
+.pebble-icon-button, .pebble-account-trigger, .pebble-mobile-menu-button {
+  color: var(--pebble-muted) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+}
+.pebble-icon-button:hover, .pebble-account-trigger:hover, .pebble-mobile-menu-button:hover {
+  color: var(--pebble-ink) !important;
+  background: var(--pebble-surface-soft) !important;
+  border-color: var(--pebble-line) !important;
+}
+.pebble-icon-button svg { color: var(--pebble-accent-strong) !important; }
+.pebble-theme-button { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; }
+.pebble-account-avatar { background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important; }
+.pebble-account-dropdown, .pebble-account-details {
+  background: var(--pebble-surface) !important; color: var(--pebble-ink) !important; border-color: var(--pebble-line) !important;
+}
+.pebble-account-dropdown button { color: var(--pebble-ink) !important; }
+.pebble-account-dropdown button:hover { background: var(--pebble-surface-soft) !important; }
+.pebble-account-dropdown button.is-danger { color: #c56e6e !important; }
+
+/* Keep legacy Tailwind-based pages aligned without overriding semantic status colors. */
+.pebble-main { background: transparent !important; color: var(--pebble-ink) !important; }
+.pebble-main [class~="bg-white"], .pebble-main [class~="bg-gray-50"], .pebble-main [class~="bg-gray-100"] {
+  background-color: var(--pebble-surface) !important;
+}
+:root.dark .pebble-main [class~="bg-white"], :root.dark .pebble-main [class~="bg-gray-50"],
+:root.dark .pebble-main [class~="bg-gray-100"] { background-color: var(--pebble-surface) !important; }
+.pebble-main [class*="text-gray-900"], .pebble-main [class*="text-gray-800"], .pebble-main [class*="text-gray-700"] { color: var(--pebble-ink) !important; }
+.pebble-main [class*="text-gray-600"], .pebble-main [class*="text-gray-500"], .pebble-main [class*="text-gray-400"] { color: var(--pebble-muted) !important; }
+:root.dark .pebble-main [class*="dark:bg-gray-800"], :root.dark .pebble-main [class*="dark:bg-gray-900"] { background-color: var(--pebble-surface) !important; }
+:root.dark .pebble-main [class*="dark:text-gray-300"], :root.dark .pebble-main [class*="dark:text-gray-400"] { color: var(--pebble-muted) !important; }
+.pebble-main [class*="border-gray-"], .pebble-main [class*="border-slate-"] { border-color: var(--pebble-line) !important; }
+.pebble-main input, .pebble-main textarea, .pebble-main select {
+  background: var(--pebble-surface) !important; color: var(--pebble-ink) !important; border-color: var(--pebble-line) !important;
+}
+.pebble-main input::placeholder, .pebble-main textarea::placeholder { color: var(--pebble-muted) !important; }
+.pebble-main [class*="rounded-"][class*="border"] { border-color: var(--pebble-line) !important; }
+.pebble-main [class*="shadow-"] { box-shadow: var(--pebble-shadow) !important; }
+:root.dark .pebble-main [class*="bg-columbia/"], :root.dark .pebble-main [class*="bg-blue-50"] { background: var(--pebble-surface-soft) !important; }
+
+/* Consistent quiet surfaces; retain color coding for status badges and charts. */
+.dash-stat-card, .dash-calendar-card, .dash-reminders-card, .tracker-summary-card,
+.tracker-list-panel, .calendar-overview, .calendar-month-panel, .calendar-day-panel,
+.development-stat-card, .development-collection, .development-activity-panel,
+.resume-panel, .profile-side-card, .profile-main-card, .agenda-journal-paper, .agenda-tasks-panel {
+  border-color: var(--pebble-line) !important;
+  background-color: var(--pebble-surface) !important;
+  color: var(--pebble-ink) !important;
+  box-shadow: var(--pebble-shadow) !important;
+}
+:root.dark .dash-stat-card, :root.dark .dash-calendar-card, :root.dark .dash-reminders-card,
+:root.dark .tracker-summary-card, :root.dark .tracker-list-panel, :root.dark .calendar-overview,
+:root.dark .calendar-month-panel, :root.dark .calendar-day-panel, :root.dark .development-stat-card,
+:root.dark .development-collection, :root.dark .development-activity-panel, :root.dark .resume-panel,
+:root.dark .profile-side-card, :root.dark .profile-main-card, :root.dark .agenda-journal-paper,
+:root.dark .agenda-tasks-panel {
+  background-color: var(--pebble-surface) !important; color: var(--pebble-ink) !important;
+}
+.dash-stat-icon, .tracker-summary-icon, .development-stat-icon, .profile-card-icon {
+  background: var(--pebble-accent-soft) !important; color: var(--pebble-accent-strong) !important;
+}
+.dash-welcome, .tracker-hero, .development-hero {
+  background: var(--pebble-surface-soft) !important; color: var(--pebble-ink) !important;
+  border-color: var(--pebble-line) !important; box-shadow: none !important;
+}
+.dash-welcome h1, .tracker-hero h1, .development-hero h1 { color: var(--pebble-ink) !important; }
+.dash-welcome h1 span, .dash-text-link, .tracker-hero h1 > span { color: var(--pebble-accent-strong) !important; }
+.dash-welcome-copy { color: var(--pebble-muted) !important; }
+.dash-primary-action, .tracker-primary-button, .development-add-button, .calendar-add-button, .calendar-confirm-button {
+  background: var(--pebble-accent) !important; border-color: var(--pebble-accent) !important; color: #fff !important;
+  box-shadow: none !important; border-radius: 8px !important;
+}
+:root.dark .dash-primary-action, :root.dark .tracker-primary-button, :root.dark .development-add-button,
+:root.dark .calendar-add-button, :root.dark .calendar-confirm-button {
+  background: var(--pebble-accent) !important; color: #172019 !important;
+}
+.dash-streak-card { background: var(--pebble-accent-soft) !important; color: var(--pebble-ink) !important; box-shadow: none !important; }
+.dash-streak-card h2, .dash-streak-copy, .dash-streak-unit, .dash-kicker-light { color: var(--pebble-ink) !important; }
+:root.dark .dash-streak-card { background: var(--pebble-accent-soft) !important; }
+:root.dark .dash-streak-card h2, :root.dark .dash-streak-copy, :root.dark .dash-streak-unit { color: var(--pebble-ink) !important; }
+
+/* Focus and motion are consistent in both appearances. */
+:root.dark input, :root.dark textarea, :root.dark select { color: var(--pebble-ink) !important; background: var(--pebble-surface-soft) !important; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--pebble-accent) !important; outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
