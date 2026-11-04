@@ -339,7 +339,7 @@ export default function Resume() {
 
     const move = (pointerEvent) => {
       const current = pointerDragRef.current;
-      if (!current) return;
+      if (!current || pointerEvent.pointerId !== event.pointerId) return;
       current.pointerX = pointerEvent.clientX;
       current.pointerY = pointerEvent.clientY;
       if (Math.hypot(current.pointerX - current.startX, current.pointerY - current.startY) > 4) {
@@ -383,7 +383,7 @@ export default function Resume() {
 
     const finish = (pointerEvent) => stop(pointerEvent, true);
     const cancel = (pointerEvent) => stop(pointerEvent, false);
-    window.addEventListener('pointermove', move, { passive: false });
+    window.addEventListener('pointermove', move, { passive: true });
     window.addEventListener('pointerup', finish, { once: true });
     window.addEventListener('pointercancel', cancel, { once: true });
   };
