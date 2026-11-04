@@ -45,7 +45,7 @@ export default function Resume() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
-  const edgeScrollRef = useRef({ frame: 0, viewport: null, direction: 0, speed: 0 });
+  const edgeScrollRef = useRef({ frame: 0, viewport: null, pointerX: 0 });
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
   const photoInputRef = useRef(null);
@@ -301,52 +301,58 @@ export default function Resume() {
   const stopEdgeScroll = () => {
     const state = edgeScrollRef.current;
     if (state.frame) cancelAnimationFrame(state.frame);
-    edgeScrollRef.current = { frame: 0, viewport: null, direction: 0, speed: 0 };
+    edgeScrollRef.current = { frame: 0, viewport: null, pointerX: 0 };
   };
 
-  // Native drag events, not ordinary mouse movement, control page-to-page scrolling.
-  const handlePreviewDragOver = (event) => {
-    const viewport = event.currentTarget;
-    const bounds = viewport.getBoundingClientRect();
-    // Use a generous edge zone: the dragged section must keep scrolling even
-    // when the pointer is held still near either side of the preview.
-    const edge = Math.min(180, Math.max(120, bounds.width * 0.22));
-    const pointerX = event.clientX - bounds.left;
+  // Track the pointer from both the source drag and the drop target.
+  // This keeps auto-scroll alive even when the browser throttles dragover events.
+  const handlePreviewDragMove = (event) => {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+
+    const viewport = previewRef.current?.closest('.resume-preview-column')?.querySelector('.resume-paper-wrap');
+    if (!viewport) return;
+
     const state = edgeScrollRef.current;
-    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-
-    if (pointerX >= bounds.width - edge && viewport.scrollLeft < maxScroll - 1) {
-      state.direction = 1;
-      state.speed = 8 + Math.min(24, ((pointerX - (bounds.width - edge)) / edge) * 24);
-    } else if (pointerX <= edge && viewport.scrollLeft > 0) {
-      state.direction = -1;
-      state.speed = 8 + Math.min(24, ((edge - pointerX) / edge) * 24);
-    } else {
-      state.direction = 0;
-      state.speed = 0;
-    }
-
     state.viewport = viewport;
-    if (state.direction && !state.frame) {
-      const tick = () => {
-        const current = edgeScrollRef.current;
-        const activeViewport = current.viewport;
-        if (!activeViewport || !current.direction || !current.speed) {
-          current.frame = 0;
-          return;
-        }
-        const max = Math.max(0, activeViewport.scrollWidth - activeViewport.clientWidth);
-        const nextLeft = Math.max(0, Math.min(max, activeViewport.scrollLeft + current.direction * current.speed));
-        activeViewport.scrollLeft = nextLeft;
-        const atBoundary = current.direction > 0 ? nextLeft >= max - 1 : nextLeft <= 0;
-        if (atBoundary) {
-          current.frame = 0;
-          return;
-        }
-        current.frame = requestAnimationFrame(tick);
-      };
-      state.frame = requestAnimationFrame(tick);
-    }
+    state.pointerX = event.clientX;
+
+    if (state.frame) return;
+
+    const tick = () => {
+      const current = edgeScrollRef.current;
+      const activeViewport = current.viewport;
+      if (!activeViewport) {
+        current.frame = 0;
+        return;
+      }
+
+      const bounds = activeViewport.getBoundingClientRect();
+      const edge = Math.min(150, Math.max(90, bounds.width * 0.18));
+      const pointerX = current.pointerX - bounds.left;
+      const maxScroll = Math.max(0, activeViewport.scrollWidth - activeViewport.clientWidth);
+      let direction = 0;
+      let intensity = 0;
+
+      if (pointerX > bounds.width - edge && activeViewport.scrollLeft < maxScroll - 1) {
+        direction = 1;
+        intensity = Math.min(1, (pointerX - (bounds.width - edge)) / edge);
+      } else if (pointerX < edge && activeViewport.scrollLeft > 1) {
+        direction = -1;
+        intensity = Math.min(1, (edge - pointerX) / edge);
+      }
+
+      if (!direction) {
+        current.frame = 0;
+        return;
+      }
+
+      const speed = 7 + intensity * 25;
+      activeViewport.scrollLeft = Math.max(0, Math.min(maxScroll, activeViewport.scrollLeft + direction * speed));
+      current.frame = requestAnimationFrame(tick);
+    };
+
+    state.frame = requestAnimationFrame(tick);
   };
 
   const sectionToggle = (key, title, count) => {
@@ -442,8 +448,8 @@ export default function Resume() {
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
           <div
             className="resume-paper-wrap"
-            onDragEnter={handlePreviewDragOver}
-            onDragOver={handlePreviewDragOver}
+            onDragEnter={handlePreviewDragMove}
+            onDragOver={handlePreviewDragMove}
             onDrop={stopEdgeScroll}
           >
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
@@ -486,6 +492,7 @@ export default function Resume() {
                             event.dataTransfer.effectAllowed = 'move';
                             event.dataTransfer.setData('text/plain', section.id);
                           }}
+                          onDrag={handlePreviewDragMove}
                           onDragEnd={stopEdgeScroll}
                         >
                           <div className="cv-section-drag-handle" aria-hidden="true"><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
