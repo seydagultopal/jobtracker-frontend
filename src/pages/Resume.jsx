@@ -42,6 +42,8 @@ export default function Resume() {
   const [devData, setDevData] = useState({ projects: [], courses: [], skills: [] });
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+  const previewRef = useRef(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
   const photoInputRef = useRef(null);
@@ -102,6 +104,21 @@ export default function Resume() {
     load();
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    const element = previewRef.current;
+    if (!element) return undefined;
+    const updatePageCount = () => {
+      const a4PageHeight = 1123;
+      const nextPageCount = Math.max(1, Math.ceil(element.scrollHeight / a4PageHeight));
+      setPageCount(current => current === nextPageCount ? current : nextPageCount);
+    };
+    updatePageCount();
+    const observer = new ResizeObserver(updatePageCount);
+    observer.observe(element);
+    document.fonts?.ready?.then(updatePageCount);
+    return () => observer.disconnect();
+  }, [personalInfo, experience, education, selectedDevItems, options, cvLang, showPhoto, devData]);
 
   const toggleDevItem = (category, id) => {
     setSelectedDevItems(prev => ({
@@ -184,7 +201,7 @@ export default function Resume() {
       profileNote: 'Kişisel bilgiler, eğitim ve deneyim Profil sayfandan alınır.',
       projects: 'Projeler', courses: 'Sertifikalar ve eğitimler', skills: 'Teknik yetkinlikler',
       download: 'PDF olarak indir', downloading: 'PDF hazırlanıyor…', language: 'CV dili',
-      preview: 'Belge önizlemesi', previewHint: 'Sade, tek sütunlu ve ATS dostu A4 düzeni.',
+      preview: 'Belge önizlemesi', previewHint: 'Sade, tek sütunlu ve ATS dostu A4 düzeni. Sayfa sayısı içeriğe göre otomatik hesaplanır.',
       loading: 'CV hazırlanıyor…', empty: 'CV bilgilerin henüz hazır değil',
       emptyHint: 'Önce Profil sayfasından kişisel bilgilerini, eğitimini ve deneyimini ekle.',
       photo: 'CV’de fotoğraf kullan', addPhoto: 'Fotoğraf ekle', changePhoto: 'Fotoğrafı değiştir',
@@ -196,7 +213,7 @@ export default function Resume() {
       profileNote: 'Personal details, education and experience come from your Profile page.',
       projects: 'Projects', courses: 'Certifications & courses', skills: 'Technical skills',
       download: 'Download PDF', downloading: 'Preparing PDF…', language: 'Resume language',
-      preview: 'Document preview', previewHint: 'A clean, single-column, ATS-friendly A4 layout.',
+      preview: 'Document preview', previewHint: 'A clean, single-column, ATS-friendly A4 layout. Page count is estimated automatically from your content.',
       loading: 'Preparing your resume…', empty: 'Your resume is not ready yet',
       emptyHint: 'Add your personal details, education and experience on the Profile page first.',
       photo: 'Include a photo', addPhoto: 'Add photo', changePhoto: 'Change photo',
@@ -303,10 +320,10 @@ export default function Resume() {
         </aside>
 
         <section className="resume-preview-column">
-          <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · PDF</span></div>
+          <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {pageCount} {isTr ? "sayfa" : pageCount === 1 ? "page" : "pages"}</span></div>
           <p className="resume-preview-hint">{labels.previewHint}</p>
           <div className="resume-paper-wrap">
-            <article id="cv-preview" className={`resume-paper${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}>
+            <article ref={previewRef} id="cv-preview" data-page-count={pageCount} className={`resume-paper${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}>
               {(personalInfo.firstName || personalInfo.lastName || personalInfo.title || personalInfo.email) ? (
                 <>
                   <header className="cv-paper-header">
