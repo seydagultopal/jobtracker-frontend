@@ -52,7 +52,7 @@ const translations = {
     contactText: 'Bir sorun mu var? Veya sadece selam mı vermek istiyorsun? Pebble ekibi olarak mesajlarını sabırsızlıkla bekliyoruz.',
 
     // Kayıt (Register) Sayfası
-    regTitle: 'Aramıza Katıl ✨',
+    regTitle: 'Aramıza Katıl',
     regFirstName: 'Ad',
     regLastName: 'Soyad',
     regEmail: 'Mail',
@@ -60,7 +60,7 @@ const translations = {
     regConfirmPassword: 'Şifreyi Tekrar Gir',
     regBtn: 'Kayıt Ol',
     regHasAccount: 'Hesabın var mı? Giriş Yap',
-    msgRegSuccess: 'Kayıt Başarılı! 🎉',
+    msgRegSuccess: 'Kayıt başarılı.',
     msgEmailInUse: 'Bu mail zaten kullanımda! Giriş yap.',
     msgPassMismatch: 'Şifreler eşleşmiyor!',
     msgRegFailed: 'Kayıt Başarısız!',
@@ -71,7 +71,7 @@ const translations = {
     passRule3: 'En az bir özel karakter (!@#$ vb.) içermeli.',
 
     // Giriş (Login) Sayfası
-    loginTitle: 'Hoş Geldin ✨',
+    loginTitle: 'Hoş geldin',
     loginBtn: 'Giriş Yap',
     forgotPass: 'Şifremi Unuttum',
     loginOr: 'VEYA',
@@ -86,7 +86,7 @@ const translations = {
     forgotNewPass: 'Yeni Şifre',
     forgotConfirmPass: 'Yeni Şifre (Tekrar)',
     btnResetPass: 'Şifremi Güncelle',
-    msgPassResetSuccess: 'Şifren başarıyla güncellendi! 🎉',
+    msgPassResetSuccess: 'Şifren başarıyla güncellendi.',
 
     // Tracker Tablo
     dashTitle: 'Başvurularım',
@@ -334,7 +334,7 @@ const translations = {
     contactTitle: 'Contact Us',
     contactText: 'Have a problem? Or just want to say hi? We at the Pebble team are looking forward to your messages.',
 
-    regTitle: 'Join Us ✨',
+    regTitle: 'Create an account',
     regFirstName: 'First Name',
     regLastName: 'Last Name',
     regEmail: 'Email',
@@ -342,7 +342,7 @@ const translations = {
     regConfirmPassword: 'Confirm Password',
     regBtn: 'Sign Up',
     regHasAccount: 'Already have an account? Sign In',
-    msgRegSuccess: 'Registration Successful! 🎉',
+    msgRegSuccess: 'Registration successful.',
     msgEmailInUse: 'This email is already in use! Please sign in.',
     msgPassMismatch: 'Passwords do not match!',
     msgRegFailed: 'Registration Failed!',
@@ -352,7 +352,7 @@ const translations = {
     passRule2: 'Must contain at least one uppercase letter and one number.',
     passRule3: 'Must contain at least one special character (!@#$ etc.).',
     
-    loginTitle: 'Welcome Back ✨',
+    loginTitle: 'Welcome back',
     loginBtn: 'Sign In',
     forgotPass: 'Forgot Password?',
     loginOr: 'OR',
@@ -361,12 +361,12 @@ const translations = {
     msgLoginFailed: 'Login Failed! Please check your credentials.',
     msgLoginSuccess: 'Login Successful! Redirecting...',
     
-    forgotPassTitle: 'Forgot Password? 🥺',
+    forgotPassTitle: 'Forgot Password?',
     forgotPassDesc: 'Do not worry, you can set a new password and get your data back.',
     forgotNewPass: 'New Password',
     forgotConfirmPass: 'Confirm New Password',
     btnResetPass: 'Update Password',
-    msgPassResetSuccess: 'Password updated successfully! 🎉',
+    msgPassResetSuccess: 'Password updated successfully.',
 
     dashTitle: 'My Applications',
     dashSubtitle: 'All steps of your career journey are here ✨',
