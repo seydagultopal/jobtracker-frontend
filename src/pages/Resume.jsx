@@ -240,7 +240,13 @@ export default function Resume() {
     });
     return result;
   })();
-  const pages = (pageLayout || autoPages).map(ids => ids.filter(id => sectionBlocks.some(section => section.id === id))).filter((ids, index, all) => ids.length || index === 0 || index < all.length - 1);
+  const pages = (() => {
+    const result = (pageLayout || autoPages).map(ids => ids.filter(id => sectionBlocks.some(section => section.id === id)));
+    const assigned = new Set(result.flat());
+    const unassigned = sectionBlocks.filter(section => !assigned.has(section.id)).map(section => section.id);
+    if (unassigned.length) result[result.length - 1].push(...unassigned);
+    return result.length ? result : [[]];
+  })();
   const currentPageCount = Math.max(1, pages.length);
   const sectionById = Object.fromEntries(sectionBlocks.map(section => [section.id, section]));
 
@@ -350,7 +356,7 @@ export default function Resume() {
 
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
-          <p className="resume-preview-hint">{labels.previewHint}</p>
+          <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
           <div className="resume-paper-wrap">
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
