@@ -3,27 +3,37 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext(null);
 const THEME_KEY = 'app_theme';
 
-function readInitialTheme() {
+function getInitialTheme() {
+  if (typeof window === 'undefined') return false;
+
   try {
-    return window.localStorage.getItem(THEME_KEY) === 'dark';
+    const savedTheme = window.localStorage.getItem(THEME_KEY);
+    if (savedTheme === 'dark') return true;
+    if (savedTheme === 'light') return false;
   } catch {
-    return false;
+    // Fall back to the operating-system preference when storage is unavailable.
   }
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+}
+
+function applyTheme(isDarkMode) {
+  const root = document.documentElement;
+  root.classList.toggle('dark', isDarkMode);
+  root.dataset.theme = isDarkMode ? 'dark' : 'light';
+  root.style.colorScheme = isDarkMode ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(readInitialTheme);
+  const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', isDarkMode);
-    root.dataset.theme = isDarkMode ? 'dark' : 'light';
-    root.style.colorScheme = isDarkMode ? 'dark' : 'light';
+    applyTheme(isDarkMode);
 
     try {
       window.localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
     } catch {
-      // The theme still works for this session when storage is unavailable.
+      // Theme selection remains active for the current session.
     }
   }, [isDarkMode]);
 
