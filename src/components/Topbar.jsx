@@ -43,8 +43,15 @@ export default function Topbar({ onMenuClick = () => {}, isMobileNavOpen = false
   }, []);
 
   const handleLogout = async () => {
-    try { await api.post('/api/auth/logout'); }
-    finally { navigate('/login', { replace: true }); }
+    try {
+      await api.post('/api/auth/logout');
+      setUserData({ name: '', email: '', photo: null });
+      setIsProfileMenuOpen(false);
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Do not pretend the session ended if the server did not confirm logout.
+    }
   };
 
   return (
