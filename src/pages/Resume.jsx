@@ -42,7 +42,6 @@ export default function Resume() {
   const [devData, setDevData] = useState({ projects: [], courses: [], skills: [] });
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [pageCount, setPageCount] = useState(1);
   const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
   const [showPhoto, setShowPhoto] = useState(false);
@@ -164,7 +163,12 @@ export default function Resume() {
         pagebreak: { mode: ['css', 'legacy'], before: ['.cv-page + .cv-page'], avoid: ['.cv-entry', '.cv-section-heading'] },
         enableLinks: true
       };
-      await html2pdf().set(opt).from(element).save();
+      element.classList.add('is-pdf-export');
+      try {
+        await html2pdf().set(opt).from(element).save();
+      } finally {
+        element.classList.remove('is-pdf-export');
+      }
     } catch (error) {
       console.error('PDF export failed:', error);
       window.alert(isTr ? 'PDF oluşturulamadı. Lütfen tekrar dene.' : 'The PDF could not be created. Please try again.');
