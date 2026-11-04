@@ -293,12 +293,6 @@ export default function Resume() {
     });
   };
 
-  const handleSectionDrop = (event, targetPage) => {
-    event.preventDefault();
-    const sectionId = event.dataTransfer.getData('text/plain');
-    if (sectionId) moveSection(sectionId, targetPage);
-  };
-
   const beginSectionPointerDrag = (event, sectionId) => {
     if (event.button !== 0) return;
     event.preventDefault();
@@ -492,8 +486,6 @@ export default function Resume() {
                   className={`resume-paper cv-page${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}
                   data-page={pageIndex + 1}
                   key={pageIndex}
-                  onDragOver={event => event.preventDefault()}
-                  onDrop={event => handleSectionDrop(event, pageIndex)}
                 >
                   {pageIndex === 0 && headerExists && (
                     <header className="cv-paper-header">
