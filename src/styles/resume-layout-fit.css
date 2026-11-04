@@ -138,7 +138,7 @@
 
 /* Prevent tall/descending name glyphs from touching the professional title below. */
 .cv-paper-identity h1 {
-  margin-bottom: 12px !important;
+  margin-bottom: 15px !important;
   line-height: 1.2 !important;
   padding-bottom: 2px !important;
 }
