@@ -43,7 +43,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (status === 'unauthenticated') {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 
   if (status === 'error') {
