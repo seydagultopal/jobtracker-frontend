@@ -61,7 +61,7 @@ export default function ResetPassword() {
       <div className="auth-reset-card p-10 rounded-[2rem] w-full max-w-md z-10 relative">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4"><Logo className="h-12 w-12" /></div><h1 className="text-2xl font-black tracking-widest text-cherry mb-4">Pebble</h1>
-          <h2 className="text-2xl font-bold text-gray-800">Yeni Şifre Belirle 🔒</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Yeni şifre belirle</h2>
           <p className="text-sm text-gray-500 mt-2">Lütfen hesabın için güçlü bir şifre oluştur.</p>
         </div>
         
