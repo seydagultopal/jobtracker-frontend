@@ -182,7 +182,7 @@
 .cv-draggable-section{position:relative;padding:5px 8px 1px;margin:0 -8px 8px;border:1px solid transparent;border-radius:5px;cursor:grab;transition:background .15s ease,border-color .15s ease}
 .cv-draggable-section:hover{border-color:#d9e1da;background:#fbfcfb}
 .cv-draggable-section:active{cursor:grabbing}
-.cv-section-drag-handle{display:flex;align-items:center;gap:6px;height:16px;margin:-2px 0 2px;color:#929892;opacity:.45;font-family:Arial,Helvetica,sans-serif}
+.cv-section-drag-handle{display:flex;align-items:center;gap:6px;height:16px;margin:-2px 0 2px;color:#929892;opacity:.55;font-family:Arial,Helvetica,sans-serif;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .cv-draggable-section:hover .cv-section-drag-handle{opacity:1}
 .cv-section-drag-handle span{font-size:15px;line-height:1}
 .cv-section-drag-handle small{font-size:7px;letter-spacing:.02em}
@@ -223,3 +223,6 @@
   cursor: default;
 }
 .resume-paper.cv-page { scroll-snap-align: start; }
+
+.cv-section-drag-handle:active{cursor:grabbing}
+.cv-draggable-section.is-dragging{z-index:5;border-color:var(--pebble-accent)!important;background:var(--pebble-surface-soft)!important;box-shadow:0 8px 22px rgba(0,0,0,.12)}
