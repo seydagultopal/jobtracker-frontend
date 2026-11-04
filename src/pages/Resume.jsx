@@ -160,7 +160,7 @@ export default function Resume() {
           scrollY: 0
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy'], before: ['.cv-page + .cv-page'], avoid: ['.cv-entry', '.cv-section-heading'] },
+        pagebreak: { mode: ['css'], before: ['.cv-page + .cv-page'] },
         enableLinks: true
       };
       element.classList.add('is-pdf-export');
@@ -270,6 +270,20 @@ export default function Resume() {
     if (sectionId) moveSection(sectionId, targetPage);
   };
 
+  const handlePreviewMouseMove = (event) => {
+    const viewport = event.currentTarget;
+    const bounds = viewport.getBoundingClientRect();
+    const edge = Math.min(100, bounds.width * 0.18);
+    const pointerX = event.clientX - bounds.left;
+    if (pointerX > bounds.width - edge) {
+      const intensity = (pointerX - (bounds.width - edge)) / edge;
+      viewport.scrollLeft += Math.max(3, Math.ceil(intensity * 22));
+    } else if (pointerX < edge) {
+      const intensity = (edge - pointerX) / edge;
+      viewport.scrollLeft -= Math.max(3, Math.ceil(intensity * 22));
+    }
+  };
+
   const sectionToggle = (key, title, count) => {
     const optionKey = key === 'projects' ? 'showProjects' : key === 'courses' ? 'showCourses' : 'showSkills';
     return (
@@ -361,7 +375,7 @@ export default function Resume() {
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
-          <div className="resume-paper-wrap">
+          <div className="resume-paper-wrap" onMouseMove={handlePreviewMouseMove} onMouseLeave={event => { event.currentTarget.dataset.edgeScrolling = "false"; }}>
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
                 <article
