@@ -114,3 +114,23 @@
     padding: 4px !important;
   }
 }
+
+
+/* Keep social and portfolio URLs short in the CV while preserving clickable PDF links. */
+.cv-paper-contact .cv-contact-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  color: inherit !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+  text-decoration-color: #a7aaa5 !important;
+  text-underline-offset: 2px !important;
+  overflow-wrap: anywhere !important;
+}
+.cv-paper-contact .cv-contact-link:hover {
+  color: #405d49 !important;
+  text-decoration-color: currentColor !important;
+}
+.cv-paper-contact .cv-contact-link svg {
+  display: none !important;
+}
