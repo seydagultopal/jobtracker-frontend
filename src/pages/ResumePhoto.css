@@ -1,0 +1,11 @@
+/* Preserve the complete CV photo instead of cropping its sides to fill the frame. */
+.cv-paper-photo.cv-paper-photo-contain {
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #fff !important;
+}
+.resume-photo-thumb.resume-photo-thumb-contain {
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #fff !important;
+}
