@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import './ResumePhoto.css';
+import '../styles/resume-layout-fit.css';
 
 const safeJSONParse = (data) => {
   if (!data) return [];
