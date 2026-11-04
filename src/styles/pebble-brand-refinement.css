@@ -351,3 +351,11 @@ aside nav a[aria-current="page"], .pebble-nav-link[aria-current="page"], .pebble
   background: var(--pebble-accent) !important; color: #fff !important;
 }
 .auth-form-panel button:not([type="submit"]):hover { color: var(--pebble-accent-strong) !important; }
+
+/* Final cleanup for legacy page-level accent literals and selectable cover swatches. */
+.profile-cover-swatch-0 { background: linear-gradient(135deg, #718A78, #C8D9CC) !important; }
+.profile-cover-swatch-1 { background: linear-gradient(135deg, #8FAFC0, #B7B0CC) !important; }
+.profile-cover-swatch-2 { background: linear-gradient(135deg, #718A78, #C8D9CC) !important; }
+.profile-cover-swatch-3 { background: linear-gradient(135deg, #AFA5C9, #D7D0E7) !important; }
+.calendar-type-interview { --event-color: #607C68 !important; --event-bg: #E7EFE7 !important; }
+:root.dark .calendar-type-interview { --event-color: #B6CDB9 !important; --event-bg: #304236 !important; }
