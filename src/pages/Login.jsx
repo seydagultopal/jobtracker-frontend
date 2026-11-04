@@ -104,7 +104,7 @@ export default function Login() {
         email: forgotData.email
       });
       
-      showToastMessage('success', 'Şifre sıfırlama linki mailine gönderildi! 💌');
+      showToastMessage('success', 'Şifre sıfırlama bağlantısı e-posta adresine gönderildi.');
       
       setTimeout(() => {
         setShowForgotModal(false);
