@@ -1,0 +1,56 @@
+/* Resume workspace spacing: give the A4 preview more usable viewport width. */
+.resume-page {
+  padding: 12px 16px !important;
+}
+
+.resume-page-heading-compact {
+  margin-bottom: 12px !important;
+}
+
+.resume-workspace {
+  grid-template-columns: minmax(238px, 270px) minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.resume-paper-wrap {
+  padding: 6px !important;
+}
+
+.resume-paper {
+  padding: 48px 52px !important;
+}
+
+@media (min-width: 851px) and (max-width: 1100px) {
+  .resume-workspace {
+    grid-template-columns: minmax(220px, 240px) minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .resume-paper {
+    padding: 42px 44px !important;
+  }
+}
+
+@media (max-width: 850px) {
+  .resume-workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .resume-page {
+    padding: 10px 6px !important;
+  }
+
+  .resume-paper-wrap {
+    padding: 4px !important;
+  }
+
+  /* Keep the exported document at A4 width; the preview wrapper can scroll. */
+  .resume-paper {
+    width: 794px !important;
+    max-width: 794px !important;
+    min-height: 1123px !important;
+    padding: 48px 52px !important;
+  }
+}
