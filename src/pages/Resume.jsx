@@ -304,19 +304,21 @@ export default function Resume() {
     edgeScrollRef.current = { frame: 0, viewport: null, direction: 0, speed: 0 };
   };
 
-  const handlePreviewMouseMove = (event) => {
+  // Native drag events, not ordinary mouse movement, control page-to-page scrolling.
+  const handlePreviewDragOver = (event) => {
     const viewport = event.currentTarget;
     const bounds = viewport.getBoundingClientRect();
-    const edge = Math.min(120, bounds.width * 0.2);
+    const edge = Math.min(110, bounds.width * 0.16);
     const pointerX = event.clientX - bounds.left;
     const state = edgeScrollRef.current;
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
 
-    if (pointerX > bounds.width - edge && viewport.scrollLeft < viewport.scrollWidth - viewport.clientWidth) {
+    if (pointerX >= bounds.width - edge && viewport.scrollLeft < maxScroll - 1) {
       state.direction = 1;
-      state.speed = Math.max(2, ((pointerX - (bounds.width - edge)) / edge) * 18);
-    } else if (pointerX < edge && viewport.scrollLeft > 0) {
+      state.speed = Math.max(5, ((pointerX - (bounds.width - edge)) / edge) * 22);
+    } else if (pointerX <= edge && viewport.scrollLeft > 0) {
       state.direction = -1;
-      state.speed = Math.max(2, ((edge - pointerX) / edge) * 18);
+      state.speed = Math.max(5, ((edge - pointerX) / edge) * 22);
     } else {
       state.direction = 0;
       state.speed = 0;
@@ -330,9 +332,10 @@ export default function Resume() {
           current.frame = 0;
           return;
         }
-        current.viewport.scrollLeft += current.direction * current.speed;
+        const max = current.viewport.scrollWidth - current.viewport.clientWidth;
+        current.viewport.scrollLeft = Math.max(0, Math.min(max, current.viewport.scrollLeft + current.direction * current.speed));
         const atBoundary = current.direction > 0
-          ? current.viewport.scrollLeft >= current.viewport.scrollWidth - current.viewport.clientWidth
+          ? current.viewport.scrollLeft >= max - 1
           : current.viewport.scrollLeft <= 0;
         if (atBoundary) {
           current.frame = 0;
@@ -435,7 +438,7 @@ export default function Resume() {
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
-          <div className="resume-paper-wrap" onMouseMove={handlePreviewMouseMove} onMouseLeave={stopEdgeScroll}>
+          <div className="resume-paper-wrap" onDragOver={handlePreviewDragOver} onDrop={stopEdgeScroll}>
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
                 <article
@@ -476,6 +479,7 @@ export default function Resume() {
                             event.dataTransfer.effectAllowed = 'move';
                             event.dataTransfer.setData('text/plain', section.id);
                           }}
+                          onDragEnd={stopEdgeScroll}
                         >
                           <div className="cv-section-drag-handle" aria-hidden="true"><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
                           {section.content}
