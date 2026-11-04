@@ -134,3 +134,15 @@
 .cv-paper-contact .cv-contact-link svg {
   display: none !important;
 }
+
+
+/* Prevent tall/descending name glyphs from touching the professional title below. */
+.cv-paper-identity h1 {
+  margin-bottom: 12px !important;
+  line-height: 1.2 !important;
+  padding-bottom: 2px !important;
+}
+.cv-paper-identity h2 {
+  margin-top: 0 !important;
+  line-height: 1.45 !important;
+}
