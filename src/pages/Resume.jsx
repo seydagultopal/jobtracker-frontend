@@ -1,4 +1,5 @@
-import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { BookOpen, BriefcaseBusiness, Code2, Download, Github, Globe, GraduationCap, Linkedin, Mail, MapPin, Phone, Sparkles, Upload, UserRound, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
@@ -44,6 +45,7 @@ export default function Resume() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
+  const edgeScrollRef = useRef({ frame: 0, viewport: null, direction: 0, speed: 0 });
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
   const photoInputRef = useRef(null);
@@ -144,31 +146,57 @@ export default function Resume() {
     setIsDownloading(true);
     try {
       if (document.fonts?.ready) await document.fonts.ready;
-      const images = Array.from(element.querySelectorAll('img'));
-      await Promise.all(images.map(img => img.decode?.().catch(() => undefined)));
-      const opt = {
-        margin: 0,
-        filename: `${[personalInfo.firstName, personalInfo.lastName].filter(Boolean).join('_') || 'Resume'}_CV.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: false,
-          backgroundColor: '#ffffff',
-          windowWidth: 794,
-          scrollX: 0,
-          scrollY: 0
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css'], before: ['.cv-page + .cv-page'] },
-        enableLinks: true
-      };
+      const pagesToExport = Array.from(element.querySelectorAll('.cv-page'));
+      if (!pagesToExport.length) throw new Error('No resume pages to export');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
       element.classList.add('is-pdf-export');
       try {
-        await html2pdf().set(opt).from(element).save();
+        for (let index = 0; index < pagesToExport.length; index += 1) {
+          const page = pagesToExport[index];
+          const canvas = await html2canvas(page, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: Math.max(1123, page.scrollHeight),
+            windowWidth: 794,
+            scrollX: 0,
+            scrollY: 0,
+            logging: false
+          });
+          const image = canvas.toDataURL('image/jpeg', 0.98);
+          const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+          const renderedWidth = canvas.width * ratio;
+          const renderedHeight = canvas.height * ratio;
+          const offsetX = (pageWidth - renderedWidth) / 2;
+          const offsetY = (pageHeight - renderedHeight) / 2;
+
+          if (index > 0) pdf.addPage('a4', 'portrait');
+          pdf.addImage(image, 'JPEG', offsetX, offsetY, renderedWidth, renderedHeight, undefined, 'FAST');
+
+          // Keep external profile links clickable even though each sheet is rendered as a page image.
+          const pageBounds = page.getBoundingClientRect();
+          page.querySelectorAll('a[href]').forEach(anchor => {
+            const href = getExternalUrl(anchor.getAttribute('href'));
+            if (!href) return;
+            const bounds = anchor.getBoundingClientRect();
+            const x = offsetX + ((bounds.left - pageBounds.left) / canvas.width) * renderedWidth;
+            const y = offsetY + ((bounds.top - pageBounds.top) / canvas.height) * renderedHeight;
+            const w = (bounds.width / canvas.width) * renderedWidth;
+            const h = (bounds.height / canvas.height) * renderedHeight;
+            if (w > 0 && h > 0) pdf.link(x, y, w, h, { url: href });
+          });
+        }
       } finally {
         element.classList.remove('is-pdf-export');
       }
+
+      const filename = `${[personalInfo.firstName, personalInfo.lastName].filter(Boolean).join('_') || 'Resume'}_CV.pdf`;
+      pdf.save(filename);
     } catch (error) {
       console.error('PDF export failed:', error);
       window.alert(isTr ? 'PDF oluşturulamadı. Lütfen tekrar dene.' : 'The PDF could not be created. Please try again.');
@@ -270,17 +298,49 @@ export default function Resume() {
     if (sectionId) moveSection(sectionId, targetPage);
   };
 
+  const stopEdgeScroll = () => {
+    const state = edgeScrollRef.current;
+    if (state.frame) cancelAnimationFrame(state.frame);
+    edgeScrollRef.current = { frame: 0, viewport: null, direction: 0, speed: 0 };
+  };
+
   const handlePreviewMouseMove = (event) => {
     const viewport = event.currentTarget;
     const bounds = viewport.getBoundingClientRect();
-    const edge = Math.min(100, bounds.width * 0.18);
+    const edge = Math.min(120, bounds.width * 0.2);
     const pointerX = event.clientX - bounds.left;
-    if (pointerX > bounds.width - edge) {
-      const intensity = (pointerX - (bounds.width - edge)) / edge;
-      viewport.scrollLeft += Math.max(3, Math.ceil(intensity * 22));
-    } else if (pointerX < edge) {
-      const intensity = (edge - pointerX) / edge;
-      viewport.scrollLeft -= Math.max(3, Math.ceil(intensity * 22));
+    const state = edgeScrollRef.current;
+
+    if (pointerX > bounds.width - edge && viewport.scrollLeft < viewport.scrollWidth - viewport.clientWidth) {
+      state.direction = 1;
+      state.speed = Math.max(2, ((pointerX - (bounds.width - edge)) / edge) * 18);
+    } else if (pointerX < edge && viewport.scrollLeft > 0) {
+      state.direction = -1;
+      state.speed = Math.max(2, ((edge - pointerX) / edge) * 18);
+    } else {
+      state.direction = 0;
+      state.speed = 0;
+    }
+
+    state.viewport = viewport;
+    if (state.direction && !state.frame) {
+      const tick = () => {
+        const current = edgeScrollRef.current;
+        if (!current.viewport || !current.direction || !current.speed) {
+          current.frame = 0;
+          return;
+        }
+        current.viewport.scrollLeft += current.direction * current.speed;
+        const atBoundary = current.direction > 0
+          ? current.viewport.scrollLeft >= current.viewport.scrollWidth - current.viewport.clientWidth
+          : current.viewport.scrollLeft <= 0;
+        if (atBoundary) {
+          current.frame = 0;
+          return;
+        }
+        current.frame = requestAnimationFrame(tick);
+      };
+      state.frame = requestAnimationFrame(tick);
     }
   };
 
@@ -375,7 +435,7 @@ export default function Resume() {
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
-          <div className="resume-paper-wrap" onMouseMove={handlePreviewMouseMove} onMouseLeave={event => { event.currentTarget.dataset.edgeScrolling = "false"; }}>
+          <div className="resume-paper-wrap" onMouseMove={handlePreviewMouseMove} onMouseLeave={stopEdgeScroll}>
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
                 <article
