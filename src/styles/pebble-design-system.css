@@ -33,7 +33,7 @@
 html, body { background-color: var(--pebble-canvas); }
 :root.dark body {
   background:
-    radial-gradient(ellipse at 88% 0%, rgba(255, 134, 94, .075), transparent 30rem),
+    radial-gradient(ellipse at 88% 0%, color-mix(in srgb, var(--pebble-accent) 7.5%, transparent), transparent 30rem),
     radial-gradient(ellipse at 8% 90%, rgba(199, 177, 232, .055), transparent 28rem),
     var(--pebble-canvas);
 }
@@ -186,7 +186,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 :root.dark .dash-welcome {
   color: var(--pebble-ink) !important;
   background:
-    radial-gradient(circle at 88% 18%, rgba(255, 134, 94, .11), transparent 18rem),
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--pebble-accent) 11%, transparent), transparent 18rem),
     var(--pebble-surface) !important;
   border-color: var(--pebble-line) !important;
 }
@@ -241,7 +241,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .profile-cover-art { opacity: .22 !important; }
 :root.dark .profile-cover {
   background:
-    radial-gradient(ellipse at 86% 8%, rgba(255, 134, 94, .12), transparent 20rem),
+    radial-gradient(ellipse at 86% 8%, color-mix(in srgb, var(--pebble-accent) 12%, transparent), transparent 20rem),
     var(--pebble-surface) !important;
   border-color: var(--pebble-line) !important;
 }
@@ -311,7 +311,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 }
 :root.dark .pebble-landing {
   background:
-    radial-gradient(ellipse at 5% 7%, rgba(255, 134, 94, .09), transparent 31rem),
+    radial-gradient(ellipse at 5% 7%, color-mix(in srgb, var(--pebble-accent) 9%, transparent), transparent 31rem),
     radial-gradient(ellipse at 96% 22%, rgba(199, 177, 232, .075), transparent 34rem),
     var(--pebble-canvas);
 }
@@ -420,7 +420,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .landing-about h2 { max-width: 620px; font-size: clamp(27px, 3.2vw, 37px); }
 .landing-about p { margin: 0; }
 .landing-final-cta { position: relative; z-index: 1; width: min(1080px, calc(100% - 64px)); margin: 0 auto 72px; padding: 55px 30px; overflow: hidden; border: 1px solid var(--pebble-line); border-radius: 25px; background: linear-gradient(115deg, color-mix(in srgb, var(--pebble-accent) 8%, var(--pebble-surface)), var(--pebble-surface)); text-align: center; }
-:root.dark .landing-final-cta { background: linear-gradient(115deg, rgba(255,134,94,.10), var(--pebble-surface)); }
+:root.dark .landing-final-cta { background: linear-gradient(115deg, color-mix(in srgb, var(--pebble-accent) 10%, transparent), var(--pebble-surface)); }
 .landing-final-orb { position: absolute; top: -130px; right: -60px; width: 270px; height: 270px; border: 1px solid color-mix(in srgb, var(--pebble-accent) 22%, transparent); border-radius: 50%; pointer-events: none; }
 .landing-final-cta > span { position: relative; display: block; color: var(--pebble-ink); font-size: clamp(26px, 3.4vw, 37px); font-weight: 750; letter-spacing: -.05em; }
 .landing-final-cta > p { position: relative; max-width: 540px; margin: 12px auto 23px; color: var(--pebble-muted); font-size: 13px; line-height: 1.8; }
