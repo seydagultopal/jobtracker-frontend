@@ -184,10 +184,10 @@ export default function Resume() {
             const href = getExternalUrl(anchor.getAttribute('href'));
             if (!href) return;
             const bounds = anchor.getBoundingClientRect();
-            const x = offsetX + ((bounds.left - pageBounds.left) / canvas.width) * renderedWidth;
-            const y = offsetY + ((bounds.top - pageBounds.top) / canvas.height) * renderedHeight;
-            const w = (bounds.width / canvas.width) * renderedWidth;
-            const h = (bounds.height / canvas.height) * renderedHeight;
+            const x = offsetX + ((bounds.left - pageBounds.left) / pageBounds.width) * renderedWidth;
+            const y = offsetY + ((bounds.top - pageBounds.top) / pageBounds.height) * renderedHeight;
+            const w = (bounds.width / pageBounds.width) * renderedWidth;
+            const h = (bounds.height / pageBounds.height) * renderedHeight;
             if (w > 0 && h > 0) pdf.link(x, y, w, h, { url: href });
           });
         }
