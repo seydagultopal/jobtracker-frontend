@@ -583,7 +583,7 @@ export default function Resume() {
                         src={personalInfo.photo}
                         alt=""
                         draggable="false"
-                        style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
+                        style={{ objectPosition: 'center', transform: `translate(${50 - photoCrop.x}%, ${50 - photoCrop.y}%) scale(${photoCrop.zoom})`, transformOrigin: 'center center' }}
                       />
                       <span>{isTr ? 'Sürükle ve konumlandır' : 'Drag to reposition'}</span>
                     </div>
@@ -666,7 +666,7 @@ export default function Resume() {
                             src={personalInfo.photo}
                             alt=""
                             className="cv-paper-photo-crop"
-                            style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
+                            style={{ objectPosition: 'center', transform: `translate(${50 - photoCrop.x}%, ${50 - photoCrop.y}%) scale(${photoCrop.zoom})`, transformOrigin: 'center center' }}
                           />
                         </div>
                       )}
