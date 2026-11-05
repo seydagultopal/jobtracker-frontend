@@ -51,7 +51,7 @@ export default function Resume() {
   const [dropTargetPage, setDropTargetPage] = useState(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
-  const [photoCrop, setPhotoCrop] = useState({ x: 50, y: 50, zoom: 1 });
+  const [photoCrop, setPhotoCrop] = useState({ x: 50, y: 50, zoom: 1.2 });
   const photoCropPointerRef = useRef(null);
   const photoInputRef = useRef(null);
   const [options, setOptions] = useState({ showProjects: true, showCourses: true, showSkills: true });
@@ -175,7 +175,7 @@ export default function Resume() {
     try {
       const image = await readImage(file);
       setPersonalInfo(prev => ({ ...prev, photo: image }));
-      setPhotoCrop({ x: 50, y: 50, zoom: 1 });
+      setPhotoCrop({ x: 50, y: 50, zoom: 1.2 });
       setShowPhoto(true);
     } catch {
       setPhotoError(isTr ? 'Fotoğraf okunamadı. Başka bir dosya dene.' : 'The image could not be read. Try another file.');
@@ -607,7 +607,7 @@ export default function Resume() {
                       {personalInfo.photo && <button type="button" className="resume-photo-remove" onClick={() => setPersonalInfo(prev => ({ ...prev, photo: null }))}><X size={14} />{labels.removePhoto}</button>}
                     </div>
                     {personalInfo.photo && (
-                      <button type="button" className="resume-photo-reset" onClick={() => setPhotoCrop({ x: 50, y: 50, zoom: 1 })}>
+                      <button type="button" className="resume-photo-reset" onClick={() => setPhotoCrop({ x: 50, y: 50, zoom: 1.2 })}>
                         {isTr ? 'Konumu sıfırla' : 'Reset position'}
                       </button>
                     )}
