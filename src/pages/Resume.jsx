@@ -45,8 +45,10 @@ export default function Resume() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [pageLayout, setPageLayout] = useState(null);
   const previewRef = useRef(null);
+  const previewViewportRef = useRef(null);
   const pointerDragRef = useRef(null);
   const [draggingSection, setDraggingSection] = useState(null);
+  const [dropTargetPage, setDropTargetPage] = useState(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
   const photoInputRef = useRef(null);
@@ -58,6 +60,11 @@ export default function Resume() {
   });
   const [experience, setExperience] = useState([]);
   const [education, setEducation] = useState([]);
+
+  useEffect(() => () => {
+    const activeDrag = pointerDragRef.current;
+    if (activeDrag?.cleanup) activeDrag.cleanup();
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -294,83 +301,96 @@ export default function Resume() {
   };
 
   const beginSectionPointerDrag = (event, sectionId) => {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || pointerDragRef.current) return;
     event.preventDefault();
     event.stopPropagation();
 
-    const viewport = previewRef.current?.closest('.resume-preview-column')?.querySelector('.resume-paper-wrap');
+    const viewport = previewViewportRef.current;
     if (!viewport) return;
 
     const drag = {
       sectionId,
       viewport,
+      pointerId: event.pointerId,
       pointerX: event.clientX,
       pointerY: event.clientY,
       startX: event.clientX,
       startY: event.clientY,
       moved: false,
-      frame: 0
+      frame: 0,
+      cleanup: null
     };
     pointerDragRef.current = drag;
-    setDraggingSection(sectionId);
+
+    const findDropPage = (active) => {
+      const target = document.elementFromPoint(active.pointerX, active.pointerY);
+      const page = target?.closest('.cv-page');
+      if (!page || !active.viewport.contains(page)) return null;
+      const index = Number(page.dataset.page) - 1;
+      return Number.isInteger(index) && index >= 0 ? index : null;
+    };
 
     const stop = (pointerEvent, shouldDrop) => {
       const current = pointerDragRef.current;
-      if (!current) return;
-      if (current.frame) cancelAnimationFrame(current.frame);
-
-      if (shouldDrop && current.moved) {
-        const target = document.elementFromPoint(pointerEvent.clientX, pointerEvent.clientY);
-        const targetPage = target?.closest('.cv-page');
-        if (targetPage && current.viewport.contains(targetPage)) {
-          const targetPageIndex = Number(targetPage.dataset.page) - 1;
-          if (Number.isInteger(targetPageIndex) && targetPageIndex >= 0) {
-            moveSection(current.sectionId, targetPageIndex);
-          }
-        }
+      if (!current || pointerEvent.pointerId !== current.pointerId) return;
+      current.pointerX = pointerEvent.clientX;
+      current.pointerY = pointerEvent.clientY;
+      const targetPageIndex = findDropPage(current);
+      if (shouldDrop && current.moved && targetPageIndex !== null) {
+        const sourcePage = Array.from(current.viewport.querySelectorAll('.cv-page')).find(page =>
+          Array.from(page.querySelectorAll('[data-section-id]')).some(section => section.dataset.sectionId === current.sectionId)
+        );
+        const sourcePageIndex = sourcePage ? Number(sourcePage.dataset.page) - 1 : -1;
+        if (sourcePageIndex !== targetPageIndex) moveSection(current.sectionId, targetPageIndex);
       }
 
+      current.cleanup?.();
       pointerDragRef.current = null;
       setDraggingSection(null);
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', finish);
-      window.removeEventListener('pointercancel', cancel);
+      setDropTargetPage(null);
     };
 
     const move = (pointerEvent) => {
       const current = pointerDragRef.current;
-      if (!current || pointerEvent.pointerId !== event.pointerId) return;
+      if (!current || pointerEvent.pointerId !== current.pointerId) return;
       current.pointerX = pointerEvent.clientX;
       current.pointerY = pointerEvent.clientY;
-      if (Math.hypot(current.pointerX - current.startX, current.pointerY - current.startY) > 4) {
+      if (!current.moved && Math.hypot(current.pointerX - current.startX, current.pointerY - current.startY) > 5) {
         current.moved = true;
+        setDraggingSection(current.sectionId);
       }
-      if (!current.moved || current.frame) return;
+      if (!current.moved) return;
+
+      const nextTarget = findDropPage(current);
+      setDropTargetPage(previous => previous === nextTarget ? previous : nextTarget);
+      if (current.frame) return;
 
       const tick = () => {
         const active = pointerDragRef.current;
         if (!active) return;
         const bounds = active.viewport.getBoundingClientRect();
-        const edge = Math.min(150, Math.max(90, bounds.width * 0.18));
+        const edge = Math.min(160, Math.max(90, bounds.width * 0.2));
         const relativeX = active.pointerX - bounds.left;
         const maxScroll = Math.max(0, active.viewport.scrollWidth - active.viewport.clientWidth);
         let direction = 0;
         let intensity = 0;
 
-        if (relativeX > bounds.width - edge && active.viewport.scrollLeft < maxScroll - 1) {
+        if (relativeX >= bounds.width - edge && active.viewport.scrollLeft < maxScroll - 1) {
           direction = 1;
           intensity = Math.min(1, (relativeX - (bounds.width - edge)) / edge);
-        } else if (relativeX < edge && active.viewport.scrollLeft > 1) {
+        } else if (relativeX <= edge && active.viewport.scrollLeft > 1) {
           direction = -1;
           intensity = Math.min(1, (edge - relativeX) / edge);
         }
 
+        const targetIndex = findDropPage(active);
+        setDropTargetPage(previous => previous === targetIndex ? previous : targetIndex);
         if (!direction) {
           active.frame = 0;
           return;
         }
 
-        const speed = 6 + intensity * 26;
+        const speed = 5 + intensity * 27;
         active.viewport.scrollLeft = Math.max(0, Math.min(
           maxScroll,
           active.viewport.scrollLeft + direction * speed
@@ -383,9 +403,28 @@ export default function Resume() {
 
     const finish = (pointerEvent) => stop(pointerEvent, true);
     const cancel = (pointerEvent) => stop(pointerEvent, false);
+    drag.cleanup = () => {
+      if (drag.frame) cancelAnimationFrame(drag.frame);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', cancel);
+    };
     window.addEventListener('pointermove', move, { passive: true });
-    window.addEventListener('pointerup', finish, { once: true });
-    window.addEventListener('pointercancel', cancel, { once: true });
+    window.addEventListener('pointerup', finish);
+    window.addEventListener('pointercancel', cancel);
+  };
+
+  const handleSectionKeyDown = (event, sectionId) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const currentPage = pages.findIndex(page => page.includes(sectionId));
+    if (currentPage < 0) return;
+    const nextPage = Math.max(0, currentPage + (event.key === 'ArrowRight' ? 1 : -1));
+    if (nextPage !== currentPage) moveSection(sectionId, nextPage);
+  };
+
+  const removeEmptyPage = (pageIndex) => {
+    setPageLayout(current => (current || autoPages).filter((page, index) => index !== pageIndex));
   };
 
   const sectionToggle = (key, title, count) => {
@@ -479,11 +518,11 @@ export default function Resume() {
         <section className="resume-preview-column">
           <div className="resume-preview-heading"><div><span className="resume-panel-kicker">03 / {isTr ? 'ÖNİZLEME' : 'PREVIEW'}</span><h2>{labels.preview}</h2></div><span className="resume-a4-tag">A4 · {currentPageCount} {isTr ? "sayfa" : currentPageCount === 1 ? "page" : "pages"}</span></div>
           <div className="resume-preview-tools"><p className="resume-preview-hint">{labels.previewHint}</p><button type="button" className="resume-add-page" onClick={() => setPageLayout(current => [...(current || autoPages), []])}>{isTr ? '+ Sayfa ekle' : '+ Add page'}</button></div>
-          <div className="resume-paper-wrap">
+          <div ref={previewViewportRef} className={"resume-paper-wrap" + (draggingSection ? " is-dragging-section" : "")}>
             <div ref={previewRef} id="cv-preview" className="resume-pages" data-page-count={currentPageCount}>
               {pages.map((pageSectionIds, pageIndex) => (
                 <article
-                  className={`resume-paper cv-page${showPhoto && personalInfo.photo ? ' has-photo' : ''}`}
+                  className={"resume-paper cv-page" + (showPhoto && personalInfo.photo ? " has-photo" : "") + (dropTargetPage === pageIndex ? " is-drop-target" : "") + (!pageSectionIds.length ? " is-empty-page" : "")}
                   data-page={pageIndex + 1}
                   key={pageIndex}
                 >
@@ -505,22 +544,32 @@ export default function Resume() {
                     </header>
                   )}
                   {!headerExists && pageIndex === 0 && <div className="cv-paper-empty"><span><Sparkles size={24} /></span><h2>{labels.empty}</h2><p>{labels.emptyHint}</p></div>}
+                  {pageIndex > 0 && !pageSectionIds.length && (
+                    <button type="button" className="cv-remove-empty-page" onClick={() => removeEmptyPage(pageIndex)}>
+                      {isTr ? 'Boş sayfayı kaldır' : 'Remove empty page'}
+                    </button>
+                  )}
                   <div className="cv-page-content">
+                    {!pageSectionIds.length && pageIndex > 0 && (
+                      <div className="cv-empty-page-hint">{isTr ? 'Boş sayfa · bölümü buraya sürükle' : 'Empty page · drop a section here'}</div>
+                    )}
                     {pageSectionIds.map(sectionId => {
                       const section = sectionById[sectionId];
                       if (!section) return null;
                       return (
                         <div
                           className={`cv-draggable-section${draggingSection === section.id ? ' is-dragging' : ''}`}
+                          data-section-id={section.id}
                           key={section.id}
                         >
-                          <div
+                          <button
+                            type="button"
                             className="cv-section-drag-handle"
-                            role="button"
-                            tabIndex={0}
-                            aria-label={isTr ? 'Bölümü taşımak için sürükle' : 'Drag to move section'}
+                            aria-label={isTr ? 'Bölümü taşımak için sürükle. Ok tuşlarıyla sayfalar arasında taşı.' : 'Drag to move section. Use arrow keys to move between pages.'}
+                            aria-grabbed={draggingSection === section.id}
                             onPointerDown={event => beginSectionPointerDrag(event, section.id)}
-                          ><span>⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></div>
+                            onKeyDown={event => handleSectionKeyDown(event, section.id)}
+                          ><span aria-hidden="true">⠿</span><small>{isTr ? 'Taşımak için sürükle' : 'Drag to move'}</small></button>
                           {section.content}
                         </div>
                       );
