@@ -288,14 +288,44 @@ export default function Resume() {
     return result.length ? result : [[]];
   })();
   const currentPageCount = Math.max(1, pages.length);
+  const pageLayoutKey = pages.map(page => page.join(',')).join('|');
   const sectionById = Object.fromEntries(sectionBlocks.map(section => [section.id, section]));
 
-  const moveSection = (sectionId, targetPage) => {
+  // Measure the rendered A4 content, not estimated character counts. Move the last
+  // whole section forward when a manually arranged page exceeds its printable area.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const preview = previewRef.current;
+      if (!preview) return;
+      const renderedPages = Array.from(preview.querySelectorAll('.cv-page'));
+      for (let pageIndex = 0; pageIndex < renderedPages.length; pageIndex += 1) {
+        const page = renderedPages[pageIndex];
+        const content = page.querySelector('.cv-page-content');
+        const sections = Array.from(content?.querySelectorAll(':scope > [data-section-id]') || []);
+        if (!content || sections.length < 2 || content.scrollHeight <= content.clientHeight + 2) continue;
+        const lastSectionId = sections[sections.length - 1].dataset.sectionId;
+        setPageLayout(current => {
+          const next = (current || autoPages).map(items => [...items]);
+          while (next.length <= pageIndex + 1) next.push([]);
+          next[pageIndex] = next[pageIndex].filter(id => id !== lastSectionId);
+          next[pageIndex + 1] = [lastSectionId, ...next[pageIndex + 1].filter(id => id !== lastSectionId)];
+          return next;
+        });
+        break;
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [pageLayoutKey, headerExists, personalInfo.summary, experience, education, selectedProjects.length, selectedSkills.length, completedCourses.length, showPhoto]);
+
+  const moveSection = (sectionId, targetPage, beforeSectionId = null) => {
     setPageLayout(current => {
-      const base = current || autoPages;
+      const base = (current || autoPages).map(page => [...page]);
       const next = base.map(page => page.filter(id => id !== sectionId));
       while (next.length <= targetPage) next.push([]);
-      next[targetPage] = [...next[targetPage], sectionId];
+      const target = next[targetPage];
+      const beforeIndex = beforeSectionId ? target.indexOf(beforeSectionId) : -1;
+      if (beforeIndex >= 0) target.splice(beforeIndex, 0, sectionId);
+      else target.push(sectionId);
       return next;
     });
   };
@@ -342,11 +372,22 @@ export default function Resume() {
       current.pointerY = pointerEvent.clientY;
       const targetPageIndex = findDropPage(current);
       if (shouldDrop && current.moved && targetPageIndex !== null) {
-        const sourcePage = Array.from(current.viewport.querySelectorAll('.cv-page')).find(page =>
-          Array.from(page.querySelectorAll('[data-section-id]')).some(section => section.dataset.sectionId === current.sectionId)
-        );
-        const sourcePageIndex = sourcePage ? Number(sourcePage.dataset.page) - 1 : -1;
-        if (sourcePageIndex !== targetPageIndex) moveSection(current.sectionId, targetPageIndex);
+        const page = current.viewport.querySelector(`.cv-page[data-page="${targetPageIndex + 1}"]`);
+        const hoveredSection = document.elementFromPoint(current.pointerX, current.pointerY)?.closest('[data-section-id]');
+        let beforeSectionId = null;
+        if (page && hoveredSection && page.contains(hoveredSection) && hoveredSection.dataset.sectionId !== current.sectionId) {
+          const hoveredBounds = hoveredSection.getBoundingClientRect();
+          const insertAfter = current.pointerY >= hoveredBounds.top + hoveredBounds.height / 2;
+          if (!insertAfter) {
+            beforeSectionId = hoveredSection.dataset.sectionId;
+          } else {
+            const siblings = Array.from(page.querySelectorAll('[data-section-id]'));
+            const hoveredIndex = siblings.indexOf(hoveredSection);
+            const nextSibling = siblings.slice(hoveredIndex + 1).find(item => item.dataset.sectionId !== current.sectionId);
+            beforeSectionId = nextSibling?.dataset.sectionId || null;
+          }
+        }
+        moveSection(current.sectionId, targetPageIndex, beforeSectionId);
       }
 
       current.cleanup?.();
