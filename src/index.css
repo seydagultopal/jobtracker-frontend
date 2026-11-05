@@ -2057,3 +2057,58 @@ h1, h2, h3, h4, .dash-welcome h1, .dash-streak-card h2,
 :root.dark .tracker-status-offer, :root.dark .tracker-status-rejected {
   background: #303632 !important; color: #c3d0c5 !important; border-color: #46534a !important;
 }
+
+
+/* Resume editor: fixed A4 sheet and a measured printable content area. */
+.resume-paper.cv-page {
+  height: 1123px !important;
+  min-height: 1123px !important;
+  max-height: 1123px !important;
+  overflow: hidden !important;
+  background: #fffdf9 !important;
+  color: #30251f !important;
+}
+.cv-page-content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+.cv-page-footer {
+  flex: 0 0 auto !important;
+}
+
+/* Restore the original high-contrast CV typography independently of app theme colors. */
+.resume-paper.cv-page,
+.resume-paper.cv-page .cv-paper-identity h1,
+.resume-paper.cv-page .cv-paper-identity h2,
+.resume-paper.cv-page .cv-paper-contact,
+.resume-paper.cv-page .cv-paper-section,
+.resume-paper.cv-page .cv-paper-section h3,
+.resume-paper.cv-page .cv-paper-entry,
+.resume-paper.cv-page .cv-paper-entry strong,
+.resume-paper.cv-page .cv-paper-entry p,
+.resume-paper.cv-page .cv-paper-summary {
+  color: #30251f !important;
+}
+.resume-paper.cv-page .cv-paper-entry > span,
+.resume-paper.cv-page .cv-paper-contact,
+.resume-paper.cv-page .cv-paper-summary,
+.resume-paper.cv-page .cv-paper-entry p {
+  color: #5f5148 !important;
+}
+.resume-paper.cv-page .cv-paper-entry > small {
+  color: #755743 !important;
+}
+.resume-paper.cv-page .cv-paper-section h3 svg,
+.resume-paper.cv-page .cv-paper-contact svg {
+  color: #b45c35 !important;
+}
+.resume-paper.cv-page .cv-draggable-section,
+.resume-paper.cv-page .cv-draggable-section.is-dragging {
+  opacity: 1 !important;
+}
+.resume-pages.is-pdf-export .resume-paper.cv-page {
+  height: 1123px !important;
+  min-height: 1123px !important;
+  max-height: 1123px !important;
+}
