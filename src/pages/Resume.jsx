@@ -247,10 +247,6 @@ export default function Resume() {
       counts: 'Content overview'
     };
 
-  if (loading) {
-    return <div className="resume-loading"><span className="resume-loading-mark"><Sparkles size={20} /></span><p>{labels.loading}</p></div>;
-  }
-
   const completedCourses = devData.courses.filter(course =>
     selectedDevItems.courses.includes(course.id) && (course.status === 'COMPLETED' || course.progress === 100)
   );
@@ -316,6 +312,10 @@ export default function Resume() {
     });
     return () => cancelAnimationFrame(frame);
   }, [pageLayoutKey, headerExists, personalInfo.summary, experience, education, selectedProjects.length, selectedSkills.length, completedCourses.length, showPhoto]);
+
+  if (loading) {
+    return <div className="resume-loading"><span className="resume-loading-mark"><Sparkles size={20} /></span><p>{labels.loading}</p></div>;
+  }
 
   const moveSection = (sectionId, targetPage, beforeSectionId = null) => {
     setPageLayout(current => {
