@@ -299,3 +299,18 @@
   outline: 1px dashed var(--pebble-accent);
   outline-offset: 2px;
 }
+
+
+/* Editor-only controls must never leak into the exported document. */
+.resume-pages.is-pdf-export .cv-section-drag-handle,
+.resume-pages.is-pdf-export .cv-empty-page-hint,
+.resume-pages.is-pdf-export .cv-remove-empty-page {
+  display: none !important;
+}
+.resume-pages.is-pdf-export .cv-page.is-drop-target {
+  outline: 0 !important;
+}
+.resume-pages.is-pdf-export .cv-draggable-section.is-dragging {
+  opacity: 1 !important;
+  outline: 0 !important;
+}
