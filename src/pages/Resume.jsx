@@ -296,7 +296,7 @@ export default function Resume() {
       const next = base.map(page => page.filter(id => id !== sectionId));
       while (next.length <= targetPage) next.push([]);
       next[targetPage] = [...next[targetPage], sectionId];
-      return next.filter((page, index) => page.length || index === 0);
+      return next;
     });
   };
 
