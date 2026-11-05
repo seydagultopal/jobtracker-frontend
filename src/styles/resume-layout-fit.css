@@ -138,12 +138,15 @@
 
 /* Prevent tall/descending name glyphs from touching the professional title below. */
 .cv-paper-identity h1 {
-  margin-bottom: 15px !important;
+  display: block !important;
+  margin-bottom: 20px !important;
   line-height: 1.2 !important;
-  padding-bottom: 2px !important;
+  padding-bottom: 3px !important;
 }
 .cv-paper-identity h2 {
+  display: block !important;
   margin-top: 0 !important;
+  padding-top: 2px !important;
   line-height: 1.45 !important;
 }
 
