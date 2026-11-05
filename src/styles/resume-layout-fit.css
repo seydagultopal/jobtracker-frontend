@@ -233,7 +233,7 @@
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: auto !important;
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
   scroll-behavior: auto !important;
   scrollbar-gutter: stable;
 }
