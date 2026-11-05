@@ -51,6 +51,8 @@ export default function Resume() {
   const [dropTargetPage, setDropTargetPage] = useState(null);
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoError, setPhotoError] = useState('');
+  const [photoCrop, setPhotoCrop] = useState({ x: 50, y: 50, zoom: 1 });
+  const photoCropPointerRef = useRef(null);
   const photoInputRef = useRef(null);
   const [options, setOptions] = useState({ showProjects: true, showCourses: true, showSkills: true });
   const [selectedDevItems, setSelectedDevItems] = useState({ projects: [], courses: [], skills: [] });
@@ -124,6 +126,38 @@ export default function Resume() {
     }));
   };
 
+  const handlePhotoCropPointerDown = (event) => {
+    if (!personalInfo.photo || event.button !== 0) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    photoCropPointerRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY
+    };
+  };
+
+  const handlePhotoCropPointerMove = (event) => {
+    const active = photoCropPointerRef.current;
+    if (!active || active.pointerId !== event.pointerId) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const deltaX = event.clientX - active.x;
+    const deltaY = event.clientY - active.y;
+    active.x = event.clientX;
+    active.y = event.clientY;
+    setPhotoCrop(current => ({
+      ...current,
+      x: Math.max(0, Math.min(100, current.x - (deltaX / bounds.width) * 100)),
+      y: Math.max(0, Math.min(100, current.y - (deltaY / bounds.height) * 100))
+    }));
+  };
+
+  const handlePhotoCropPointerEnd = (event) => {
+    if (photoCropPointerRef.current?.pointerId === event.pointerId) {
+      photoCropPointerRef.current = null;
+    }
+  };
+
   const handlePhotoUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -141,6 +175,7 @@ export default function Resume() {
     try {
       const image = await readImage(file);
       setPersonalInfo(prev => ({ ...prev, photo: image }));
+      setPhotoCrop({ x: 50, y: 50, zoom: 1 });
       setShowPhoto(true);
     } catch {
       setPhotoError(isTr ? 'Fotoğraf okunamadı. Başka bir dosya dene.' : 'The image could not be read. Try another file.');
@@ -533,10 +568,49 @@ export default function Resume() {
               </label>
               {showPhoto && (
                 <div className="resume-photo-actions">
-                  {personalInfo.photo ? <img src={personalInfo.photo} alt="" className="resume-photo-thumb resume-photo-thumb-contain" /> : <span className="resume-photo-placeholder"><UserRound size={19} /></span>}
-                  <div className="resume-photo-buttons">
-                    <button type="button" onClick={() => photoInputRef.current?.click()}><Upload size={14} />{personalInfo.photo ? labels.changePhoto : labels.addPhoto}</button>
-                    {personalInfo.photo && <button type="button" className="resume-photo-remove" onClick={() => setPersonalInfo(prev => ({ ...prev, photo: null }))}><X size={14} />{labels.removePhoto}</button>}
+                  {personalInfo.photo ? (
+                    <div
+                      className="resume-photo-crop-frame"
+                      role="img"
+                      aria-label={isTr ? 'Fotoğraf kırpma alanı. Sürükleyerek fotoğrafı konumlandır.' : 'Photo crop area. Drag to reposition the photo.'}
+                      onPointerDown={handlePhotoCropPointerDown}
+                      onPointerMove={handlePhotoCropPointerMove}
+                      onPointerUp={handlePhotoCropPointerEnd}
+                      onPointerCancel={handlePhotoCropPointerEnd}
+                      onLostPointerCapture={handlePhotoCropPointerEnd}
+                    >
+                      <img
+                        src={personalInfo.photo}
+                        alt=""
+                        draggable="false"
+                        style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
+                      />
+                      <span>{isTr ? 'Sürükle ve konumlandır' : 'Drag to reposition'}</span>
+                    </div>
+                  ) : <span className="resume-photo-placeholder"><UserRound size={19} /></span>}
+                  <div className="resume-photo-editor-controls">
+                    {personalInfo.photo && (
+                      <label className="resume-photo-zoom-control">
+                        <span>{isTr ? 'Yakınlaştırma' : 'Zoom'}</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="2.5"
+                          step="0.05"
+                          value={photoCrop.zoom}
+                          onChange={event => setPhotoCrop(current => ({ ...current, zoom: Number(event.target.value) }))}
+                        />
+                      </label>
+                    )}
+                    <div className="resume-photo-buttons">
+                      <button type="button" onClick={() => photoInputRef.current?.click()}><Upload size={14} />{personalInfo.photo ? labels.changePhoto : labels.addPhoto}</button>
+                      {personalInfo.photo && <button type="button" className="resume-photo-remove" onClick={() => setPersonalInfo(prev => ({ ...prev, photo: null }))}><X size={14} />{labels.removePhoto}</button>}
+                    </div>
+                    {personalInfo.photo && (
+                      <button type="button" className="resume-photo-reset" onClick={() => setPhotoCrop({ x: 50, y: 50, zoom: 1 })}>
+                        {isTr ? 'Konumu sıfırla' : 'Reset position'}
+                      </button>
+                    )}
                   </div>
                   <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={handlePhotoUpload} />
                 </div>
@@ -586,7 +660,14 @@ export default function Resume() {
                           {personalInfo.website && getExternalUrl(personalInfo.website) && <a className="cv-contact-link" href={getExternalUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" aria-label="Portfolio website"><Globe size={11} /><span>Portfolio</span></a>}
                         </div>
                       </div>
-                      {showPhoto && personalInfo.photo && <img src={personalInfo.photo} alt="" className="cv-paper-photo cv-paper-photo-contain" />}
+                      {showPhoto && personalInfo.photo && (
+                        <img
+                          src={personalInfo.photo}
+                          alt=""
+                          className="cv-paper-photo cv-paper-photo-crop"
+                          style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
+                        />
+                      )}
                     </header>
                   )}
                   {!headerExists && pageIndex === 0 && <div className="cv-paper-empty"><span><Sparkles size={24} /></span><h2>{labels.empty}</h2><p>{labels.emptyHint}</p></div>}
