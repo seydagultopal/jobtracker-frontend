@@ -661,12 +661,14 @@ export default function Resume() {
                         </div>
                       </div>
                       {showPhoto && personalInfo.photo && (
-                        <img
-                          src={personalInfo.photo}
-                          alt=""
-                          className="cv-paper-photo cv-paper-photo-crop"
-                          style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
-                        />
+                        <div className="cv-paper-photo-frame">
+                          <img
+                            src={personalInfo.photo}
+                            alt=""
+                            className="cv-paper-photo-crop"
+                            style={{ objectPosition: `${photoCrop.x}% ${photoCrop.y}%`, transform: `scale(${photoCrop.zoom})` }}
+                          />
+                        </div>
                       )}
                     </header>
                   )}
