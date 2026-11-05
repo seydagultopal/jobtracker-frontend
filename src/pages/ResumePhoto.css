@@ -61,18 +61,26 @@
   text-decoration: underline;
   cursor: pointer;
 }
-.cv-paper-photo.cv-paper-photo-crop {
+.cv-paper-photo-frame {
   width: 76px !important;
   height: 96px !important;
   flex: 0 0 76px !important;
+  overflow: hidden !important;
   border: 2px solid #eadbce !important;
   border-radius: 9px !important;
-  object-fit: cover !important;
-  object-position: center !important;
   background: #f4eee8 !important;
 }
+.cv-paper-photo-frame .cv-paper-photo-crop {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
 @media (max-width: 600px) {
-  .cv-paper-photo.cv-paper-photo-crop {
+  .cv-paper-photo-frame {
     width: 62px !important;
     height: 78px !important;
     flex-basis: 62px !important;
