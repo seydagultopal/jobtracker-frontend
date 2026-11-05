@@ -304,6 +304,11 @@ export default function Resume() {
     if (event.button !== 0 || pointerDragRef.current) return;
     event.preventDefault();
     event.stopPropagation();
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Window-level listeners remain as a fallback if pointer capture is unavailable.
+    }
 
     const viewport = previewViewportRef.current;
     if (!viewport) return;
@@ -390,7 +395,7 @@ export default function Resume() {
           return;
         }
 
-        const speed = 5 + intensity * 27;
+        const speed = 4 + intensity * 16;
         active.viewport.scrollLeft = Math.max(0, Math.min(
           maxScroll,
           active.viewport.scrollLeft + direction * speed
