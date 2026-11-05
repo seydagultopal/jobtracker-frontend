@@ -226,3 +226,76 @@
 
 .cv-section-drag-handle:active{cursor:grabbing}
 .cv-draggable-section.is-dragging{z-index:5;border-color:var(--pebble-accent)!important;background:var(--pebble-surface-soft)!important;box-shadow:0 8px 22px rgba(0,0,0,.12)}
+
+
+/* Resume editor interaction states: keep horizontal navigation predictable while dragging. */
+.resume-paper-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: auto !important;
+  scrollbar-gutter: stable;
+}
+.resume-paper-wrap.is-dragging-section {
+  scroll-snap-type: none !important;
+  overscroll-behavior-x: contain;
+  cursor: grabbing;
+}
+.cv-section-drag-handle {
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 4px;
+  width: auto;
+  min-width: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  line-height: 1;
+}
+.cv-section-drag-handle:focus-visible {
+  outline: 2px solid var(--pebble-accent);
+  outline-offset: 3px;
+}
+.cv-page.is-drop-target {
+  outline: 2px dashed var(--pebble-accent) !important;
+  outline-offset: -12px;
+}
+.cv-page.is-empty-page .cv-page-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cv-empty-page-hint {
+  max-width: 220px;
+  padding: 18px 22px;
+  border: 1px dashed #c9c2b9;
+  border-radius: 10px;
+  color: #8b8178;
+  font-size: 10px;
+  text-align: center;
+  pointer-events: none;
+}
+.cv-remove-empty-page {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  border: 1px solid #e6ddd3;
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: #fffdf9;
+  color: #76695f;
+  font-size: 9px;
+  cursor: pointer;
+}
+.cv-remove-empty-page:hover {
+  border-color: var(--pebble-accent);
+  color: var(--pebble-accent-strong);
+}
+.cv-draggable-section.is-dragging {
+  opacity: .72;
+  outline: 1px dashed var(--pebble-accent);
+  outline-offset: 2px;
+}
